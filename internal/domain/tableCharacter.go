@@ -2,19 +2,17 @@ package domain
 
 type TableCharacter struct{
 	Idcharacter int64 `json:"idcharacter"`
-	User_id int `json:"user_id"`
+	UserId string `json:"userid"`
 	Name string `json:"name"`
-	//Creo que conviene hacer una tabla de clases para tener dropdowns en el front
-	Class string `json:"class"`
-	// Lo mismo que con class
-	Race string `json:"race"`
+	ClassId int `json:"classid"`
+	RaceId int `json:"raceid"`
 	Background string `json:"background"`
 	Hitpoints int `json:"hitpoints"`
 	Speed int `json:"speed"`
-	Armor_class int `json:"armor_class"`
+	ArmorClass int `json:"armorclass"`
 	Level int `json:"level"`
 	Exp int `json:"exp"`
-	Campaign_id int `json:"campaign_id"`
+	CampaignId int `json:"campaignid"`
 	Str int `json:"str"`
 	Dex int `json:"dex"`
 	Int int `json:"int"`
