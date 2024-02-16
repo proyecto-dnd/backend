@@ -9,7 +9,7 @@ type service struct {
 	repo EventRepository
 }
 
-func NewService(repo EventRepository) EventService {
+func NewEventService(repo EventRepository) EventService {
 	return &service{repo: repo}
 }
 
@@ -83,6 +83,52 @@ func (s *service) GetEventByID(id int) (dto.EventDto, error) {
 	}, nil
 }
 
+func (s *service) GetEventsBySessionID(sessionid int) ([]dto.EventDto, error) {
+	events, err := s.repo.GetBySessionId(sessionid)
+	if err != nil {
+		return nil, err
+	}
+
+	var eventsDto []dto.EventDto
+	for _, event := range events {
+		eventsDto = append(eventsDto, dto.EventDto{
+			Idevent:            event.Idevent,
+			Type:               event.Type,
+			EventDescription:   event.EventDescription,
+			Enviroment:         event.Enviroment,
+			Session_id:         event.Session_id,
+			Character_involved: event.Character_involved,
+			Dice_roll:          event.Dice_roll,
+			Difficulty_Class:   event.Difficulty_Class,
+		})
+	}
+
+	return eventsDto, nil
+}
+
+func (s *service) GetEventsByCharacterID(characterid int) ([]dto.EventDto, error) {
+	events, err := s.repo.GetByCharacterId(characterid)
+	if err != nil {
+		return nil, err
+	}
+
+	var eventsDto []dto.EventDto
+	for _, event := range events {
+		eventsDto = append(eventsDto, dto.EventDto{
+			Idevent:            event.Idevent,
+			Type:               event.Type,
+			EventDescription:   event.EventDescription,
+			Enviroment:         event.Enviroment,
+			Session_id:         event.Session_id,
+			Character_involved: event.Character_involved,
+			Dice_roll:          event.Dice_roll,
+			Difficulty_Class:   event.Difficulty_Class,
+		})
+	}
+
+	return eventsDto, nil
+}
+
 func (s *service) UpdateEvent(eventDto dto.EventDto) (dto.EventDto, error) {
 	eventDomain := domain.Event{
 		Idevent:            eventDto.Idevent,
@@ -114,7 +160,6 @@ func (s *service) UpdateEvent(eventDto dto.EventDto) (dto.EventDto, error) {
 	return updatedEventDto, nil
 }
 
-// DeleteEvent deletes an event.
 func (s *service) DeleteEvent(id int) error {
 	return s.repo.Delete(id)
 }

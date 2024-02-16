@@ -15,6 +15,10 @@ type eventMySqlRepository struct {
 	db *sql.DB
 }
 
+func NewEventRepository(db *sql.DB) EventRepository {
+	return &eventMySqlRepository{db: db}
+}
+
 func (r *eventMySqlRepository) Create(event domain.Event) (domain.Event, error) {
 	statement, err := r.db.Prepare(QueryCreateEvent)
 	if err != nil {
@@ -65,7 +69,7 @@ func (r *eventMySqlRepository) GetAll() ([]domain.Event, error) {
 	return events, nil
 }
 
-func (r *eventMySqlRepository) GetById(id int64) (domain.Event, error) {
+func (r *eventMySqlRepository) GetById(id int) (domain.Event, error) {
 	var event domain.Event
 	err := r.db.QueryRow(QueryGetById, id).Scan(&event.Idevent, &event.Type, &event.EventDescription, &event.Enviroment, &event.Session_id, &event.Character_involved, &event.Dice_roll, &event.Difficulty_Class)
 	if err != nil {
