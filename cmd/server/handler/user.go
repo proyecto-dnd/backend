@@ -31,7 +31,7 @@ func (h *UserHandler) HandlerCreate() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
-	
+
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(201, createdUser)
 	}

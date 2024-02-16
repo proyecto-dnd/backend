@@ -50,8 +50,8 @@ func (r *router) buildUserRoutes() {
 	userGroup := r.routerGroup.Group("/user")
 	{
 		// TODO Add Middlewares if needed
-		userGroup.POST("", userFirebaseHandler.HandlerCreate())		
-		userGroup.GET("", userFirebaseHandler.HandlerGetAll())		
+		userGroup.POST("", userFirebaseHandler.HandlerCreate())
+		userGroup.GET("", userFirebaseHandler.HandlerGetAll())
 		userGroup.GET("/:id", userFirebaseHandler.HandlerGetById())
 		userGroup.PUT("/:id", userFirebaseHandler.HandlerUpdate())
 		userGroup.PATCH("/:id", userFirebaseHandler.HandlerPatch())
