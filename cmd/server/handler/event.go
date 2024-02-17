@@ -105,13 +105,20 @@ func (h *EventHandler) HandlerGetByCharacterId() gin.HandlerFunc {
 
 func (h *EventHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+
 		var tempEvent dto.EventDto
 		if err := ctx.BindJSON(&tempEvent); err != nil {
 			ctx.JSON(500, err)
 			return
 		}
 
-		updatedUser, err := h.service.UpdateEvent(tempEvent)
+		updatedUser, err := h.service.UpdateEvent(tempEvent, intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
