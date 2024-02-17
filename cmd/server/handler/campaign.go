@@ -76,6 +76,7 @@ func (h *CampaignHandler) HandlerUpdate() gin.HandlerFunc {
 
 		var tempCampaign dto.CreateCampaignDto
 		if err := ctx.BindJSON(&tempCampaign); err != nil {
+			fmt.Println(err)
 			ctx.JSON(500, err)
 			return
 		}
