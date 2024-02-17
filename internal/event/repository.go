@@ -3,6 +3,8 @@ package event
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -22,13 +24,15 @@ func NewEventRepository(db *sql.DB) EventRepository {
 func (r *eventMySqlRepository) Create(event domain.Event) (domain.Event, error) {
 	statement, err := r.db.Prepare(QueryCreateEvent)
 	if err != nil {
+		fmt.Println(err)
 		return domain.Event{}, ErrPrepareStatement
 	}
+	
 	defer statement.Close()
 	result, err := statement.Exec(
 		event.Type,
 		event.EventDescription,
-		event.Enviroment,
+		event.Environment,
 		event.Session_id,
 		event.Character_involved,
 		event.Dice_roll,
@@ -61,7 +65,7 @@ func (r *eventMySqlRepository) GetAll() ([]domain.Event, error) {
 	var events []domain.Event
 	for rows.Next() {
 		var event domain.Event
-		if err := rows.Scan(&event.Idevent, &event.Type, &event.EventDescription, &event.Enviroment, &event.Session_id, &event.Character_involved, &event.Dice_roll, &event.Difficulty_Class); err != nil {
+		if err := rows.Scan(&event.Idevent, &event.Type, &event.EventDescription, &event.Environment, &event.Session_id, &event.Character_involved, &event.Dice_roll, &event.Difficulty_Class); err != nil {
 			return nil, err
 		}
 		events = append(events, event)
@@ -71,7 +75,7 @@ func (r *eventMySqlRepository) GetAll() ([]domain.Event, error) {
 
 func (r *eventMySqlRepository) GetById(id int) (domain.Event, error) {
 	var event domain.Event
-	err := r.db.QueryRow(QueryGetById, id).Scan(&event.Idevent, &event.Type, &event.EventDescription, &event.Enviroment, &event.Session_id, &event.Character_involved, &event.Dice_roll, &event.Difficulty_Class)
+	err := r.db.QueryRow(QueryGetById, id).Scan(&event.Idevent, &event.Type, &event.EventDescription, &event.Environment, &event.Session_id, &event.Character_involved, &event.Dice_roll, &event.Difficulty_Class)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return domain.Event{}, errors.New("event not found")
@@ -91,7 +95,7 @@ func (r *eventMySqlRepository) GetBySessionId(session_id int) ([]domain.Event, e
 	var events []domain.Event
 	for rows.Next() {
 		var event domain.Event
-		if err := rows.Scan(&event.Idevent, &event.Type, &event.EventDescription, &event.Enviroment, &event.Session_id, &event.Character_involved, &event.Dice_roll, &event.Difficulty_Class); err != nil {
+		if err := rows.Scan(&event.Idevent, &event.Type, &event.EventDescription, &event.Environment, &event.Session_id, &event.Character_involved, &event.Dice_roll, &event.Difficulty_Class); err != nil {
 			return nil, err
 		}
 		events = append(events, event)
@@ -109,7 +113,7 @@ func (r *eventMySqlRepository) GetByCharacterId(character_id int) ([]domain.Even
 	var events []domain.Event
 	for rows.Next() {
 		var event domain.Event
-		if err := rows.Scan(&event.Idevent, &event.Type, &event.EventDescription, &event.Enviroment, &event.Session_id, &event.Character_involved, &event.Dice_roll, &event.Difficulty_Class); err != nil {
+		if err := rows.Scan(&event.Idevent, &event.Type, &event.EventDescription, &event.Environment, &event.Session_id, &event.Character_involved, &event.Dice_roll, &event.Difficulty_Class); err != nil {
 			return nil, err
 		}
 		events = append(events, event)
@@ -117,14 +121,14 @@ func (r *eventMySqlRepository) GetByCharacterId(character_id int) ([]domain.Even
 	return events, nil
 }
 
-func (r *eventMySqlRepository) Update(event domain.Event) (domain.Event, error) {
+func (r *eventMySqlRepository) Update(event domain.Event, id int) (domain.Event, error) {
 	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {
 		return domain.Event{}, ErrPrepareStatement
 	}
 	defer statement.Close()
 
-	_, err = statement.Exec(event.Type, event.EventDescription, event.Enviroment, event.Session_id, event.Character_involved, event.Dice_roll, event.Difficulty_Class, event.Idevent)
+	_, err = statement.Exec(event.Type, event.EventDescription, event.Environment, event.Session_id, event.Character_involved, event.Dice_roll, event.Difficulty_Class, id)
 	if err != nil {
 		return domain.Event{}, err
 	}

@@ -13,48 +13,38 @@ func NewEventService(repo EventRepository) EventService {
 	return &service{repo: repo}
 }
 
-func (s *service) CreateEvent(eventDto dto.EventDto) (dto.EventDto, error) {
+func (s *service) CreateEvent(eventDto dto.EventDto) (domain.Event, error) {
 	eventDomain := domain.Event{
-		Idevent:            eventDto.Idevent,
 		Type:               eventDto.Type,
 		EventDescription:   eventDto.EventDescription,
-		Enviroment:         eventDto.Enviroment,
+		Environment:         eventDto.Environment,
 		Session_id:         eventDto.Session_id,
 		Character_involved: eventDto.Character_involved,
 		Dice_roll:          eventDto.Dice_roll,
 		Difficulty_Class:   eventDto.Difficulty_Class,
 	}
-
+	
 	createdEvent, err := s.repo.Create(eventDomain)
 	if err != nil {
-		return dto.EventDto{}, err
+		return domain.Event{}, err
 	}
 
-	return dto.EventDto{
-		Idevent:            createdEvent.Idevent,
-		Type:               createdEvent.Type,
-		EventDescription:   createdEvent.EventDescription,
-		Enviroment:         createdEvent.Enviroment,
-		Session_id:         createdEvent.Session_id,
-		Character_involved: createdEvent.Character_involved,
-		Dice_roll:          createdEvent.Dice_roll,
-		Difficulty_Class:   createdEvent.Difficulty_Class,
-	}, nil
+	return createdEvent, nil
 }
 
-func (s *service) GetAllEvents() ([]dto.EventDto, error) {
+func (s *service) GetAllEvents() ([]domain.Event, error) {
 	events, err := s.repo.GetAll()
 	if err != nil {
 		return nil, err
 	}
 
-	var eventsDto []dto.EventDto
+	var eventsArray []domain.Event
 	for _, event := range events {
-		eventsDto = append(eventsDto, dto.EventDto{
+		eventsArray = append(eventsArray, domain.Event{
 			Idevent:            event.Idevent,
 			Type:               event.Type,
 			EventDescription:   event.EventDescription,
-			Enviroment:         event.Enviroment,
+			Environment:         event.Environment,
 			Session_id:         event.Session_id,
 			Character_involved: event.Character_involved,
 			Dice_roll:          event.Dice_roll,
@@ -62,40 +52,31 @@ func (s *service) GetAllEvents() ([]dto.EventDto, error) {
 		})
 	}
 
-	return eventsDto, nil
+	return eventsArray, nil
 }
 
-func (s *service) GetEventByID(id int) (dto.EventDto, error) {
+func (s *service) GetEventByID(id int) (domain.Event, error) {
 	event, err := s.repo.GetById(id)
 	if err != nil {
-		return dto.EventDto{}, err
+		return domain.Event{}, err
 	}
 
-	return dto.EventDto{
-		Idevent:            event.Idevent,
-		Type:               event.Type,
-		EventDescription:   event.EventDescription,
-		Enviroment:         event.Enviroment,
-		Session_id:         event.Session_id,
-		Character_involved: event.Character_involved,
-		Dice_roll:          event.Dice_roll,
-		Difficulty_Class:   event.Difficulty_Class,
-	}, nil
+	return event, nil
 }
 
-func (s *service) GetEventsBySessionID(sessionid int) ([]dto.EventDto, error) {
+func (s *service) GetEventsBySessionID(sessionid int) ([]domain.Event, error) {
 	events, err := s.repo.GetBySessionId(sessionid)
 	if err != nil {
 		return nil, err
 	}
 
-	var eventsDto []dto.EventDto
+	var eventsDto []domain.Event
 	for _, event := range events {
-		eventsDto = append(eventsDto, dto.EventDto{
+		eventsDto = append(eventsDto, domain.Event{
 			Idevent:            event.Idevent,
 			Type:               event.Type,
 			EventDescription:   event.EventDescription,
-			Enviroment:         event.Enviroment,
+			Environment:         event.Environment,
 			Session_id:         event.Session_id,
 			Character_involved: event.Character_involved,
 			Dice_roll:          event.Dice_roll,
@@ -106,19 +87,19 @@ func (s *service) GetEventsBySessionID(sessionid int) ([]dto.EventDto, error) {
 	return eventsDto, nil
 }
 
-func (s *service) GetEventsByCharacterID(characterid int) ([]dto.EventDto, error) {
+func (s *service) GetEventsByCharacterID(characterid int) ([]domain.Event, error) {
 	events, err := s.repo.GetByCharacterId(characterid)
 	if err != nil {
 		return nil, err
 	}
 
-	var eventsDto []dto.EventDto
+	var eventsDto []domain.Event
 	for _, event := range events {
-		eventsDto = append(eventsDto, dto.EventDto{
+		eventsDto = append(eventsDto, domain.Event{
 			Idevent:            event.Idevent,
 			Type:               event.Type,
 			EventDescription:   event.EventDescription,
-			Enviroment:         event.Enviroment,
+			Environment:         event.Environment,
 			Session_id:         event.Session_id,
 			Character_involved: event.Character_involved,
 			Dice_roll:          event.Dice_roll,
@@ -129,28 +110,27 @@ func (s *service) GetEventsByCharacterID(characterid int) ([]dto.EventDto, error
 	return eventsDto, nil
 }
 
-func (s *service) UpdateEvent(eventDto dto.EventDto) (dto.EventDto, error) {
+func (s *service) UpdateEvent(eventDto dto.EventDto, id int) (domain.Event, error) {
 	eventDomain := domain.Event{
-		Idevent:            eventDto.Idevent,
 		Type:               eventDto.Type,
 		EventDescription:   eventDto.EventDescription,
-		Enviroment:         eventDto.Enviroment,
+		Environment:         eventDto.Environment,
 		Session_id:         eventDto.Session_id,
 		Character_involved: eventDto.Character_involved,
 		Dice_roll:          eventDto.Dice_roll,
 		Difficulty_Class:   eventDto.Difficulty_Class,
 	}
 
-	updatedEvent, err := s.repo.Update(eventDomain)
+	updatedEvent, err := s.repo.Update(eventDomain, id)
 	if err != nil {
-		return dto.EventDto{}, err
+		return domain.Event{}, err
 	}
 
-	updatedEventDto := dto.EventDto{
+	updatedEventDto := domain.Event{
 		Idevent:            int(updatedEvent.Idevent),
 		Type:               updatedEvent.Type,
 		EventDescription:   updatedEvent.EventDescription,
-		Enviroment:         updatedEvent.Enviroment,
+		Environment:         updatedEvent.Environment,
 		Session_id:         updatedEvent.Session_id,
 		Character_involved: updatedEvent.Character_involved,
 		Dice_roll:          updatedEvent.Dice_roll,

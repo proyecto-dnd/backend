@@ -4,7 +4,7 @@ type Event struct {
 	Idevent            int  `json:"idevent"`
 	Type               string `json:"type"`
 	EventDescription   string `json:"event_description"`
-	Enviroment         string `json:"enviroment"`
+	Environment         string `json:"environment"`
 	Session_id         int    `json:"session_id"`
 	Character_involved int    `json:"character_id"`
 	Dice_roll          bool   `json:"dice_roll"`

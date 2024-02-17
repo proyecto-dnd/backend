@@ -17,12 +17,12 @@ type EventHandler interface {
 }
 
 type EventService interface {
-	CreateEvent(dto.EventDto) (dto.EventDto, error)
-	GetAllEvents() ([]dto.EventDto, error)
-	GetEventByID(id int) (dto.EventDto, error)
-	GetEventsBySessionID(sessionid int) ([]dto.EventDto, error)
-	GetEventsByCharacterID(characterid int) ([]dto.EventDto, error)
-	UpdateEvent(dto.EventDto) (dto.EventDto, error)
+	CreateEvent(dto.EventDto) (domain.Event, error)
+	GetAllEvents() ([]domain.Event, error)
+	GetEventByID(id int) (domain.Event, error)
+	GetEventsBySessionID(sessionid int) ([]domain.Event, error)
+	GetEventsByCharacterID(characterid int) ([]domain.Event, error)
+	UpdateEvent(event dto.EventDto, id int) (domain.Event, error)
 	DeleteEvent(id int) error
 }
 
@@ -32,6 +32,6 @@ type EventRepository interface {
 	GetById(id int)(domain.Event, error)
 	GetBySessionId(sessionid int)([]domain.Event, error)
 	GetByCharacterId(characterid int)([]domain.Event, error)
-	Update(event domain.Event) (domain.Event, error)
+	Update(event domain.Event, id int) (domain.Event, error)
 	Delete(id int)error
 }
