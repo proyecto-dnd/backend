@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
 	"github.com/proyecto-dnd/backend/internal/event"
+	"github.com/proyecto-dnd/backend/internal/campaign"
 	"github.com/proyecto-dnd/backend/internal/user"
 )
 
@@ -32,6 +33,7 @@ func (r *router) MapRoutes() {
 	r.setGroup()
 	r.buildUserRoutes()
 	r.buildEventRoutes()
+	r.buildCampaignRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -74,5 +76,20 @@ func (r *router) buildEventRoutes() {
 		eventGroup.GET("/character/:id", eventHandler.HandlerGetByCharacterId())
 		eventGroup.PUT("/:id", eventHandler.HandlerUpdate())
 		eventGroup.DELETE("/:id", eventHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildCampaignRoutes() {
+	campaignRepository := campaign.NewCampaignRepository(r.db)
+	campaignService := campaign.NewCampaignService(campaignRepository)
+	campaignHandler := handler.NewCampaignHandler(&campaignService)
+
+	campaignGroup := r.routerGroup.Group("/campaign")
+	{
+		campaignGroup.POST("", campaignHandler.HandlerCreate())
+		campaignGroup.GET("", campaignHandler.HandlerGetAll())
+		campaignGroup.GET("/:id", campaignHandler.HandlerGetById())
+		campaignGroup.PUT("/:id", campaignHandler.HandlerUpdate())
+		campaignGroup.DELETE("/:id", campaignHandler.HandlerDelete())
 	}
 }

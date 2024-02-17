@@ -17,12 +17,12 @@ type EventHandler interface {
 }
 
 type EventService interface {
-	CreateEvent(dto.EventDto) (domain.Event, error)
+	CreateEvent(dto.CreateEventDto) (domain.Event, error)
 	GetAllEvents() ([]domain.Event, error)
 	GetEventByID(id int) (domain.Event, error)
 	GetEventsBySessionID(sessionid int) ([]domain.Event, error)
 	GetEventsByCharacterID(characterid int) ([]domain.Event, error)
-	UpdateEvent(event dto.EventDto, id int) (domain.Event, error)
+	UpdateEvent(event dto.CreateEventDto, id int) (domain.Event, error)
 	DeleteEvent(id int) error
 }
 
