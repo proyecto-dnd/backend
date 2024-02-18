@@ -84,7 +84,8 @@ func (r *router) buildEventRoutes() {
 
 func (r *router) buildCampaignRoutes() {
 	campaignRepository := campaign.NewCampaignRepository(r.db)
-	campaignService := campaign.NewCampaignService(campaignRepository)
+	sessionRepository := session.NewSessionRepository(r.db)
+	campaignService := campaign.NewCampaignService(campaignRepository, sessionRepository)
 	campaignHandler := handler.NewCampaignHandler(&campaignService)
 
 	campaignGroup := r.routerGroup.Group("/campaign")
@@ -99,8 +100,7 @@ func (r *router) buildCampaignRoutes() {
 
 func (r *router) buildSessionRoutes() {
 	sessionRepository := session.NewSessionRepository(r.db)
-	campaignRepository := campaign.NewCampaignRepository(r.db)
-	sessionService := session.NewSessionService(sessionRepository, campaignRepository)
+	sessionService := session.NewSessionService(sessionRepository)
 	sessionHandler := handler.NewSessionHandler(&sessionService)
 
 	sessionGroup := r.routerGroup.Group("/session")
