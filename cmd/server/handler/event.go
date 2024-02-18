@@ -18,7 +18,7 @@ func NewEventHandler(service *event.EventService) *EventHandler {
 
 func (h *EventHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var tempEvent dto.EventDto
+		var tempEvent dto.CreateEventDto
 		if err := ctx.BindJSON(&tempEvent); err != nil {
 			ctx.JSON(500, err)
 			return
@@ -112,18 +112,18 @@ func (h *EventHandler) HandlerUpdate() gin.HandlerFunc {
 			return
 		}
 
-		var tempEvent dto.EventDto
+		var tempEvent dto.CreateEventDto
 		if err := ctx.BindJSON(&tempEvent); err != nil {
 			ctx.JSON(500, err)
 			return
 		}
 
-		updatedUser, err := h.service.UpdateEvent(tempEvent, intId)
+		updatedEvent, err := h.service.UpdateEvent(tempEvent, intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
 		}
-		ctx.JSON(200, updatedUser)
+		ctx.JSON(200, updatedEvent)
 	}
 }
 
@@ -144,6 +144,6 @@ func (h *EventHandler) HandlerDelete() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(200, "Deleted User with id "+id)
+		ctx.JSON(200, "Deleted Event with id "+id)
 	}
 }
