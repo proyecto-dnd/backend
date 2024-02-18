@@ -1,4 +1,4 @@
-package tablecharacter
+package characterdata
 
 import (
 	"database/sql"
@@ -7,27 +7,27 @@ import (
 )
 
 var (
-	ErrPrepareStatement    = errors.New("Error preparing statement")
-	ErrGettingLastInsertId = errors.New("Error getting last insert id")
+	ErrPrepareStatement    = errors.New("error preparing statement")
+	ErrGettingLastInsertId = errors.New("error getting last insert id")
 	ErrNotFound            = errors.New("characters not found")
 )
 
-type tableCharacterMySqlRepository struct {
+type CharacterDataMySqlRepository struct {
 	db *sql.DB
 }
 
-// Create implements RepositoryTableCharacter.
-func (r *tableCharacterMySqlRepository) Create(character domain.TableCharacter) (domain.TableCharacter, error) {
+// Create implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) Create(character domain.CharacterData) (domain.CharacterData, error) {
 	statement, err := r.db.Prepare(QueryCreateCharacter)
 	if err != nil {
-		return domain.TableCharacter{}, ErrPrepareStatement
+		return domain.CharacterData{}, ErrPrepareStatement
 	}
 	defer statement.Close()
 	result, err := statement.Exec(
 		character.UserId,
 		character.Name,
-		character.ClassId,
-		character.RaceId,
+		character.Class,
+		character.Race,
 		character.Background,
 		character.Hitpoints,
 		character.Speed,
@@ -43,19 +43,19 @@ func (r *tableCharacterMySqlRepository) Create(character domain.TableCharacter) 
 		character.Cha,
 	)
 	if err != nil {
-		return domain.TableCharacter{}, err
+		return domain.CharacterData{}, err
 	}
 
 	lastId, err := result.LastInsertId()
 	if err != nil {
-		return domain.TableCharacter{}, ErrGettingLastInsertId
+		return domain.CharacterData{}, ErrGettingLastInsertId
 	}
-	character.Idcharacter = lastId
+	character.CharacterId = lastId
 	return character, nil
 }
 
-// Delete implements RepositoryTableCharacter.
-func (r *tableCharacterMySqlRepository) Delete(id int) error {
+// Delete implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) Delete(id int) error {
 	result, err := r.db.Exec(QueryDelete, id)
 	if err != nil {
 		return err
@@ -72,24 +72,26 @@ func (r *tableCharacterMySqlRepository) Delete(id int) error {
 	return nil
 }
 
-// GetAll implements RepositoryTableCharacter.
-func (r *tableCharacterMySqlRepository) GetAll() ([]domain.TableCharacter, error) {
+// GetAll implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) GetAll() ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetAll)
 	if err != nil {
-		return []domain.TableCharacter{}, nil
+		return []domain.CharacterData{}, nil
 	}
 	defer rows.Close()
 
-	var characters []domain.TableCharacter
+	var characters []domain.CharacterData
+
 
 	for rows.Next() {
-		var character domain.TableCharacter
+		var character domain.CharacterData
+	
 		err := rows.Scan(
-			&character.Idcharacter,
+			&character.CharacterId,
 			&character.UserId,
 			&character.Name,
-			&character.ClassId,
-			&character.RaceId,
+			&character.Class,
+			&character.Race,
 			&character.Background,
 			&character.Hitpoints,
 			&character.Speed,
@@ -105,35 +107,37 @@ func (r *tableCharacterMySqlRepository) GetAll() ([]domain.TableCharacter, error
 			&character.Cha,
 		)
 		if err != nil {
-			return []domain.TableCharacter{}, err
+			return []domain.CharacterData{}, err
 		}
 		characters = append(characters, character)
 	}
 	if err := rows.Err(); err != nil {
-		return []domain.TableCharacter{}, err
+		return []domain.CharacterData{}, err
 	}
 
 	return characters, nil
 }
 
-// GetByCampaignId implements RepositoryTableCharacter.
-func (r *tableCharacterMySqlRepository) GetByCampaignId(campaignid int) ([]domain.TableCharacter, error) {
+// GetByCampaignId implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) GetByCampaignId(campaignid int) ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetByCampaignId, campaignid)
 	if err != nil {
-		return []domain.TableCharacter{}, nil
+		return []domain.CharacterData{}, nil
 	}
 	defer rows.Close()
 
-	var characters []domain.TableCharacter
+	var characters []domain.CharacterData
+
 
 	for rows.Next() {
-		var character domain.TableCharacter
+		var character domain.CharacterData
+	
 		err := rows.Scan(
-			&character.Idcharacter,
+			&character.CharacterId,
 			&character.UserId,
 			&character.Name,
-			&character.ClassId,
-			&character.RaceId,
+			&character.Class,
+			&character.Race,
 			&character.Background,
 			&character.Hitpoints,
 			&character.Speed,
@@ -149,27 +153,28 @@ func (r *tableCharacterMySqlRepository) GetByCampaignId(campaignid int) ([]domai
 			&character.Cha,
 		)
 		if err != nil {
-			return []domain.TableCharacter{}, err
+			return []domain.CharacterData{}, err
 		}
 		characters = append(characters, character)
 	}
 	if err := rows.Err(); err != nil {
-		return []domain.TableCharacter{}, err
+		return []domain.CharacterData{}, err
 	}
 
 	return characters, nil
 }
 
-// GetById implements RepositoryTableCharacter.
-func (r *tableCharacterMySqlRepository) GetById(id int) (domain.TableCharacter, error) {
+// GetById implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) GetById(id int) (domain.CharacterData, error) {
 	row := r.db.QueryRow(QueryGetById, id)
-	var character domain.TableCharacter
+	var character domain.CharacterData
+
 	err := row.Scan(
-		&character.Idcharacter,
+		&character.CharacterId,
 		&character.UserId,
 		&character.Name,
-		&character.ClassId,
-		&character.RaceId,
+		&character.Class,
+		&character.Race,
 		&character.Background,
 		&character.Hitpoints,
 		&character.Speed,
@@ -185,30 +190,32 @@ func (r *tableCharacterMySqlRepository) GetById(id int) (domain.TableCharacter, 
 		&character.Cha,
 	)
 	if err != nil {
-		return domain.TableCharacter{}, err
+		return domain.CharacterData{}, ErrNotFound
 	}
 
 	return character, nil
 }
 
-// GetByUserId implements RepositoryTableCharacter.
-func (r *tableCharacterMySqlRepository) GetByUserId(userid string) ([]domain.TableCharacter, error) {
+// GetByUserId implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) GetByUserId(userid string) ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetByUserId, userid)
 	if err != nil {
-		return []domain.TableCharacter{}, nil
+		return []domain.CharacterData{}, nil
 	}
 	defer rows.Close()
 
-	var characters []domain.TableCharacter
+	var characters []domain.CharacterData
+
 
 	for rows.Next() {
-		var character domain.TableCharacter
+		var character domain.CharacterData
+	
 		err := rows.Scan(
-			&character.Idcharacter,
+			&character.CharacterId,
 			&character.UserId,
 			&character.Name,
-			&character.ClassId,
-			&character.RaceId,
+			&character.Class,
+			&character.Race,
 			&character.Background,
 			&character.Hitpoints,
 			&character.Speed,
@@ -224,35 +231,37 @@ func (r *tableCharacterMySqlRepository) GetByUserId(userid string) ([]domain.Tab
 			&character.Cha,
 		)
 		if err != nil {
-			return []domain.TableCharacter{}, err
+			return []domain.CharacterData{}, err
 		}
 		characters = append(characters, character)
 	}
 	if err := rows.Err(); err != nil {
-		return []domain.TableCharacter{}, err
+		return []domain.CharacterData{}, err
 	}
 
 	return characters, nil
 }
 
-// GetByUserIdAndCampaignId implements RepositoryTableCharacter.
-func (r *tableCharacterMySqlRepository) GetByUserIdAndCampaignId(userid string, campaignid int) ([]domain.TableCharacter, error) {
+// GetByUserIdAndCampaignId implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) GetByUserIdAndCampaignId(userid string, campaignid int) ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetByUserIdAndCampaignId, userid, campaignid)
 	if err != nil {
-		return []domain.TableCharacter{}, nil
+		return []domain.CharacterData{}, nil
 	}
 	defer rows.Close()
 
-	var characters []domain.TableCharacter
+	var characters []domain.CharacterData
+
 
 	for rows.Next() {
-		var character domain.TableCharacter
+		var character domain.CharacterData
+	
 		err := rows.Scan(
-			&character.Idcharacter,
+			&character.CharacterId,
 			&character.UserId,
 			&character.Name,
-			&character.ClassId,
-			&character.RaceId,
+			&character.Class,
+			&character.Race,
 			&character.Background,
 			&character.Hitpoints,
 			&character.Speed,
@@ -268,29 +277,29 @@ func (r *tableCharacterMySqlRepository) GetByUserIdAndCampaignId(userid string, 
 			&character.Cha,
 		)
 		if err != nil {
-			return []domain.TableCharacter{}, err
+			return []domain.CharacterData{}, err
 		}
 		characters = append(characters, character)
 	}
 	if err := rows.Err(); err != nil {
-		return []domain.TableCharacter{}, err
+		return []domain.CharacterData{}, err
 	}
 
 	return characters, nil
 }
 
-// Update implements RepositoryTableCharacter.
-func (r *tableCharacterMySqlRepository) Update(character domain.TableCharacter) (domain.TableCharacter, error) {
+// Update implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) Update(character domain.CharacterData) (domain.CharacterData, error) {
 	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {
-		return domain.TableCharacter{}, ErrPrepareStatement
+		return domain.CharacterData{}, ErrPrepareStatement
 	}
 	defer statement.Close()
 	_, err = statement.Exec(
 		character.UserId,
 		character.Name,
-		character.ClassId,
-		character.RaceId,
+		character.Class,
+		character.Race,
 		character.Background,
 		character.Hitpoints,
 		character.Speed,
@@ -304,14 +313,14 @@ func (r *tableCharacterMySqlRepository) Update(character domain.TableCharacter) 
 		character.Wiz,
 		character.Con,
 		character.Cha,
-		character.Idcharacter,
+		character.CharacterId,
 	)
 	if err != nil {
-		return domain.TableCharacter{}, err
+		return domain.CharacterData{}, err
 	}
 	return character, nil
 }
 
-func NewTableCharacterRepository(db *sql.DB) RepositoryTableCharacter {
-	return &tableCharacterMySqlRepository{db}
+func NewCharacterDataRepository(db *sql.DB) RepositoryCharacterData {
+	return &CharacterDataMySqlRepository{db}
 }

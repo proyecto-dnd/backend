@@ -1,0 +1,58 @@
+package skillxcharacterdata
+
+import (
+	"database/sql"
+	"errors"
+
+	"github.com/proyecto-dnd/backend/internal/domain"
+)
+
+var (
+	ErrPrepareStatement    = errors.New("error preparing statement")
+	ErrGettingLastInsertId = errors.New("error getting last insert id")
+	ErrNotFound            = errors.New("item not found")
+)
+
+type skillxCharacterDataSqlRepository struct {
+	db *sql.DB
+}
+
+// Create implements RepositorySkillXCharacterData.
+func (r *skillxCharacterDataSqlRepository) Create(skillXCharacterData domain.SkillXCharacterData) (domain.SkillXCharacterData, error) {
+	statement, err := r.db.Prepare(QueryCreateItemXCharacterData)
+	if err!= nil {
+        return domain.SkillXCharacterData{}, ErrPrepareStatement
+    }
+	defer statement.Close()
+
+	_, err = statement.Exec(
+		skillXCharacterData.SkillID,
+		skillXCharacterData.CharacterDataID,
+	)
+
+	if err != nil {
+		return domain.SkillXCharacterData{}, err
+	}
+
+	return skillXCharacterData, nil
+}
+
+// Delete implements RepositorySkillXCharacterData.
+func (r *skillxCharacterDataSqlRepository) Delete(skillXCharacterData domain.SkillXCharacterData) error {
+	result, err := r.db.Exec(QueryDeleteItemXCharacterData, skillXCharacterData.SkillID, skillXCharacterData.CharacterDataID, nil)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err!= nil {
+        return err
+    }
+	if rowsAffected < 1 {
+        return ErrNotFound
+    }
+	return nil
+}
+
+func NewSkillxCharacterDataRepository(db *sql.DB) RepositorySkillXCharacterData {
+	return &skillxCharacterDataSqlRepository{db}
+}

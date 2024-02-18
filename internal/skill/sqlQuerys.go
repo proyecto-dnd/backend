@@ -1,7 +1,7 @@
 package skill
 
 var (
-	QuetyCreateSkill = ``
+	QueryCreateSkill = ``
 	QueryGetAll = ``
 	QueryGetById = ``
 	QueryGetByCharacterId = ``
