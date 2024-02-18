@@ -90,6 +90,8 @@ func (r *campaignMySqlRepository) Update(campaign domain.Campaign, id int) (doma
 		return domain.Campaign{}, err
 	}
 
+	campaign.CampaignId = id
+
 	return campaign, nil
 }
 

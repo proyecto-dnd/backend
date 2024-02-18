@@ -129,6 +129,8 @@ func (r *eventMySqlRepository) Update(event domain.Event, id int) (domain.Event,
 		return domain.Event{}, err
 	}
 
+	event.EventId = id
+
 	return event, nil
 }
 
