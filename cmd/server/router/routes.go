@@ -2,11 +2,13 @@ package router
 
 import (
 	"database/sql"
+
 	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
-	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/campaign"
+	"github.com/proyecto-dnd/backend/internal/event"
+	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
 )
 
@@ -34,6 +36,7 @@ func (r *router) MapRoutes() {
 	r.buildUserRoutes()
 	r.buildEventRoutes()
 	r.buildCampaignRoutes()
+	r.buildSessionRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -91,5 +94,22 @@ func (r *router) buildCampaignRoutes() {
 		campaignGroup.GET("/:id", campaignHandler.HandlerGetById())
 		campaignGroup.PUT("/:id", campaignHandler.HandlerUpdate())
 		campaignGroup.DELETE("/:id", campaignHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildSessionRoutes() {
+	sessionRepository := session.NewSessionRepository(r.db)
+	campaignRepository := campaign.NewCampaignRepository(r.db)
+	sessionService := session.NewSessionService(sessionRepository, campaignRepository)
+	sessionHandler := handler.NewSessionHandler(&sessionService)
+
+	sessionGroup := r.routerGroup.Group("/session")
+	{
+		sessionGroup.POST("", sessionHandler.HandlerCreate())
+		sessionGroup.GET("", sessionHandler.HandlerGetAll())
+		sessionGroup.GET("/:id", sessionHandler.HandlerGetById())
+		sessionGroup.GET("/campaign/:id", sessionHandler.HandlerGetByCampaignId())
+		sessionGroup.PUT("/:id", sessionHandler.HandlerUpdate())
+		sessionGroup.DELETE("/:id", sessionHandler.HandlerDelete())
 	}
 }
