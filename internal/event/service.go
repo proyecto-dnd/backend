@@ -5,6 +5,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
+// TODO: Agregar session y character repository para verificar que los ids existan
 type service struct {
 	repo EventRepository
 }
