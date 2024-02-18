@@ -15,7 +15,7 @@ var (
 	`
 
 	QueryUpdate = `
-		UPDATE event
+		UPDATE campaign
 		SET dungeon_master = ?, name = ?, description = ?, image = ?
 		WHERE campaign_id = ?;
 	`
