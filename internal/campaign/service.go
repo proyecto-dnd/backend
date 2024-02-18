@@ -1,16 +1,18 @@
 package campaign
 
 import (
+	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
 type service struct {
-	repo CampaignRepository
+	campaignRepository CampaignRepository
+	sessionRepository  session.SessionRepository
 }
 
-func NewCampaignService(repo CampaignRepository) CampaignService {
-	return &service{repo: repo}
+func NewCampaignService(campaignRepository CampaignRepository, sessionRepository session.SessionRepository) CampaignService {
+	return &service{campaignRepository: campaignRepository, sessionRepository: sessionRepository}
 }
 
 func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto) (domain.Campaign, error) {
@@ -21,7 +23,7 @@ func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto) (domain.Camp
 		Image:         campaignDto.Image,
 	}
 	
-	createdCampaign, err := s.repo.Create(campaignDomain)
+	createdCampaign, err := s.campaignRepository.Create(campaignDomain)
 	if err != nil {
 		return domain.Campaign{}, err
 	}
@@ -29,25 +31,57 @@ func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto) (domain.Camp
 	return createdCampaign, nil
 }
 
-func (s *service) GetAllCampaigns() ([]domain.Campaign, error) {
-	campaigns, err := s.repo.GetAll()
+func (s *service) GetAllCampaigns() ([]dto.ResponseCampaignDto, error) {
+	campaigns, err := s.campaignRepository.GetAll()
 	if err != nil {
 		return nil, err
 	}
 
-	return campaigns, nil
-}
+	var responseCampaigns []dto.ResponseCampaignDto
+	for _, campaign := range campaigns {
+		sessions, err := s.sessionRepository.GetByCampaignId(campaign.CampaignId)
+		if err != nil {
+			return nil, err
+		}
 
-func (s *service) GetCampaignByID(id int) (domain.Campaign, error) {
-	campaign, err := s.repo.GetById(id)
-	if err != nil {
-		return domain.Campaign{}, err
+		responseCampaign := dto.ResponseCampaignDto{
+			DungeonMaster: campaign.DungeonMaster,
+			Name:          campaign.Name,
+			Description:   campaign.Description,
+			Image:         campaign.Image,
+			Sessions:      sessions,
+		}
+
+		responseCampaigns = append(responseCampaigns, responseCampaign)
+	
 	}
 
-	return campaign, nil
+	return responseCampaigns, nil
 }
 
-func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (domain.Campaign, error) {
+func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
+	campaign, err := s.campaignRepository.GetById(id)
+	if err != nil {
+		return dto.ResponseCampaignDto{}, err
+	}
+
+	sessions, err := s.sessionRepository.GetByCampaignId(campaign.CampaignId)
+	if err != nil {
+		return dto.ResponseCampaignDto{}, err
+	}
+
+	responseCampaign := dto.ResponseCampaignDto{
+		DungeonMaster: campaign.DungeonMaster,
+		Name:          campaign.Name,
+		Description:   campaign.Description,
+		Image:         campaign.Image,
+		Sessions:      sessions,
+	}
+
+	return responseCampaign, nil
+}
+
+func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto.ResponseCampaignDto, error) {
 	campaignDomain := domain.Campaign{
 		DungeonMaster: campaignDto.DungeonMaster,
 		Name:          campaignDto.Name,
@@ -55,14 +89,27 @@ func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dom
 		Image:         campaignDto.Image,
 	}
 
-	updatedCampaign, err := s.repo.Update(campaignDomain, id)
+	updatedCampaign, err := s.campaignRepository.Update(campaignDomain, id)
 	if err != nil {
-		return domain.Campaign{}, err
+		return dto.ResponseCampaignDto{}, err
 	}
 
-	return updatedCampaign, nil
+	sessions, err := s.sessionRepository.GetByCampaignId(updatedCampaign.CampaignId)
+	if err != nil {
+		return dto.ResponseCampaignDto{}, err
+	}
+
+	responseCampaign := dto.ResponseCampaignDto{
+		DungeonMaster: updatedCampaign.DungeonMaster,
+		Name:          updatedCampaign.Name,
+		Description:   updatedCampaign.Description,
+		Image:         updatedCampaign.Image,
+		Sessions:      sessions,
+	}
+
+	return responseCampaign, nil
 }
 
 func (s *service) DeleteCampaign(id int) error {
-	return s.repo.Delete(id)
+	return s.campaignRepository.Delete(id)
 }

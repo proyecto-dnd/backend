@@ -2,28 +2,19 @@ package session
 
 import (
 	"fmt"
-
-	"github.com/proyecto-dnd/backend/internal/campaign"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
 type service struct {
 	sessionRepo  SessionRepository
-	campaignRepo campaign.CampaignRepository
-}
+ }
 
-func NewSessionService(sessionRepo SessionRepository, campaignRepo campaign.CampaignRepository) SessionService {
-	return &service{sessionRepo: sessionRepo, campaignRepo: campaignRepo}
+func NewSessionService(sessionRepo SessionRepository) SessionService {
+	return &service{sessionRepo: sessionRepo}
 }
 
 func (s *service) CreateSession(sessionDto dto.CreateSessionDto) (domain.Session, error) {
-
-	_, err := s.campaignRepo.GetById(sessionDto.CampaignId)
-	if err != nil {
-		return domain.Session{}, err
-	}
-
 	sessionDomain := domain.Session{
 		Start:       sessionDto.Start,
 		End:         sessionDto.End,
@@ -68,10 +59,6 @@ func (s *service) GetSessionByCampaignID(id int) ([]domain.Session, error) {
 }
 
 func (s *service) UpdateSession(sessionDto dto.CreateSessionDto, id int) (domain.Session, error) {
-	_, err := s.campaignRepo.GetById(sessionDto.CampaignId)
-	if err != nil {
-		return domain.Session{}, err
-	}
 
 	sessionDomain := domain.Session{
 		Start:       sessionDto.Start,
