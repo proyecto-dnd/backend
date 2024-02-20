@@ -65,6 +65,19 @@ func (h *CampaignHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+func (h *CampaignHandler) HandlerGetByUserId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		tempCampaign, err := h.service.GetCampaignsByUserId(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, tempCampaign)
+	}
+}
+
 func (h *CampaignHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
