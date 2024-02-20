@@ -22,12 +22,6 @@ var (
 		SELECT * FROM user_campaign WHERE user_id = ?;
 	`
 
-	QueryUpdate = `
-		UPDATE user_campaign
-		SET campaign_id = ?, user_id = ?, is_dm = ?, is_owner = ?
-		WHERE user_campaign_id = ?;
-	`
-
 	QueryDelete = `
 		DELETE FROM user_campaign WHERE user_campaign_id = ?;
 	`

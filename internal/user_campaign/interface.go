@@ -12,7 +12,6 @@ type UserCampaignHandler interface {
 	HandlerGetById() gin.HandlerFunc
 	HandlerGetByCampaignId() gin.HandlerFunc
 	HandlerGetByUserId() gin.HandlerFunc
-	HandlerUpdate() gin.HandlerFunc
 	HandlerDelete() gin.HandlerFunc
 }
 
@@ -21,8 +20,7 @@ type UserCampaignService interface {
 	GetAllUserCampaigns() ([]domain.UserCampaign, error)
 	GetUserCampaignByID(id int) (domain.UserCampaign, error)
 	GetUserCampaignByCampaignID(id int) ([]domain.UserCampaign, error)
-	GetUserCampaignByUserId(id int) ([]domain.UserCampaign, error)
-	UpdateUserCampaign(UserCampaign dto.CreateUserCampaignDto, id int) (domain.UserCampaign, error)
+	GetUserCampaignByUserId(id string) ([]domain.UserCampaign, error)
 	DeleteUserCampaign(id int) error
 }
 
@@ -31,7 +29,6 @@ type UserCampaignRepository interface {
 	GetAll()([]domain.UserCampaign, error)
 	GetById(id int)(domain.UserCampaign, error)
 	GetByCampaignId(id int)([]domain.UserCampaign, error)
-	GetByUserId(id int)([]domain.UserCampaign, error)
-	Update(UserCampaign domain.UserCampaign, id int) (domain.UserCampaign, error)
+	GetByUserId(id string)([]domain.UserCampaign, error)
 	Delete(id int)error
 }
