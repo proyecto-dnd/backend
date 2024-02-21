@@ -10,6 +10,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
+	"github.com/proyecto-dnd/backend/internal/user_campaign"
 )
 
 type Router interface {
@@ -37,6 +38,7 @@ func (r *router) MapRoutes() {
 	r.buildEventRoutes()
 	r.buildCampaignRoutes()
 	r.buildSessionRoutes()
+	r.buildUserCampaignRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -93,6 +95,7 @@ func (r *router) buildCampaignRoutes() {
 		campaignGroup.POST("", campaignHandler.HandlerCreate())
 		campaignGroup.GET("", campaignHandler.HandlerGetAll())
 		campaignGroup.GET("/:id", campaignHandler.HandlerGetById())
+		campaignGroup.GET("/user/:id", campaignHandler.HandlerGetByUserId())
 		campaignGroup.PUT("/:id", campaignHandler.HandlerUpdate())
 		campaignGroup.DELETE("/:id", campaignHandler.HandlerDelete())
 	}
@@ -111,5 +114,21 @@ func (r *router) buildSessionRoutes() {
 		sessionGroup.GET("/campaign/:id", sessionHandler.HandlerGetByCampaignId())
 		sessionGroup.PUT("/:id", sessionHandler.HandlerUpdate())
 		sessionGroup.DELETE("/:id", sessionHandler.HandlerDelete())
+	}
+}
+
+func(r *router) buildUserCampaignRoutes() {
+	userCampaignRepository := user_campaign.NewUserCampaignRepository(r.db)
+	userCampaignService := user_campaign.NewUserCampaignService(userCampaignRepository)
+	userCampaignHandler := handler.NewUserCampaignHandler(&userCampaignService)
+
+	userCampaignGroup := r.routerGroup.Group("/user_campaign")
+	{
+		userCampaignGroup.POST("", userCampaignHandler.HandlerCreate())
+		userCampaignGroup.GET("", userCampaignHandler.HandlerGetAll())
+		userCampaignGroup.GET("/:id", userCampaignHandler.HandlerGetById())
+		userCampaignGroup.GET("/campaign/:id", userCampaignHandler.HandlerGetByCampaignId())
+		userCampaignGroup.GET("/user/:id", userCampaignHandler.HandlerGetByUserId())
+		userCampaignGroup.DELETE("/:id", userCampaignHandler.HandlerDelete())
 	}
 }
