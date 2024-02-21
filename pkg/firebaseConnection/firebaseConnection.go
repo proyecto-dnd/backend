@@ -27,21 +27,6 @@ func InitializeFirebaseApp() *firebase.App {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
 
-	// firestoreClient, err := firebaseApp.Firestore(ctx)
-	// if err != nil {
-	// 	log.Fatalf("error creating client: %v\n", err)
-	// }
-
-	// ref := firestoreClient.Collection("testDB").NewDoc()
-	// result, err := ref.Set(ctx, map[string]interface{}{
-	// 	"title":       "la primera...",
-	// 	"description": "Y la segunda...",
-	// })
-	// if err != nil {
-	// 	log.Fatalf("error when creating testDB: %v\n", err)
-	// }
-
-	// log.Printf("Result is: [%v]", result)
 	fmt.Println("conectado a firebase")
 	return app
 }
