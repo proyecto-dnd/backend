@@ -1,8 +1,8 @@
 package domain
 
 type Skill struct{
-	Idskill int `json:"idskill"`
+	SkillId int64 `json:"idskill"`
 	Name string `json:"name"`
 	Description string `json:"description"`
-	Dharacter_id int `json:"character_id"`
+	CampaignId int64 `json:"campaign"`
 }
