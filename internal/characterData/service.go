@@ -45,11 +45,11 @@ func (s *service) GetAll() ([]dto.FullCharacterData, error) {
 	}
 	var fullCharacters []dto.FullCharacterData
 	for _, v := range characters {
-		skills, err := s.skillService.GetByCharacterId(int(v.CharacterId))
+		skills, err := s.skillService.GetByCharacterId(int(v.Character_Id))
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
-		items, err := s.itemService.GetByCharacterDataId(v.CharacterId)
+		items, err := s.itemService.GetByCharacterDataId(v.Character_Id)
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
@@ -67,11 +67,11 @@ func (s *service) GetByCampaignId(campaignid int) ([]dto.FullCharacterData, erro
 	}
 	var fullCharacters []dto.FullCharacterData
 	for _, v := range characters {
-		skills, err := s.skillService.GetByCharacterId(int(v.CharacterId))
+		skills, err := s.skillService.GetByCharacterId(int(v.Character_Id))
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
-		items, err := s.itemService.GetByCharacterDataId(v.CharacterId)
+		items, err := s.itemService.GetByCharacterDataId(v.Character_Id)
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
@@ -88,11 +88,11 @@ func (s *service) GetById(id int) (dto.FullCharacterData, error) {
 		return dto.FullCharacterData{}, err
 	}
 
-	skills, err := s.skillService.GetByCharacterId(int(character.CharacterId))
+	skills, err := s.skillService.GetByCharacterId(int(character.Character_Id))
 	if err != nil {
 		return dto.FullCharacterData{}, err
 	}
-	items, err := s.itemService.GetByCharacterDataId(character.CharacterId)
+	items, err := s.itemService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
 		return dto.FullCharacterData{}, err
 	}
@@ -108,11 +108,11 @@ func (s *service) GetByUserId(userid string) ([]dto.FullCharacterData, error) {
 
 	var fullCharacters []dto.FullCharacterData
 	for _, v := range characters {
-		skills, err := s.skillService.GetByCharacterId(int(v.CharacterId))
+		skills, err := s.skillService.GetByCharacterId(int(v.Character_Id))
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
-		items, err := s.itemService.GetByCharacterDataId(v.CharacterId)
+		items, err := s.itemService.GetByCharacterDataId(v.Character_Id)
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
@@ -131,11 +131,11 @@ func (s *service) GetByUserIdAndCampaignId(userid string, campaignid int) ([]dto
 
 	var fullCharacters []dto.FullCharacterData
 	for _, v := range characters {
-		skills, err := s.skillService.GetByCharacterId(int(v.CharacterId))
+		skills, err := s.skillService.GetByCharacterId(int(v.Character_Id))
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
-		items, err := s.itemService.GetByCharacterDataId(v.CharacterId)
+		items, err := s.itemService.GetByCharacterDataId(v.Character_Id)
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
@@ -153,11 +153,11 @@ func (s *service) Update(character domain.CharacterData) (dto.FullCharacterData,
 		return dto.FullCharacterData{}, err
 	}
 
-	skills, err := s.skillService.GetByCharacterId(int(character.CharacterId))
+	skills, err := s.skillService.GetByCharacterId(int(character.Character_Id))
 	if err != nil {
 		return dto.FullCharacterData{}, err
 	}
-	items, err := s.itemService.GetByCharacterDataId(character.CharacterId)
+	items, err := s.itemService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
 		return dto.FullCharacterData{}, err
 	}
@@ -166,9 +166,9 @@ func (s *service) Update(character domain.CharacterData) (dto.FullCharacterData,
 
 func CharacterDataToFullCharacterData(character domain.CharacterData, items []domain.ItemXCharacterData, skills []domain.Skill) dto.FullCharacterData {
 	return dto.FullCharacterData{
-		CharacterId: character.CharacterId,
-		UserId:      character.UserId,
-		CampaignId: character.CampaignId,
+		Character_Id: character.Character_Id,
+		User_Id:      character.User_Id,
+		Campaign_Id: character.Campaign_Id,
 		Race: character.Race,
 		Class: character.Race,
 		Background: character.Background,
@@ -191,7 +191,7 @@ func CharacterDataToFullCharacterData(character domain.CharacterData, items []do
 		Hitpoints: character.Hitpoints,
 		HitDice: character.HitDice,
 		Speed: character.Speed,
-		ArmorClass: character.ArmorClass,
+		Armor_Class: character.Armor_Class,
 		Level: character.Level,
 		Exp: character.Exp,
 		Items: items,
@@ -201,9 +201,9 @@ func CharacterDataToFullCharacterData(character domain.CharacterData, items []do
 
 func FullCharacterDataToCharacterData(character dto.FullCharacterData) domain.CharacterData {
 	return domain.CharacterData{
-		CharacterId: character.CharacterId,
-		UserId:      character.UserId,
-		CampaignId: character.CampaignId,
+		Character_Id: character.Character_Id,
+		User_Id:      character.User_Id,
+		Campaign_Id: character.Campaign_Id,
 		Race: character.Race,
 		Class: character.Race,
 		Background: character.Background,
@@ -226,7 +226,7 @@ func FullCharacterDataToCharacterData(character dto.FullCharacterData) domain.Ch
 		Hitpoints: character.Hitpoints,
 		HitDice: character.HitDice,
 		Speed: character.Speed,
-		ArmorClass: character.ArmorClass,
+		Armor_Class: character.Armor_Class,
 		Level: character.Level,
 		Exp: character.Exp,
 	}
