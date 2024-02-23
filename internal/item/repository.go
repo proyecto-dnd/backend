@@ -29,7 +29,7 @@ func (r *itemMySqlRepository) Create(item domain.Item) (domain.Item, error) {
 		item.Weight,
 		item.Price,
 		item.Description,
-		item.CampaignId,
+		item.Campaign_Id,
 	)
 
 	if err != nil {
@@ -41,7 +41,7 @@ func (r *itemMySqlRepository) Create(item domain.Item) (domain.Item, error) {
 		return domain.Item{}, ErrGettingLastInsertId
 	}
 
-	item.ItemId = lastId
+	item.Item_Id = lastId
 
 	return item, nil
 }
@@ -74,12 +74,12 @@ func (r *itemMySqlRepository) GetAll() ([]domain.Item, error) {
 	for rows.Next() {
 		var item domain.Item
 		err := rows.Scan(
-			&item.ItemId,
+			&item.Item_Id,
 			&item.Name,
 			&item.Weight,
 			&item.Price,
 			&item.Description,
-			&item.CampaignId,
+			&item.Campaign_Id,
 		)
 		if err != nil {
 			return []domain.Item{}, err
@@ -104,12 +104,12 @@ func (r *itemMySqlRepository) GetByCampaignId(campaignId int64) ([]domain.Item, 
 	for rows.Next() {
 		var item domain.Item
 		err := rows.Scan(
-			&item.ItemId,
+			&item.Item_Id,
 			&item.Name,
 			&item.Weight,
 			&item.Price,
 			&item.Description,
-			&item.CampaignId,
+			&item.Campaign_Id,
 		)
 		if err != nil {
 			return []domain.Item{}, err
@@ -128,12 +128,12 @@ func (r *itemMySqlRepository) GetById(id int64) (domain.Item, error) {
 
 	var item domain.Item
 	err := row.Scan(
-		&item.ItemId,
+		&item.Item_Id,
 		&item.Name,
 		&item.Weight,
 		&item.Price,
 		&item.Description,
-		&item.CampaignId,
+		&item.Campaign_Id,
 	)
 	if err != nil {
 		return domain.Item{}, ErrNotFound
@@ -155,8 +155,8 @@ func (r *itemMySqlRepository) Update(item domain.Item) (domain.Item, error) {
 		item.Weight,
 		item.Price,
 		item.Description,
-		item.CampaignId,
-		item.ItemId,
+		item.Campaign_Id,
+		item.Item_Id,
 	)
 
 	if err != nil {

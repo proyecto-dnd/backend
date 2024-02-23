@@ -3,9 +3,9 @@ package dto
 import "github.com/proyecto-dnd/backend/internal/domain"
 
 type FullCharacterData struct {
-	CharacterId int64  `json:"characterid"`
-	UserId      string `json:"userid"`
-	CampaignId  int    `json:"campaignid"`
+	Character_Id int64  `json:"characterid"`
+	User_Id      string `json:"userid"`
+	Campaign_Id  int    `json:"campaignid"`
 	Race        int    `json:"raceid"`     // TODO: Change Type from int to Race Struct
 	Class       int    `json:"classid"`    // TODO: Change Type from int to Class Struct
 	Background  int    `json:"background"` // TODO: Change Type from string to Background Struct
@@ -28,7 +28,7 @@ type FullCharacterData struct {
 	Hitpoints   int    `json:"hitpoints"`
 	HitDice     string `json:"hitDice"`
 	Speed       int    `json:"speed"`
-	ArmorClass  int    `json:"armorclass"`
+	Armor_Class  int    `json:"armorclass"`
 	Level       int    `json:"level"`
 	Exp         int    `json:"exp"`
 	Items      []domain.ItemXCharacterData `json:"items"`

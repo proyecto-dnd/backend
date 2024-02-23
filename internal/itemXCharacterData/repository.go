@@ -25,8 +25,8 @@ func (r *itemXtableCharacterSqlRepository) Create(itemXCharacterData domain.Item
 	defer statement.Close()
 
 	result, err := statement.Exec(
-		itemXCharacterData.Item.ItemId,
-		itemXCharacterData.CharacterDataId,
+		itemXCharacterData.Item.Item_Id,
+		itemXCharacterData.CharacterData_Id,
 		itemXCharacterData.Quantity,
 	)
 
@@ -39,7 +39,7 @@ func (r *itemXtableCharacterSqlRepository) Create(itemXCharacterData domain.Item
 		return domain.ItemXCharacterData{}, ErrGettingLastInsertId
 	}
 
-	itemXCharacterData.ItemXCharacterDataId = lastId
+	itemXCharacterData.ItemXCharacterData_Id = lastId
 
 	return itemXCharacterData, nil
 }
@@ -93,14 +93,14 @@ func (r *itemXtableCharacterSqlRepository) GetAll() ([]domain.ItemXCharacterData
 	for rows.Next() {
 		var itemXCharacterData domain.ItemXCharacterData
 		err := rows.Scan(
-			&itemXCharacterData.ItemXCharacterDataId,
-			&itemXCharacterData.Item.ItemId,
+			&itemXCharacterData.ItemXCharacterData_Id,
+			&itemXCharacterData.Item.Item_Id,
 			&itemXCharacterData.Item.Name,
 			&itemXCharacterData.Item.Weight,
 			&itemXCharacterData.Item.Price,
 			&itemXCharacterData.Item.Description,
-			&itemXCharacterData.Item.CampaignId,
-			&itemXCharacterData.CharacterDataId,
+			&itemXCharacterData.Item.Campaign_Id,
+			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Quantity,
 		)
 		if err != nil {
@@ -119,14 +119,14 @@ func (r *itemXtableCharacterSqlRepository) GetById(id int64) (domain.ItemXCharac
 	row := r.db.QueryRow(QueryGetById, id)
 	var itemXCharacterData domain.ItemXCharacterData
 	err := row.Scan(
-		&itemXCharacterData.ItemXCharacterDataId,
-		&itemXCharacterData.Item.ItemId,
+		&itemXCharacterData.ItemXCharacterData_Id,
+		&itemXCharacterData.Item.Item_Id,
 		&itemXCharacterData.Item.Name,
 		&itemXCharacterData.Item.Weight,
 		&itemXCharacterData.Item.Price,
 		&itemXCharacterData.Item.Description,
-		&itemXCharacterData.Item.CampaignId,
-		&itemXCharacterData.CharacterDataId,
+		&itemXCharacterData.Item.Campaign_Id,
+		&itemXCharacterData.CharacterData_Id,
 		&itemXCharacterData.Quantity,
 	)
 	if err != nil {
@@ -151,14 +151,14 @@ func (r *itemXtableCharacterSqlRepository) GetByCharacterDataId(id int64) ([]dom
 	for rows.Next() {
 		var itemXCharacterData domain.ItemXCharacterData
 		err := rows.Scan(
-			&itemXCharacterData.ItemXCharacterDataId,
-			&itemXCharacterData.Item.ItemId,
+			&itemXCharacterData.ItemXCharacterData_Id,
+			&itemXCharacterData.Item.Item_Id,
 			&itemXCharacterData.Item.Name,
 			&itemXCharacterData.Item.Weight,
 			&itemXCharacterData.Item.Price,
 			&itemXCharacterData.Item.Description,
-			&itemXCharacterData.Item.CampaignId,
-			&itemXCharacterData.CharacterDataId,
+			&itemXCharacterData.Item.Campaign_Id,
+			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Quantity,
 		)
 		if err != nil {
@@ -181,9 +181,9 @@ func (r *itemXtableCharacterSqlRepository) Update(itemXCharacterData domain.Item
 	defer statement.Close()
 
 	_, err = statement.Exec(
-		itemXCharacterData.ItemXCharacterDataId,
-		itemXCharacterData.Item.ItemId,
-		itemXCharacterData.CharacterDataId,
+		itemXCharacterData.ItemXCharacterData_Id,
+		itemXCharacterData.Item.Item_Id,
+		itemXCharacterData.CharacterData_Id,
 		itemXCharacterData.Quantity,
 	)
 
