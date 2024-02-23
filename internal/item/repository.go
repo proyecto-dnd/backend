@@ -26,10 +26,10 @@ func (r *itemMySqlRepository) Create(item domain.Item) (domain.Item, error) {
 
 	result, err := statement.Exec(
 		item.Name,
-		item.Type,
+		item.Weight,
+		item.Price,
 		item.Description,
 		item.CampaignId,
-		item.Equipable,
 	)
 
 	if err != nil {
@@ -76,10 +76,10 @@ func (r *itemMySqlRepository) GetAll() ([]domain.Item, error) {
 		err := rows.Scan(
 			&item.ItemId,
 			&item.Name,
-			&item.Type,
+			&item.Weight,
+			&item.Price,
 			&item.Description,
 			&item.CampaignId,
-			&item.Equipable,
 		)
 		if err != nil {
 			return []domain.Item{}, err
@@ -106,10 +106,10 @@ func (r *itemMySqlRepository) GetByCampaignId(campaignId int64) ([]domain.Item, 
 		err := rows.Scan(
 			&item.ItemId,
 			&item.Name,
-			&item.Type,
+			&item.Weight,
+			&item.Price,
 			&item.Description,
 			&item.CampaignId,
-			&item.Equipable,
 		)
 		if err != nil {
 			return []domain.Item{}, err
@@ -130,10 +130,10 @@ func (r *itemMySqlRepository) GetById(id int64) (domain.Item, error) {
 	err := row.Scan(
 		&item.ItemId,
 		&item.Name,
-		&item.Type,
+		&item.Weight,
+		&item.Price,
 		&item.Description,
 		&item.CampaignId,
-		&item.Equipable,
 	)
 	if err != nil {
 		return domain.Item{}, ErrNotFound
@@ -152,10 +152,11 @@ func (r *itemMySqlRepository) Update(item domain.Item) (domain.Item, error) {
 
 	_, err = statement.Exec(
 		item.Name,
-		item.Type,
+		item.Weight,
+		item.Price,
 		item.Description,
 		item.CampaignId,
-		item.Equipable,
+		item.ItemId,
 	)
 
 	if err != nil {

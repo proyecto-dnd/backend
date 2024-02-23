@@ -27,7 +27,6 @@ func (r *itemXtableCharacterSqlRepository) Create(itemXCharacterData domain.Item
 	result, err := statement.Exec(
 		itemXCharacterData.Item.ItemId,
 		itemXCharacterData.CharacterDataId,
-		itemXCharacterData.Equipped,
 		itemXCharacterData.Quantity,
 	)
 
@@ -97,12 +96,11 @@ func (r *itemXtableCharacterSqlRepository) GetAll() ([]domain.ItemXCharacterData
 			&itemXCharacterData.ItemXCharacterDataId,
 			&itemXCharacterData.Item.ItemId,
 			&itemXCharacterData.Item.Name,
-			&itemXCharacterData.Item.Type,
+			&itemXCharacterData.Item.Weight,
+			&itemXCharacterData.Item.Price,
 			&itemXCharacterData.Item.Description,
 			&itemXCharacterData.Item.CampaignId,
-			&itemXCharacterData.Item.Equipable,
 			&itemXCharacterData.CharacterDataId,
-			&itemXCharacterData.Equipped,
 			&itemXCharacterData.Quantity,
 		)
 		if err != nil {
@@ -124,12 +122,11 @@ func (r *itemXtableCharacterSqlRepository) GetById(id int64) (domain.ItemXCharac
 		&itemXCharacterData.ItemXCharacterDataId,
 		&itemXCharacterData.Item.ItemId,
 		&itemXCharacterData.Item.Name,
-		&itemXCharacterData.Item.Type,
+		&itemXCharacterData.Item.Weight,
+		&itemXCharacterData.Item.Price,
 		&itemXCharacterData.Item.Description,
 		&itemXCharacterData.Item.CampaignId,
-		&itemXCharacterData.Item.Equipable,
 		&itemXCharacterData.CharacterDataId,
-		&itemXCharacterData.Equipped,
 		&itemXCharacterData.Quantity,
 	)
 	if err != nil {
@@ -157,12 +154,11 @@ func (r *itemXtableCharacterSqlRepository) GetByCharacterDataId(id int64) ([]dom
 			&itemXCharacterData.ItemXCharacterDataId,
 			&itemXCharacterData.Item.ItemId,
 			&itemXCharacterData.Item.Name,
-			&itemXCharacterData.Item.Type,
+			&itemXCharacterData.Item.Weight,
+			&itemXCharacterData.Item.Price,
 			&itemXCharacterData.Item.Description,
 			&itemXCharacterData.Item.CampaignId,
-			&itemXCharacterData.Item.Equipable,
 			&itemXCharacterData.CharacterDataId,
-			&itemXCharacterData.Equipped,
 			&itemXCharacterData.Quantity,
 		)
 		if err != nil {
@@ -188,7 +184,6 @@ func (r *itemXtableCharacterSqlRepository) Update(itemXCharacterData domain.Item
 		itemXCharacterData.ItemXCharacterDataId,
 		itemXCharacterData.Item.ItemId,
 		itemXCharacterData.CharacterDataId,
-		itemXCharacterData.Equipped,
 		itemXCharacterData.Quantity,
 	)
 
