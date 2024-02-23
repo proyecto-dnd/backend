@@ -7,16 +7,13 @@ import (
 
 	"database/sql"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 
 	"github.com/proyecto-dnd/backend/cmd/server/router"
-	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/pkg/firebaseConnection"
-
-	"firebase.google.com/go/v4/auth"
-	// "firebase.google.com/go/v4/auth"
 )
 
 func main() {
@@ -37,38 +34,15 @@ func main() {
 
 	engine := gin.New()
 	engine.Use(gin.Recovery())
+	engine.Use(cors.Default())
 
 	router := router.NewRouter(engine, db, firebaseApp)
 	router.MapRoutes()
-	// createOneuser()
 
 	if err := engine.Run("localhost:8080"); err != nil {
 		panic(err)
 	}
 	defer db.Close()
-}
-
-func createOneuser() {
-	firebaseClient := firebaseConnection.CreateFirebaseClient()
-
-	ctx := &gin.Context{}
-
-	userParams := (&auth.UserToCreate{}).
-		UID("123qweasd").
-		Email("dthmax2@gmail.com").
-		Password("pass123").
-		DisplayName("Kai").
-		Disabled(false)
-	u, err := firebaseClient.CreateUser(ctx, userParams)
-	if err != nil {
-		log.Fatalf("error creating user: %v\n", err)
-	}
-	var userTemp domain.User
-	userTemp.Username = u.DisplayName
-	userTemp.Email = u.Email
-
-	log.Printf("Successfully created user: %v\n", u)
-	log.Printf("User Info is: %v\n", userTemp)
 }
 
 // func initializeFirebaseApp() *firebase.App {
