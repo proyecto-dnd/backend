@@ -1,17 +1,10 @@
 package user
 
 import (
+	"log"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
-
-type ServiceUsers interface {
-	Create(user domain.User) (domain.UserResponse, error)
-	GetAll() ([]domain.UserResponse, error)
-	GetById(id string) (domain.UserResponse, error)
-	Update(user domain.User, id string) (domain.User, error)
-	Patch(user domain.User, id string) (domain.User, error)
-	Delete(id string) error
-}
 
 type service struct {
 	repositoryFirebase RepositoryUsers
@@ -83,9 +76,22 @@ func (s *service) Patch(user domain.User, id string) (domain.User, error) {
 
 func (s *service) Delete(id string) error {
 	err := s.repositoryFirebase.Delete(id)
+
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (s *service) Login(userInfo domain.UserLoginInfo) (string, error) {
+
+	cookie, err := s.repositoryFirebase.Login(userInfo)
+	if err != nil {
+		log.Println("ACAAAAAAAAAA")
+		log.Printf(err.Error())
+		return "", err
+	}
+
+	return cookie, nil
 }

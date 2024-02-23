@@ -1,7 +1,9 @@
 package user
 
 import (
+	"fmt"
 	"log"
+	"time"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
@@ -81,7 +83,6 @@ func (r *repositoryFirebase) GetById(id string) (domain.User, error) {
 		log.Fatalf("error getting user %s: %v\n", id, err)
 	}
 
-	log.Printf("Successfully fetched user data: %v\n", u)
 	var user domain.User
 	user.Username = u.DisplayName
 	user.Email = u.Email
@@ -94,12 +95,12 @@ func (r *repositoryFirebase) Update(user domain.User, id string) (domain.User, e
 		Email(user.Email).
 		Password(user.Password).
 		DisplayName(user.Username)
-	u, err := r.authClient.UpdateUser(ctx, id, params)
+	_, err := r.authClient.UpdateUser(ctx, id, params)
 	if err != nil {
 		//TODO RETURN ERROR
 		log.Fatalf("error updating user: %v\n", err)
 	}
-	log.Printf("Successfully updated user: %v\n", u)
+	// log.Printf("Successfully updated user: %v\n", u)
 
 	return user, nil
 }
@@ -117,4 +118,19 @@ func (r *repositoryFirebase) Delete(id string) error {
 
 func (r *repositoryFirebase) Patch(user domain.User, id string) (domain.User, error) {
 	return user, nil
+}
+
+func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error) {
+
+	expiresIn := time.Hour * 24 * 2
+
+	cookie, err := r.authClient.SessionCookie(ctx, userInfo.IdToken, expiresIn)
+	if err != nil {
+		fmt.Printf("error creating session cookie: %v\n", err)
+		return "", err
+	}
+
+	// ctx.SetCookie("Session", cookie, 3600, "/", "localhost", false, false)
+	// log.Println("LISTO LA PETICION")
+	return cookie, nil
 }
