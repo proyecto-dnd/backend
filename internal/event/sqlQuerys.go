@@ -2,8 +2,8 @@ package event
 
 var (
 	QueryCreateEvent = `
-		INSERT INTO event (type, event_description, environment, session_id, character_involved, dice_rolled, difficulty_class)
-		VALUES (?, ?, ?, ?, ?, ?, ?);
+		INSERT INTO event (type, environment, session_id, event_protagonist_id, dice_rolled, difficulty_class, event_target, event_resolution)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	QueryGetAll = `
@@ -14,12 +14,16 @@ var (
 		SELECT * FROM event WHERE event_id = ?;
 	`
 
+	QueryGetByTypeId = `
+		SELECT * FROM event WHERE type = ?;
+	`
+
 	QueryGetBySessionId = `
 		SELECT * FROM event WHERE session_id = ?;
 	`
 
-	QueryGetByCharacterId = `
-		SELECT * FROM event WHERE character_involved = ?;
+	QueryGetByProtagonistId = `
+		SELECT * FROM event WHERE event_protagonist_id = ?;
 	`
 
 	QueryUpdate = `
