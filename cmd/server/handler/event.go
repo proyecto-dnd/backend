@@ -56,12 +56,31 @@ func (h *EventHandler) HandlerGetById() gin.HandlerFunc {
 			return
 		}
 
-		tempEvent, err := h.service.GetEventByID(intId)
+		tempEvent, err := h.service.GetEventById(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
 		}
 		ctx.JSON(200, tempEvent)
+	}
+}
+
+func (h *EventHandler) HandlerGetByTypeId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+
+		eventList, err := h.service.GetEventsByTypeId(intId)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, eventList)
 	}
 }
 
@@ -75,7 +94,7 @@ func (h *EventHandler) HandlerGetBySessionId() gin.HandlerFunc {
 			return
 		}
 
-		eventList, err := h.service.GetEventsBySessionID(intId)
+		eventList, err := h.service.GetEventsBySessionId(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
@@ -84,7 +103,7 @@ func (h *EventHandler) HandlerGetBySessionId() gin.HandlerFunc {
 	}
 }
 
-func (h *EventHandler) HandlerGetByCharacterId() gin.HandlerFunc {
+func (h *EventHandler) HandlerGetByProtagonistId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 
@@ -94,7 +113,7 @@ func (h *EventHandler) HandlerGetByCharacterId() gin.HandlerFunc {
 			return
 		}
 
-		eventList, err := h.service.GetEventsByCharacterID(intId)
+		eventList, err := h.service.GetEventsByProtagonistId(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return

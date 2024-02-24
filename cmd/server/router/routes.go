@@ -77,17 +77,19 @@ func (r *router) buildEventRoutes() {
 		eventGroup.POST("", eventHandler.HandlerCreate())
 		eventGroup.GET("", eventHandler.HandlerGetAll())
 		eventGroup.GET("/:id", eventHandler.HandlerGetById())
+		eventGroup.GET("/type/:id", eventHandler.HandlerGetByTypeId())
 		eventGroup.GET("/session/:id", eventHandler.HandlerGetBySessionId())
-		eventGroup.GET("/character/:id", eventHandler.HandlerGetByCharacterId())
+		eventGroup.GET("/protagonist/:id", eventHandler.HandlerGetByProtagonistId())
 		eventGroup.PUT("/:id", eventHandler.HandlerUpdate())
 		eventGroup.DELETE("/:id", eventHandler.HandlerDelete())
 	}
 }
 
 func (r *router) buildCampaignRoutes() {
-	campaignRepository := campaign.NewCampaignRepository(r.db)
 	sessionRepository := session.NewSessionRepository(r.db)
-	campaignService := campaign.NewCampaignService(campaignRepository, sessionRepository)
+	sessionService := session.NewSessionService(sessionRepository)
+	campaignRepository := campaign.NewCampaignRepository(r.db)
+	campaignService := campaign.NewCampaignService(campaignRepository, sessionService)
 	campaignHandler := handler.NewCampaignHandler(&campaignService)
 
 	campaignGroup := r.routerGroup.Group("/campaign")

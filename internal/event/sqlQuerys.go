@@ -7,28 +7,37 @@ var (
 	`
 
 	QueryGetAll = `
-		SELECT * FROM event;
+		SELECT e.*, et.name FROM event e
+		JOIN event_type et ON e.type = et.event_type_id;
 	`
 
 	QueryGetById = `
-		SELECT * FROM event WHERE event_id = ?;
+		SELECT e.*, et.name FROM event e
+		JOIN event_type et ON e.type = et.event_type_id
+		WHERE e.event_id = ?;
 	`
 
 	QueryGetByTypeId = `
-		SELECT * FROM event WHERE type = ?;
+		SELECT e.*, et.name
+		FROM event e
+		JOIN event_type et ON e.type = ?;
 	`
 
 	QueryGetBySessionId = `
-		SELECT * FROM event WHERE session_id = ?;
+		SELECT e.*, et.name FROM event e
+		JOIN event_type et ON e.type = et.event_type_id
+		WHERE e.session_id = ?;
 	`
 
 	QueryGetByProtagonistId = `
-		SELECT * FROM event WHERE event_protagonist_id = ?;
+		SELECT e.*, et.name FROM event e
+		JOIN event_type et ON e.type = et.event_type_id
+		WHERE e.event_protagonist_id = ?;
 	`
 
 	QueryUpdate = `
 		UPDATE event
-		SET type = ?, event_description = ?, environment = ?, session_id = ?, character_involved = ?, dice_rolled = ?, difficulty_class = ?
+		SET type = ?, environment = ?, session_id = ?, event_protagonist_id = ?, dice_rolled = ?, difficulty_class = ?, event_target = ?, event_resolution = ?
 		WHERE event_id = ?;
 	`
 
