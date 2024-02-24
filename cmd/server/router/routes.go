@@ -8,10 +8,11 @@ import (
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	"github.com/proyecto-dnd/backend/internal/event"
+	"github.com/proyecto-dnd/backend/internal/feature"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
-	"github.com/proyecto-dnd/backend/pkg/middleware"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
+	"github.com/proyecto-dnd/backend/pkg/middleware"
 )
 
 type Router interface {
@@ -40,6 +41,7 @@ func (r *router) MapRoutes() {
 	r.buildCampaignRoutes()
 	r.buildSessionRoutes()
 	r.buildUserCampaignRoutes()
+	r.buildFeatureRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -130,5 +132,21 @@ func(r *router) buildUserCampaignRoutes() {
 		userCampaignGroup.GET("/campaign/:id", userCampaignHandler.HandlerGetByCampaignId())
 		userCampaignGroup.GET("/user/:id", userCampaignHandler.HandlerGetByUserId())
 		userCampaignGroup.DELETE("/:id", userCampaignHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildFeatureRoutes() {
+	featureRepository := feature.NewFeatureRepository(r.db)
+	featureService := feature.NewFeatureService(featureRepository)
+	featureHandler := handler.NewFeatureHandler(&featureService)
+
+	featureGroup := r.routerGroup.Group("/feature")
+	{
+		featureGroup.POST("", featureHandler.HandlerCreate())
+		featureGroup.GET("", featureHandler.HandlerGetAll())
+		featureGroup.GET("/character/:id", featureHandler.HandlerGetAllFeaturesByCharacterId())
+		featureGroup.GET("/:id", featureHandler.HandlerGetById())
+		featureGroup.PUT("/:id", featureHandler.HandlerUpdate())
+		featureGroup.DELETE("/:id", featureHandler.HandlerDelete())
 	}
 }

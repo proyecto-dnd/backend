@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -38,7 +37,6 @@ func (h *EventHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		eventList, err := h.service.GetAllEvents()
 		if err != nil {
-			fmt.Println(err)
 			ctx.JSON(500, err)
 			return
 		}

@@ -67,6 +67,30 @@ func (r *featureMySqlRepository) GetAll() ([]domain.Feature, error) {
 	return features, nil
 }
 
+func (r *featureMySqlRepository) GetAllByCharacterId(id int) ([]domain.Feature, error) {
+	rows, err := r.db.Query(QueryGetAllByCharacterId, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	
+	var features []domain.Feature
+	for rows.Next() {
+		var feature domain.Feature
+		err := rows.Scan(
+			&feature.FeatureId,
+			&feature.Name,
+			&feature.Description,
+		)
+		if err != nil {
+			return nil, err
+		}
+		features = append(features, feature)
+	}
+	
+	return features, nil
+}
+
 func (r *featureMySqlRepository) GetById(id int) (domain.Feature, error) {
 	row := r.db.QueryRow(QueryGetById, id)
 	var feature domain.Feature

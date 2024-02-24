@@ -18,7 +18,7 @@ type FeatureHandler interface {
 type FeatureService interface {
 	CreateFeature (dto.CreateFeatureDto) (domain.Feature, error)
 	GetAllFeatures() ([]domain.Feature, error)
-	GetAllFeaturesByCharacterId(characterId int) ([]dto.FeatureFullResponseDto, error)
+	GetAllFeaturesByCharacterId(characterId int) (dto.FeatureFullResponseDto, error)
 	GetFeatureById(id int) (domain.Feature, error)
 	UpdateFeature(feature dto.CreateFeatureDto, id int) (domain.Feature, error)
 	DeleteFeature(id int) error
@@ -27,6 +27,7 @@ type FeatureService interface {
 type FeatureRepository interface {
 	Create(feature domain.Feature) (domain.Feature, error)
 	GetAll() ([]domain.Feature, error)
+	GetAllByCharacterId(characterId int) ([]domain.Feature, error)
 	GetById(id int) (domain.Feature, error)
 	Update(feature domain.Feature, id int) (domain.Feature, error)
 	Delete(id int) error
