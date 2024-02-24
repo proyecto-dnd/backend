@@ -36,5 +36,5 @@ type ResponseEventDto struct {
 	Difficulty_Class   bool               `json:"difficulty_class"`
 	EventTarget        string             `json:"event_target"`
 	EventResolution    string             `json:"event_resolution"`
-	Affected           []domain.Character `json:"affected"`
+	Affected           []domain.CharacterData `json:"affected"`
 }

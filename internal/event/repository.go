@@ -3,8 +3,6 @@ package event
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 )
@@ -25,7 +23,6 @@ func NewEventRepository(db *sql.DB) EventRepository {
 func (r *eventMySqlRepository) Create(event domain.Event) (domain.Event, error) {
 	statement, err := r.db.Prepare(QueryCreateEvent)
 	if err != nil {
-		fmt.Println(err)
 		return domain.Event{}, ErrPrepareStatement
 	}
 	

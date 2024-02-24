@@ -25,7 +25,7 @@ type EventService interface {
 	GetEventsByTypeId(typeId int) ([]dto.ResponseEventDto, error)
 	GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, error)
 	GetEventsByProtagonistId(protagonistId int) ([]dto.ResponseEventDto, error)
-	GetCharactersAffectedByEventId(eventid int) ([]dto.ResponseEventDto, error)
+	GetCharactersAffectedByEventId(eventid int) (dto.ResponseEventDto, error)
 	UpdateEvent(event dto.CreateEventDto, id int) (domain.Event, error)
 	DeleteEvent(id int) error
 }

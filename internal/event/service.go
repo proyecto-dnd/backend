@@ -1,19 +1,18 @@
 package event
 
 import (
-	"github.com/proyecto-dnd/backend/internal/character"
+	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
-// TODO: Agregar session y character repository para verificar que los ids existan
 type service struct {
-	repo EventRepository
-	charactersService character.New
+	repo              EventRepository
+	charactersService characterdata.ServiceCharacterData
 }
 
-func NewEventService(repo EventRepository) EventService {
-	return &service{repo: repo}
+func NewEventService(repo EventRepository, characterService characterdata.ServiceCharacterData) EventService {
+	return &service{repo: repo, charactersService: characterService}
 }
 
 func (s *service) CreateEvent(eventDto dto.CreateEventDto) (domain.Event, error) {
@@ -45,6 +44,11 @@ func (s *service) GetAllEvents() ([]dto.ResponseEventDto, error) {
 	var eventsToReturn []dto.ResponseEventDto
 	for _, event := range events {
 		eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+		affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+		if err != nil {
+			affected = domain.CharacterData{}
+		}
+
 		eventToReturn := dto.ResponseEventDto{
 			EventId:            event.EventId,
 			Type:               eventType,
@@ -55,6 +59,7 @@ func (s *service) GetAllEvents() ([]dto.ResponseEventDto, error) {
 			Difficulty_Class:   event.Difficulty_Class,
 			EventTarget:        event.EventTarget,
 			EventResolution:    event.EventResolution,
+			Affected:           affected,
 		}
 		eventsToReturn = append(eventsToReturn, eventToReturn)
 	}
@@ -69,6 +74,11 @@ func (s *service) GetEventById(id int) (dto.ResponseEventDto, error) {
 	}
 
 	eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+	affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+	if err != nil {
+		affected = domain.CharacterData{}
+	}
+
 	eventToReturn := dto.ResponseEventDto{
 		EventId:            event.EventId,
 		Type:               eventType,
@@ -79,6 +89,7 @@ func (s *service) GetEventById(id int) (dto.ResponseEventDto, error) {
 		Difficulty_Class:   event.Difficulty_Class,
 		EventTarget:        event.EventTarget,
 		EventResolution:    event.EventResolution,
+		Affected:           affected,
 	}
 
 	return eventToReturn, nil
@@ -93,6 +104,11 @@ func (s *service) GetEventsByTypeId(typeid int) ([]dto.ResponseEventDto, error) 
 	var eventsToReturn []dto.ResponseEventDto
 	for _, event := range events {
 		eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+		affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+		if err != nil {
+			affected = domain.CharacterData{}
+		}
+
 		eventToReturn := dto.ResponseEventDto{
 			EventId:            event.EventId,
 			Type:               eventType,
@@ -103,6 +119,7 @@ func (s *service) GetEventsByTypeId(typeid int) ([]dto.ResponseEventDto, error) 
 			Difficulty_Class:   event.Difficulty_Class,
 			EventTarget:        event.EventTarget,
 			EventResolution:    event.EventResolution,
+			Affected:           affected,
 		}
 		eventsToReturn = append(eventsToReturn, eventToReturn)
 	}
@@ -119,6 +136,11 @@ func (s *service) GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, e
 	var eventsToReturn []dto.ResponseEventDto
 	for _, event := range events {
 		eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+		affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+		if err != nil {
+			affected = domain.CharacterData{}
+		}
+
 		eventToReturn := dto.ResponseEventDto{
 			EventId:            event.EventId,
 			Type:               eventType,
@@ -129,6 +151,7 @@ func (s *service) GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, e
 			Difficulty_Class:   event.Difficulty_Class,
 			EventTarget:        event.EventTarget,
 			EventResolution:    event.EventResolution,
+			Affected:           affected,
 		}
 		eventsToReturn = append(eventsToReturn, eventToReturn)
 	}
@@ -145,6 +168,11 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 	var eventsToReturn []dto.ResponseEventDto
 	for _, event := range events {
 		eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+		affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+		if err != nil {
+			affected = domain.CharacterData{}
+		}
+
 		eventToReturn := dto.ResponseEventDto{
 			EventId:            event.EventId,
 			Type:               eventType,
@@ -155,6 +183,7 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 			Difficulty_Class:   event.Difficulty_Class,
 			EventTarget:        event.EventTarget,
 			EventResolution:    event.EventResolution,
+			Affected:           affected,
 		}
 		eventsToReturn = append(eventsToReturn, eventToReturn)
 	}
@@ -162,7 +191,32 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 	return eventsToReturn, nil
 }
 
+func (s *service) GetCharactersAffectedByEventId(eventId int) (dto.ResponseEventDto, error) {
+	event, err := s.GetEventById(eventId)
+	if err != nil {
+		return dto.ResponseEventDto{}, err
+	}
 
+	affected, err := s.charactersService.GetCharactersByEventId(eventId)
+	if err != nil {
+		return dto.ResponseEventDto{}, err
+	}
+
+	eventToReturn := dto.ResponseEventDto{
+		EventId:            event.EventId,
+		Type:               event.Type,
+		Environment:        event.Environment,
+		Session_id:         event.Session_id,
+		EventProtagonistId: event.EventProtagonistId,
+		Dice_rolled:        event.Dice_rolled,
+		Difficulty_Class:   event.Difficulty_Class,
+		EventTarget:        event.EventTarget,
+		EventResolution:    event.EventResolution,
+		Affected:           affected,
+	}
+
+	return eventToReturn, nil
+}
 
 func (s *service) UpdateEvent(eventDto dto.CreateEventDto, id int) (domain.Event, error) {
 	eventDomain := domain.Event{

@@ -146,6 +146,25 @@ func (h *EventHandler) HandlerUpdate() gin.HandlerFunc {
 	}
 }
 
+func (h *EventHandler) HandlerGetCharactersAffectedByEventId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+
+		tempEvent, err := h.service.GetCharactersAffectedByEventId(intId)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, tempEvent)
+	}
+}
+
 func (h *EventHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
