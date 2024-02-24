@@ -1,4 +1,4 @@
-package tablecharacter
+package characterdata
 
 var (
 	QueryCreateCharacter = ``

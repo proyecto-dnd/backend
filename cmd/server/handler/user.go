@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
@@ -121,5 +122,32 @@ func (h *UserHandler) HandlerDelete() gin.HandlerFunc {
 
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, "Deleted User with id "+id)
+	}
+}
+
+func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var tempUserInfo domain.UserLoginInfo
+
+		err := ctx.BindJSON(&tempUserInfo)
+		if err != nil {
+			// TEMP ERROR RESPONSE
+			log.Println("BINDING JSON: " + err.Error())
+			ctx.JSON(500, err)
+			return
+		}
+		// log.Println(tempUserInfo)
+		cookie, err := h.service.Login(tempUserInfo)
+		if err != nil {
+			// TEMP ERROR RESPONSE
+			log.Println("LOGIN SERVICE: " + err.Error())
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.SetCookie("Session", cookie, 3600, "/", "localhost", false, false)
+		// log.Println(cookie)
+		// TEMP SUCCESS RESPONSE
+		ctx.JSON(200, "Setted Cookie")
+		return
 	}
 }

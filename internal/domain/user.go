@@ -12,3 +12,7 @@ type UserResponse struct {
 	Username string `json:"name"`
 	Email    string `json:"email"`
 }
+
+type UserLoginInfo struct {
+	IdToken string `json:"idToken"`
+}

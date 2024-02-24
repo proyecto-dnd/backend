@@ -10,6 +10,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
+	"github.com/proyecto-dnd/backend/pkg/middleware"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
 )
 
@@ -51,16 +52,13 @@ func (r *router) buildUserRoutes() {
 	userFirebaseService := user.NewServiceUser(userFirebaseRepository)
 	userFirebaseHandler := handler.NewUserHandler(&userFirebaseService)
 
-	// userSqlRepository := user.NewUserSqlRepository(r.db)
-	// userService := user.NewServiceUser(userSqlRepository)
-	// userHandler := handler.NewUserHandler(&userService)
-
 	userGroup := r.routerGroup.Group("/user")
 	{
 		// TODO Add Middlewares if needed
-		userGroup.POST("", userFirebaseHandler.HandlerCreate())
-		userGroup.GET("", userFirebaseHandler.HandlerGetAll())
-		userGroup.GET("/:id", userFirebaseHandler.HandlerGetById())
+		userGroup.POST("/register", userFirebaseHandler.HandlerCreate())
+		userGroup.POST("/login", userFirebaseHandler.HandlerLogin())
+		userGroup.GET("", middleware.VerifySessionCookie(), userFirebaseHandler.HandlerGetAll())
+		userGroup.GET("/:id", middleware.VerifySessionCookie(), userFirebaseHandler.HandlerGetById())
 		userGroup.PUT("/:id", userFirebaseHandler.HandlerUpdate())
 		userGroup.PATCH("/:id", userFirebaseHandler.HandlerPatch())
 		userGroup.DELETE("/:id", userFirebaseHandler.HandlerDelete())
