@@ -1,7 +1,7 @@
-package itemxcharacterdata
+package weaponxcharacterdata
 
 var (
-	QueryCreateItemXCharacterData = ``
+	QueryCreateWeaponXCharacterData = ``
     QueryGetAll = ``
     QueryGetById = ``
     QueryGetByCharacterDataId = ``

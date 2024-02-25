@@ -18,15 +18,15 @@ type itemXtableCharacterSqlRepository struct {
 
 // Create implements RepositoryItemXTableCharacter.
 func (r *itemXtableCharacterSqlRepository) Create(itemXCharacterData domain.ItemXCharacterData) (domain.ItemXCharacterData, error) {
-	statement, err := r.db.Prepare(QueryCreateItemXTableCharacter)
+	statement, err := r.db.Prepare(QueryCreateItemXCharacterData)
 	if err != nil {
 		return domain.ItemXCharacterData{}, ErrPrepareStatement
 	}
 	defer statement.Close()
 
 	result, err := statement.Exec(
-		itemXCharacterData.Item.Item_Id,
 		itemXCharacterData.CharacterData_Id,
+		itemXCharacterData.Item.Item_Id,
 		itemXCharacterData.Quantity,
 	)
 
@@ -63,7 +63,7 @@ func (r *itemXtableCharacterSqlRepository) Delete(id int64) error {
 
 // DeleteByTableCharacterId implements RepositoryItemXTableCharacter.
 func (r *itemXtableCharacterSqlRepository) DeleteByCharacterDataId(id int64) error {
-	result, err := r.db.Exec(QueryDeleteByTableCharacterId, id)
+	result, err := r.db.Exec(QueryDeleteByCharacterDataId, id)
 	if err != nil {
 		return err
 	}
@@ -94,13 +94,13 @@ func (r *itemXtableCharacterSqlRepository) GetAll() ([]domain.ItemXCharacterData
 		var itemXCharacterData domain.ItemXCharacterData
 		err := rows.Scan(
 			&itemXCharacterData.ItemXCharacterData_Id,
+			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Item.Item_Id,
 			&itemXCharacterData.Item.Name,
 			&itemXCharacterData.Item.Weight,
 			&itemXCharacterData.Item.Price,
 			&itemXCharacterData.Item.Description,
 			&itemXCharacterData.Item.Campaign_Id,
-			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Quantity,
 		)
 		if err != nil {
@@ -120,13 +120,13 @@ func (r *itemXtableCharacterSqlRepository) GetById(id int64) (domain.ItemXCharac
 	var itemXCharacterData domain.ItemXCharacterData
 	err := row.Scan(
 		&itemXCharacterData.ItemXCharacterData_Id,
+		&itemXCharacterData.CharacterData_Id,
 		&itemXCharacterData.Item.Item_Id,
 		&itemXCharacterData.Item.Name,
 		&itemXCharacterData.Item.Weight,
 		&itemXCharacterData.Item.Price,
 		&itemXCharacterData.Item.Description,
 		&itemXCharacterData.Item.Campaign_Id,
-		&itemXCharacterData.CharacterData_Id,
 		&itemXCharacterData.Quantity,
 	)
 	if err != nil {
@@ -138,7 +138,7 @@ func (r *itemXtableCharacterSqlRepository) GetById(id int64) (domain.ItemXCharac
 
 // GetByTableCharacterId implements RepositoryItemXTableCharacter.
 func (r *itemXtableCharacterSqlRepository) GetByCharacterDataId(id int64) ([]domain.ItemXCharacterData, error) {
-	rows, err := r.db.Query(QueryDeleteByTableCharacterId, id)
+	rows, err := r.db.Query(QueryDeleteByCharacterDataId, id)
 
 	if err != nil {
 		return []domain.ItemXCharacterData{}, err
@@ -152,13 +152,13 @@ func (r *itemXtableCharacterSqlRepository) GetByCharacterDataId(id int64) ([]dom
 		var itemXCharacterData domain.ItemXCharacterData
 		err := rows.Scan(
 			&itemXCharacterData.ItemXCharacterData_Id,
+			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Item.Item_Id,
 			&itemXCharacterData.Item.Name,
 			&itemXCharacterData.Item.Weight,
 			&itemXCharacterData.Item.Price,
 			&itemXCharacterData.Item.Description,
 			&itemXCharacterData.Item.Campaign_Id,
-			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Quantity,
 		)
 		if err != nil {
@@ -174,7 +174,7 @@ func (r *itemXtableCharacterSqlRepository) GetByCharacterDataId(id int64) ([]dom
 
 // Update implements RepositoryItemXTableCharacter.
 func (r *itemXtableCharacterSqlRepository) Update(itemXCharacterData domain.ItemXCharacterData) (domain.ItemXCharacterData, error) {
-	statement, err := r.db.Prepare(QueryCreateItemXTableCharacter)
+	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {
 		return domain.ItemXCharacterData{}, ErrPrepareStatement
 	}
@@ -182,8 +182,8 @@ func (r *itemXtableCharacterSqlRepository) Update(itemXCharacterData domain.Item
 
 	_, err = statement.Exec(
 		itemXCharacterData.ItemXCharacterData_Id,
-		itemXCharacterData.Item.Item_Id,
 		itemXCharacterData.CharacterData_Id,
+		itemXCharacterData.Item.Item_Id,
 		itemXCharacterData.Quantity,
 	)
 
