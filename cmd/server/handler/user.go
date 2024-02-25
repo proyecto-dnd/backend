@@ -136,7 +136,7 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
-		// log.Println(tempUserInfo)
+
 		cookie, err := h.service.Login(tempUserInfo)
 		if err != nil {
 			// TEMP ERROR RESPONSE
@@ -144,8 +144,9 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
+
 		ctx.SetCookie("Session", cookie, 3600, "/", "localhost", false, false)
-		// log.Println(cookie)
+
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, "Setted Cookie")
 		return

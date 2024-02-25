@@ -130,7 +130,5 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 		return "", err
 	}
 
-	// ctx.SetCookie("Session", cookie, 3600, "/", "localhost", false, false)
-	// log.Println("LISTO LA PETICION")
 	return cookie, nil
 }

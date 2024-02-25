@@ -88,7 +88,6 @@ func (s *service) Login(userInfo domain.UserLoginInfo) (string, error) {
 
 	cookie, err := s.repositoryFirebase.Login(userInfo)
 	if err != nil {
-		log.Println("ACAAAAAAAAAA")
 		log.Printf(err.Error())
 		return "", err
 	}
