@@ -129,7 +129,7 @@ func (h *CharacterHandler) HandlerUpdate() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
-		tempCharacterData.CharacterId = int64(id)
+		tempCharacterData.Character_Id = int64(id)
 		createdCharacterData, err := h.service.Update(tempCharacterData)
 		if err != nil {
 			ctx.JSON(500, err)
