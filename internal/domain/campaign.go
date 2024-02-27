@@ -1,6 +1,5 @@
 package domain
 
-
 type Campaign struct {
 	CampaignId    int    `json:"campaign_id"`
 	DungeonMaster int    `json:"dungeon_master"`

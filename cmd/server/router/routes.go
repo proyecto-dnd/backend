@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
 	"github.com/proyecto-dnd/backend/internal/campaign"
+	"github.com/proyecto-dnd/backend/internal/class"
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
@@ -38,6 +39,8 @@ func (r *router) MapRoutes() {
 	r.buildEventRoutes()
 	r.buildCampaignRoutes()
 	r.buildSessionRoutes()
+	r.buildClassRoutes()
+	
 	// TODO Add other builders here	and write their functions
 }
 
@@ -109,5 +112,20 @@ func (r *router) buildSessionRoutes() {
 		sessionGroup.GET("/campaign/:id", sessionHandler.HandlerGetByCampaignId())
 		sessionGroup.PUT("/:id", sessionHandler.HandlerUpdate())
 		sessionGroup.DELETE("/:id", sessionHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildClassRoutes() {
+	classRepository := class.NewClassRepository(r.db)
+	classService := class.NewClassService(classRepository)
+	classHandler := handler.NewClassHandler(&classService)
+
+	classGroup := r.routerGroup.Group("/class")
+	{
+		classGroup.POST("", classHandler.HandlerCreate())
+		classGroup.GET("", classHandler.HandlerGetAll())
+		classGroup.GET("/:id", classHandler.HandlerGetById())
+		classGroup.PUT("/:id", classHandler.HandlerUpdate())
+		classGroup.DELETE("/:id", classHandler.HandlerDelete())
 	}
 }
