@@ -1,12 +1,15 @@
 package spell
 
-import "github.com/proyecto-dnd/backend/internal/domain"
+import (
+	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/internal/dto"
+)
 
 type RepositorySpell interface {
-	Create(spell domain.Spell) (domain.Spell, error)
+	Create(spell dto.SpellDto) (domain.Spell, error)
 	GetAll() ([]domain.Spell, error)
 	GetById(id int) (domain.Spell, error)
-	Update(item domain.Spell, id int) (domain.Spell, error)
+	Update(item dto.SpellDto, id int) (domain.Spell, error)
 	Delete(id int) error
 }
 
