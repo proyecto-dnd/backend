@@ -7,7 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
 	"github.com/proyecto-dnd/backend/internal/campaign"
+	"github.com/proyecto-dnd/backend/internal/character_feature"
 	"github.com/proyecto-dnd/backend/internal/event"
+	"github.com/proyecto-dnd/backend/internal/event_type"
 	"github.com/proyecto-dnd/backend/internal/feature"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
@@ -148,5 +150,37 @@ func (r *router) buildFeatureRoutes() {
 		featureGroup.GET("/:id", featureHandler.HandlerGetById())
 		featureGroup.PUT("/:id", featureHandler.HandlerUpdate())
 		featureGroup.DELETE("/:id", featureHandler.HandlerDelete())
+	}
+}
+
+
+func (r *router) buildEventTypeRoutes() {
+	eventTypeRepository := event_type.NewEventTypeRepository(r.db)
+	eventTypeService := event_type.NewEventTypeService(eventTypeRepository)
+	eventTypeHandler := handler.NewEventTypeHandler(&eventTypeService)
+
+	eventTypeGroup := r.routerGroup.Group("/event_type")
+	{
+		eventTypeGroup.POST("", eventTypeHandler.HandlerCreate())
+		eventTypeGroup.GET("", eventTypeHandler.HandlerGetAll())
+		eventTypeGroup.GET("/:id", eventTypeHandler.HandlerGetById())
+		eventTypeGroup.GET("/:name", eventTypeHandler.HandlerGetByName())
+		eventTypeGroup.PUT("/:id", eventTypeHandler.HandlerUpdate())
+		eventTypeGroup.DELETE("/:id", eventTypeHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildCharacterFeatureRoutes() {
+	characterFeatureRepository := character_feature.NewCharacterFeatureRepository(r.db)
+	characterFeatureService := character_feature.NewCharacterFeatureService(characterFeatureRepository)
+	characterFeatureHandler := handler.NewCharacterFeatureHandler(&characterFeatureService)
+
+	characterFeatureGroup := r.routerGroup.Group("/character_feature")
+	{
+		characterFeatureGroup.POST("", characterFeatureHandler.HandlerCreate())
+		characterFeatureGroup.GET("", characterFeatureHandler.HandlerGetAll())
+		characterFeatureGroup.GET("/feature/:id", characterFeatureHandler.HandlerGetByFeatureId())
+		characterFeatureGroup.GET("/character/:id", characterFeatureHandler.HandlerGetByCharacterId())
+		characterFeatureGroup.DELETE("/:id", characterFeatureHandler.HandlerDelete())
 	}
 }
