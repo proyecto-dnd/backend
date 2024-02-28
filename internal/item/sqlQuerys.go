@@ -1,10 +1,10 @@
 package item
 
 var (
-	QueryCreateItem = ``
-    QueryGetAll = ``
-	QueryGetByCampaignId = ``
-    QueryGetById = ``
-    QueryUpdate = ``
-    QueryDelete = ``
+	QueryCreateItem = `INSERT INTO item (name, weight, price, description, campaign_id) VALUES (?, ?, ?, ?, ?);`
+    QueryGetAll = `SELECT * FROM item;`
+	QueryGetByCampaignId = `SELECT * FROM item WHERE campaign_id = ?;`
+    QueryGetById = `SELECT * FROM item WHERE item_id = ?;`
+    QueryUpdate = `UPDATE item SET name = ?, weight = ? , price = ? , description = ? , campaign_id = ? WHERE item_id = ?;`
+    QueryDelete = `DELETE from item where item_id = ?;`
 )
