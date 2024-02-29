@@ -76,3 +76,37 @@ func (h *ItemHandler) HandlerGetByCampaignId() gin.HandlerFunc{
         ctx.JSON(200, items)
     }
 }
+
+func (h *ItemHandler) HandlerGetById() gin.HandlerFunc{
+	return func(ctx *gin.Context) {
+        id := ctx.Param("id")
+
+        intId, err := strconv.Atoi(id)
+        if err!= nil {
+            ctx.JSON(500, err)
+            return
+        }
+        items, err := h.service.GetById(int64(intId))
+        if err!= nil {
+            ctx.JSON(404, err)
+            return
+        }
+        ctx.JSON(200, items)
+    }
+}
+
+func (h *ItemHandler) HandlerUpdate() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var tempItem domain.Item
+        if err := ctx.BindJSON(&tempItem); err!= nil {
+            ctx.JSON(400, err)
+            return
+        }
+		updatedItem, err := h.service.Create(tempItem)
+		if err!= nil {
+            ctx.JSON(500, err)
+            return
+        }
+		ctx.JSON(201, updatedItem)
+    }
+}

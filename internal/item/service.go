@@ -6,7 +6,7 @@ type service struct {
 	repo RepositoryItem
 }
 
-func NewServiceItem(repo RepositoryItem) ServiceItem {
+func NewItemService(repo RepositoryItem) ServiceItem {
 	return &service{repo: repo}
 }
 

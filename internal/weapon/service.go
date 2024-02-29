@@ -6,7 +6,7 @@ type service struct {
 	repo RepositoryWeapon
 }
 
-func NewServiceWeapon(repo RepositoryWeapon) ServiceWeapon {
+func NewWeaponService(repo RepositoryWeapon) ServiceWeapon {
 	return &service{repo: repo}
 }
 

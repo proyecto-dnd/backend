@@ -69,6 +69,6 @@ func (s *service) Update(weaponXCharacterData domain.WeaponXCharacterData) (doma
     return newItemRelationship, nil
 }
 
-func NewServiceWeaponXCharacterData(weaponXCharacterDataRepo RepositoryWeaponXCharacterData) ServiceWeaponXCharacterData {
+func NewWeaponXCharacterDataService(weaponXCharacterDataRepo RepositoryWeaponXCharacterData) ServiceWeaponXCharacterData {
 	return &service{weaponXCharacterDataRepo: weaponXCharacterDataRepo}
 }
