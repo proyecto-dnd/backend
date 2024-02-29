@@ -9,15 +9,15 @@ type RepositorySpell interface {
 	Create(spell dto.SpellDto) (domain.Spell, error)
 	GetAll() ([]domain.Spell, error)
 	GetById(id int) (domain.Spell, error)
-	Update(item dto.SpellDto, id int) (domain.Spell, error)
+	Update(spell dto.SpellDto, id int) (domain.Spell, error)
 	Delete(id int) error
 }
 
 
 type ServiceSpell interface {
-	Create(spell domain.Spell) (domain.Spell, error)
+	Create(spell dto.SpellDto) (domain.Spell, error)
 	GetAll() ([]domain.Spell, error)
 	GetById(id int) (domain.Spell, error)
-	Update(item domain.Spell, id int) (domain.Spell, error)
+	Update(spell dto.SpellDto, id int) (domain.Spell, error)
 	Delete(id int) error
 }

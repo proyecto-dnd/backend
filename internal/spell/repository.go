@@ -70,7 +70,6 @@ func (r *spellMySqlRepository) Create(spell dto.SpellDto) (domain.Spell, error) 
 	return createdSpell, nil
 }
 
-// (name, description, range, ritual, duration, concentration, casting_time, level, damage_type, difficulty_class, aoe, school)
 func (r *spellMySqlRepository) GetAll() ([]domain.Spell, error) {
 	rows, err := r.db.Query(QueryGetAll)
 	if err != nil {
