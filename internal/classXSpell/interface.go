@@ -6,3 +6,8 @@ type RepositoryClassXSpell interface {
 	Create(classXClassData domain.ClassXSpell) (domain.ClassXSpell, error)
 	Delete(classXClassData domain.ClassXSpell) error
 }
+
+type ServiceClassXSpell interface {
+	Create(classXClassData domain.ClassXSpell) (domain.ClassXSpell, error)
+	Delete(classXClassData domain.ClassXSpell) error
+}
