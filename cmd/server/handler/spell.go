@@ -67,10 +67,43 @@ func (h *SpellHandler) HandlerGetById() gin.HandlerFunc {
 
 func (h *SpellHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
 
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+
+		var tempSpell dto.SpellDto
+		if err := ctx.BindJSON(&tempSpell); err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		updatedSpell, err := h.service.Update(tempSpell, intId)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+
+		ctx.JSON(200, updatedSpell)
 	}
 }
 
 func (h *SpellHandler) HandlerDelete() gin.HandlerFunc {
-	return func(ctx *gin.Context) {}
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		if err = h.service.Delete(intId); err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+
+		ctx.JSON(200, "Deleted spell with id: "+id)
+	}
 }
