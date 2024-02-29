@@ -9,9 +9,10 @@ import (
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/session"
+	"github.com/proyecto-dnd/backend/internal/spell"
 	"github.com/proyecto-dnd/backend/internal/user"
-	"github.com/proyecto-dnd/backend/pkg/middleware"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
+	"github.com/proyecto-dnd/backend/pkg/middleware"
 )
 
 type Router interface {
@@ -40,6 +41,7 @@ func (r *router) MapRoutes() {
 	r.buildCampaignRoutes()
 	r.buildSessionRoutes()
 	r.buildUserCampaignRoutes()
+	r.buildSpellRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -115,7 +117,7 @@ func (r *router) buildSessionRoutes() {
 	}
 }
 
-func(r *router) buildUserCampaignRoutes() {
+func (r *router) buildUserCampaignRoutes() {
 	userCampaignRepository := user_campaign.NewUserCampaignRepository(r.db)
 	userCampaignService := user_campaign.NewUserCampaignService(userCampaignRepository)
 	userCampaignHandler := handler.NewUserCampaignHandler(&userCampaignService)
@@ -128,5 +130,20 @@ func(r *router) buildUserCampaignRoutes() {
 		userCampaignGroup.GET("/campaign/:id", userCampaignHandler.HandlerGetByCampaignId())
 		userCampaignGroup.GET("/user/:id", userCampaignHandler.HandlerGetByUserId())
 		userCampaignGroup.DELETE("/:id", userCampaignHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildSpellRoutes() {
+	spellRepository := spell.NewSpellRepository(r.db)
+	spellService := spell.NewSpellService(spellRepository)
+	spellHandler := handler.NewSpellHandler(&spellService)
+
+	spellGroup := r.routerGroup.Group("/spell")
+	{
+		spellGroup.POST("", spellHandler.HandlerCreate())
+		spellGroup.GET("", spellHandler.HandlergetAll())
+		spellGroup.GET("/:id", spellHandler.HandlerGetById())
+		spellGroup.PUT("/:id", spellHandler.HandlerUpdate())
+		spellGroup.DELETE("/:id", spellHandler.HandlerDelete())
 	}
 }

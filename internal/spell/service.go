@@ -9,7 +9,7 @@ type service struct {
 	repository RepositorySpell
 }
 
-func NewserviceSpell(repository RepositorySpell) ServiceSpell {
+func NewSpellService(repository RepositorySpell) ServiceSpell {
 	return &service{repository: repository}
 }
 
