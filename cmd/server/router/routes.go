@@ -9,6 +9,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	"github.com/proyecto-dnd/backend/internal/class"
 	"github.com/proyecto-dnd/backend/internal/event"
+	"github.com/proyecto-dnd/backend/internal/proficiency"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/pkg/middleware"
@@ -40,7 +41,7 @@ func (r *router) MapRoutes() {
 	r.buildCampaignRoutes()
 	r.buildSessionRoutes()
 	r.buildClassRoutes()
-	
+	r.buildProficiencyRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -127,5 +128,20 @@ func (r *router) buildClassRoutes() {
 		classGroup.GET("/:id", classHandler.HandlerGetById())
 		classGroup.PUT("/:id", classHandler.HandlerUpdate())
 		classGroup.DELETE("/:id", classHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildProficiencyRoutes() {
+	proficiencyRepository := proficiency.NewProficiencyRepository(r.db)
+	proficiencyService := proficiency.NewProficiencyService(proficiencyRepository)
+	proficiencyHandler := handler.NewProficiencyHandler(&proficiencyService)
+
+	proficiencyGroup := r.routerGroup.Group("/proficiency")
+	{
+		proficiencyGroup.POST("", proficiencyHandler.HandlerCreate())
+		proficiencyGroup.GET("", proficiencyHandler.HandlerGetAll())
+		proficiencyGroup.GET("/:id", proficiencyHandler.HandlerGetById())
+		proficiencyGroup.PUT("/:id", proficiencyHandler.HandlerUpdate())
+		proficiencyGroup.DELETE("/:id", proficiencyHandler.HandlerDelete())
 	}
 }
