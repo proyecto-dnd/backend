@@ -10,6 +10,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/class"
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/proficiency"
+	"github.com/proyecto-dnd/backend/internal/proficiencyXclass.go"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/pkg/middleware"
@@ -42,6 +43,7 @@ func (r *router) MapRoutes() {
 	r.buildSessionRoutes()
 	r.buildClassRoutes()
 	r.buildProficiencyRoutes()
+	r.buildProficiencyXClassRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -143,5 +145,17 @@ func (r *router) buildProficiencyRoutes() {
 		proficiencyGroup.GET("/:id", proficiencyHandler.HandlerGetById())
 		proficiencyGroup.PUT("/:id", proficiencyHandler.HandlerUpdate())
 		proficiencyGroup.DELETE("/:id", proficiencyHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildProficiencyXClassRoutes() {
+	proficiencyXClassRepository := proficiencyXclass.NewProficiencyXClassRepository(r.db)
+	proficiencyXClassService := proficiencyXclass.NewProficiencyXClassService(proficiencyXClassRepository)
+	proficiencyXClassHandler := handler.NewProficiencyXClassHandler(proficiencyXClassService)
+
+	proficiencyXClassGroup := r.routerGroup.Group("/proficiencyxclass")
+	{
+		proficiencyXClassGroup.POST("", proficiencyXClassHandler.HandlerCreate())
+		proficiencyXClassGroup.DELETE("", proficiencyXClassHandler.HandlerDelete())
 	}
 }
