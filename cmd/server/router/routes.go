@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
 	"github.com/proyecto-dnd/backend/internal/campaign"
+	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/spell"
@@ -42,6 +43,7 @@ func (r *router) MapRoutes() {
 	r.buildSessionRoutes()
 	r.buildUserCampaignRoutes()
 	r.buildSpellRoutes()
+	r.buildClassXSpellRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -145,5 +147,17 @@ func (r *router) buildSpellRoutes() {
 		spellGroup.GET("/:id", spellHandler.HandlerGetById())
 		spellGroup.PUT("/:id", spellHandler.HandlerUpdate())
 		spellGroup.DELETE("/:id", spellHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildClassXSpellRoutes() {
+	classXSpellRepository := classXspell.NewClassXSpellRepository(r.db)
+	classXSpellService := classXspell.NewClassXSpelService(classXSpellRepository)
+	classXSpellHandler := handler.NewClassXSpellHandler(&classXSpellService)
+
+	classXSpellGroup := r.routerGroup.Group("/classxspell")
+	{
+		classXSpellGroup.POST("", classXSpellHandler.HandlerCreate())
+		classXSpellGroup.DELETE("", classXSpellHandler.HandlerDelete())
 	}
 }
