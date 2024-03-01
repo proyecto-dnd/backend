@@ -15,18 +15,7 @@ func NewClassService(classRepository RepositoryCharacterClass) ClassService {
 
 func (s *service) Create(classDto dto.ClassDto) (domain.Class, error) {
 
-	classDomain := dto.ClassDto{
-		Name:                classDto.Name,
-		Description:         classDto.Description,
-		ProficiencyBonus:    classDto.ProficiencyBonus,
-		HitDice:             classDto.HitDice,
-		ArmorProficiencies:  classDto.ArmorProficiencies,
-		WeaponProficiencies: classDto.WeaponProficiencies,
-		ToolProficiencies:   classDto.ToolProficiencies,
-		SpellcastingAbility: classDto.SpellcastingAbility,
-	}
-
-	createdClass, err := s.classRepository.Create(classDomain)
+	createdClass, err := s.classRepository.Create(classDto)
 	if err != nil {
 		return domain.Class{}, err
 	}

@@ -40,7 +40,7 @@ func (r *repositoryMysqlRepository) Create(classDto dto.ClassDto) (domain.Class,
 	if err != nil {
 		return domain.Class{}, err
 	}
-	
+
 	lastId, err := result.LastInsertId()
 	if err != nil {
 		return domain.Class{}, ErrGettingLastInsertId
@@ -55,7 +55,6 @@ func (r *repositoryMysqlRepository) Create(classDto dto.ClassDto) (domain.Class,
 	createdClass.ProficiencyBonus = classDto.ProficiencyBonus
 	createdClass.WeaponProficiencies = classDto.WeaponProficiencies
 	createdClass.SpellcastingAbility = classDto.SpellcastingAbility
-
 
 	return createdClass, nil
 }
@@ -94,7 +93,6 @@ func (r *repositoryMysqlRepository) Update(classDto dto.ClassDto, id int) (domai
 	}
 	defer statement.Close()
 
-	
 	_, err = statement.Exec(classDto.Name, classDto.Description, classDto.ProficiencyBonus, classDto.HitDice, classDto.ArmorProficiencies, classDto.WeaponProficiencies, classDto.ToolProficiencies, classDto.SpellcastingAbility)
 	if err != nil {
 		return domain.Class{}, nil
@@ -108,7 +106,7 @@ func (r *repositoryMysqlRepository) Update(classDto dto.ClassDto, id int) (domai
 	updatedClass.ToolProficiencies = classDto.ToolProficiencies
 	updatedClass.ProficiencyBonus = classDto.ProficiencyBonus
 	updatedClass.WeaponProficiencies = classDto.WeaponProficiencies
-	updatedClass.SpellcastingAbility = classDto.SpellcastingAbility	
+	updatedClass.SpellcastingAbility = classDto.SpellcastingAbility
 
 	return updatedClass, nil
 }
@@ -122,6 +120,9 @@ func (r *repositoryMysqlRepository) Delete(id int) error {
 	defer statement.Close()
 
 	_, err = statement.Exec(id)
+	if err != nil {
+		return err
+	}
 
-	return err
-} 
+	return nil
+}
