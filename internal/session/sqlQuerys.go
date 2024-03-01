@@ -27,8 +27,4 @@ var (
 	QueryDelete = `
 		DELETE FROM session WHERE session_id = ?;
 	`
-
-	QueryGetCampaignById = `
-		SELECT * FROM campaign WHERE campaign_id = ?;
-	`
 )
