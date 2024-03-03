@@ -1,5 +1,24 @@
 basePath: /api/v1
 definitions:
+  domain.Event:
+    properties:
+      character_id:
+        type: integer
+      dice_roll:
+        type: boolean
+      difficulty_class:
+        type: boolean
+      environment:
+        type: string
+      event_description:
+        type: string
+      event_id:
+        type: integer
+      session_id:
+        type: integer
+      type:
+        type: string
+    type: object
   domain.User:
     properties:
       email:
@@ -11,6 +30,11 @@ definitions:
       password:
         type: string
     type: object
+  domain.UserLoginInfo:
+    properties:
+      idToken:
+        type: string
+    type: object
   domain.UserResponse:
     properties:
       email:
@@ -18,6 +42,23 @@ definitions:
       id:
         type: string
       name:
+        type: string
+    type: object
+  dto.CreateEventDto:
+    properties:
+      Environment:
+        type: string
+      character_id:
+        type: integer
+      dice_roll:
+        type: boolean
+      difficulty_class:
+        type: boolean
+      event_description:
+        type: string
+      session_id:
+        type: integer
+      type:
         type: string
     type: object
 externalDocs:
@@ -37,11 +78,303 @@ info:
   title: Dicelogger API
   version: "1.0"
 paths:
+  /event:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Event'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all events
+      tags:
+      - event
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateEventDto
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateEventDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Event'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create event
+      tags:
+      - event
+  /event/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete event
+      tags:
+      - event
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Event'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get event by id
+      tags:
+      - event
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: CreateEventDto
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateEventDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Event'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update event
+      tags:
+      - event
+  /event/character/{id}:
+    get:
+      parameters:
+      - description: character_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Event'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get event by character id
+      tags:
+      - event
+  /event/session/{id}:
+    get:
+      parameters:
+      - description: session_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Event'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get event by session id
+      tags:
+      - event
+  /user:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.UserResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all users
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete user
+      tags:
+      - user
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.UserResponse'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get user by id
+      tags:
+      - user
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Partially update user
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update user
+      tags:
+      - user
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: UserLoginInfo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UserLoginInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Login user
+      tags:
+      - user
   /user/register:
     post:
       consumes:
       - application/json
-      description: Register a new User
       parameters:
       - description: User
         in: body
@@ -59,7 +392,7 @@ paths:
         "500":
           description: Internal Server Error
           schema: {}
-      summary: register user example
+      summary: Register user
       tags:
-      - dentist
+      - user
 swagger: "2.0"
