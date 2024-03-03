@@ -17,6 +17,16 @@ func NewUserHandler(service *user.ServiceUsers) *UserHandler {
 	return &UserHandler{service: *service}
 }
 
+// user godoc
+// @Summary register user example
+// @Description Register a new User
+// @Tags dentist
+// @Accept json
+// @Produce json
+// @Param body body domain.User true "User"
+// @Success 201 {object} domain.UserResponse
+// @Failure 500 {object} error
+// @Router /user/register [post]
 func (h *UserHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var userTemp domain.User

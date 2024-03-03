@@ -12,6 +12,8 @@ import (
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/pkg/middleware"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
+	swaggerFiles "github.com/swaggo/files"
+  ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Router interface {
@@ -35,6 +37,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 
 func (r *router) MapRoutes() {
 	r.setGroup()
+	r.setSwaggerRoute()
 	r.buildUserRoutes()
 	r.buildEventRoutes()
 	r.buildCampaignRoutes()
@@ -45,6 +48,10 @@ func (r *router) MapRoutes() {
 
 func (r *router) setGroup() {
 	r.routerGroup = r.engine.Group("/api/v1")
+}
+
+func (r *router) setSwaggerRoute() {
+	r.routerGroup.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 
 func (r *router) buildUserRoutes() {

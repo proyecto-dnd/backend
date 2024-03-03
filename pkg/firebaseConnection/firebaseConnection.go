@@ -15,7 +15,7 @@ var (
 )
 
 func InitializeFirebaseApp() *firebase.App {
-	opt := option.WithCredentialsFile("../serviceAccountKey.json")
+	opt := option.WithCredentialsFile("serviceAccountKey.json")
 
 	conf := &firebase.Config{
 		ProjectID:     "logoflegends-19383",
