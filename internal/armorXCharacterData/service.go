@@ -16,7 +16,7 @@ func (s *service) CreateArmorXCharacterData(data domain.ArmorXCharacterData) (do
 }
 
 // DeleteArmorXCharacterData implements ServiceArmorXCharacterData.
-func (s *service) DeleteArmorXCharacterData(id int64) error {
+func (s *service) DeleteArmorXCharacterData(id int) error {
 	err := s.armorXcharacterRepo.DeleteArmorXCharacterData(id)
 	if err != nil {
 		return err
@@ -25,7 +25,7 @@ func (s *service) DeleteArmorXCharacterData(id int64) error {
 }
 
 // DeleteByCharacterDataIdArmor implements ServiceArmorXCharacterData.
-func (s *service) DeleteByCharacterDataIdArmor(id int64) error {
+func (s *service) DeleteByCharacterDataIdArmor(id int) error {
 	err := s.armorXcharacterRepo.DeleteByCharacterDataIdArmor(id)
 	if err != nil {
 		return err
@@ -43,7 +43,7 @@ func (s *service) GetAllArmorXCharacterData() ([]domain.ArmorXCharacterData, err
 }
 
 // GetByIdArmorXCharacterData implements ServiceArmorXCharacterData.
-func (s *service) GetByIdArmorXCharacterData(id int64) (domain.ArmorXCharacterData, error) {
+func (s *service) GetByIdArmorXCharacterData(id int) (domain.ArmorXCharacterData, error) {
 	armorRelationship, err := s.armorXcharacterRepo.GetByIdArmorXCharacterData(id)
 	if err != nil {
 		return domain.ArmorXCharacterData{}, nil
@@ -52,7 +52,7 @@ func (s *service) GetByIdArmorXCharacterData(id int64) (domain.ArmorXCharacterDa
 }
 
 // GetByCharacterDataIdArmor implements ServiceArmorXCharacterData.
-func (s *service) GetByCharacterDataIdArmor(id int64) ([]domain.ArmorXCharacterData, error) {
+func (s *service) GetByCharacterDataIdArmor(id int) ([]domain.ArmorXCharacterData, error) {
 	armorRelationships, err := s.armorXcharacterRepo.GetByCharacterDataIdArmor(id)
 	if err != nil {
 		return []domain.ArmorXCharacterData{}, nil

@@ -37,12 +37,12 @@ func (r *backgroundSkillsSqlRepository) CreateBackgroundXSkills(data domain.Back
 		return domain.BackgroundXSkills{}, ErrGettingLastInsertIdBackgroundSkills
 	}
 
-	data.BackgroundXSkills_Id = lastId
+	data.BackgroundXSkills_Id = int(lastId)
 
 	return data, nil
 }
 
-func (r *backgroundSkillsSqlRepository) DeleteBackgroundXSkills(id int64) error {
+func (r *backgroundSkillsSqlRepository) DeleteBackgroundXSkills(id int) error {
 	result, err := r.db.Exec(QueryDeleteBackgroundXSkills, id)
 	if err != nil {
 		return err
@@ -58,7 +58,7 @@ func (r *backgroundSkillsSqlRepository) DeleteBackgroundXSkills(id int64) error 
 	return nil
 }
 
-func (r *backgroundSkillsSqlRepository) DeleteByBackgroundId(id int64) error {
+func (r *backgroundSkillsSqlRepository) DeleteByBackgroundId(id int) error {
 	result, err := r.db.Exec(QueryDeleteByBackgroundId, id)
 	if err != nil {
 		return err
@@ -103,7 +103,7 @@ func (r *backgroundSkillsSqlRepository) GetAllBackgroundXSkills() ([]domain.Back
 	return backgroundXSkillsList, nil
 }
 
-func (r *backgroundSkillsSqlRepository) GetByIdBackgroundXSkills(id int64) (domain.BackgroundXSkills, error) {
+func (r *backgroundSkillsSqlRepository) GetByIdBackgroundXSkills(id int) (domain.BackgroundXSkills, error) {
 	row := r.db.QueryRow(QueryGetByIdBackgroundXSkills, id)
 	var data domain.BackgroundXSkills
 	err := row.Scan(
@@ -118,7 +118,7 @@ func (r *backgroundSkillsSqlRepository) GetByIdBackgroundXSkills(id int64) (doma
 	return data, nil
 }
 
-func (r *backgroundSkillsSqlRepository) GetByBackgroundId(id int64) ([]domain.BackgroundXSkills, error) {
+func (r *backgroundSkillsSqlRepository) GetByBackgroundId(id int) ([]domain.BackgroundXSkills, error) {
 	rows, err := r.db.Query(QueryGetByBackgroundId, id)
 
 	if err != nil {
