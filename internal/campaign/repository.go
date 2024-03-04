@@ -78,6 +78,25 @@ func (r *campaignMySqlRepository) GetById(id int) (domain.Campaign, error) {
 	return campaign, nil
 }
 
+func (r *campaignMySqlRepository) GetCampaignsByUserId(id string) ([]domain.Campaign, error) {
+	rows, err := r.db.Query(QueryGetByUserId, id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var campaigns []domain.Campaign
+	for rows.Next() {
+		var campaign domain.Campaign
+		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image); err != nil {
+			return nil, err
+		}
+		campaigns = append(campaigns, campaign)
+	}
+	return campaigns, nil
+}
+
 func (r *campaignMySqlRepository) Update(campaign domain.Campaign, id int) (domain.Campaign, error) {
 	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {

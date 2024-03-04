@@ -81,6 +81,34 @@ func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
 	return responseCampaign, nil
 }
 
+func (s *service) GetCampaignsByUserId(id string) ([]dto.ResponseCampaignDto, error) {
+	campaigns, err := s.campaignRepository.GetCampaignsByUserId(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var responseCampaigns []dto.ResponseCampaignDto
+	for _, campaign := range campaigns {
+		sessions, err := s.sessionRepository.GetByCampaignId(campaign.CampaignId)
+		if err != nil {
+			return nil, err
+		}
+
+		responseCampaign := dto.ResponseCampaignDto{
+			DungeonMaster: campaign.DungeonMaster,
+			Name:          campaign.Name,
+			Description:   campaign.Description,
+			Image:         campaign.Image,
+			Sessions:      sessions,
+		}
+
+		responseCampaigns = append(responseCampaigns, responseCampaign)
+	}
+
+	return responseCampaigns, nil
+}
+		
+
 func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto.ResponseCampaignDto, error) {
 	campaignDomain := domain.Campaign{
 		DungeonMaster: campaignDto.DungeonMaster,
