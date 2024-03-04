@@ -8,10 +8,11 @@ import (
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	"github.com/proyecto-dnd/backend/internal/event"
+	"github.com/proyecto-dnd/backend/internal/friendship"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
-	"github.com/proyecto-dnd/backend/pkg/middleware"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
+	"github.com/proyecto-dnd/backend/pkg/middleware"
 )
 
 type Router interface {
@@ -115,7 +116,7 @@ func (r *router) buildSessionRoutes() {
 	}
 }
 
-func(r *router) buildUserCampaignRoutes() {
+func (r *router) buildUserCampaignRoutes() {
 	userCampaignRepository := user_campaign.NewUserCampaignRepository(r.db)
 	userCampaignService := user_campaign.NewUserCampaignService(userCampaignRepository)
 	userCampaignHandler := handler.NewUserCampaignHandler(&userCampaignService)
@@ -128,5 +129,17 @@ func(r *router) buildUserCampaignRoutes() {
 		userCampaignGroup.GET("/campaign/:id", userCampaignHandler.HandlerGetByCampaignId())
 		userCampaignGroup.GET("/user/:id", userCampaignHandler.HandlerGetByUserId())
 		userCampaignGroup.DELETE("/:id", userCampaignHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildFriendshipRoutes() {
+	friendshipRepository := friendship.NewFriendshipRepository(r.db)
+	friendshipService := friendship.NewFriendshipService(friendshipRepository)
+	friendshipHandler := handler.NewFriendshipHandler(friendshipService)
+
+	friendshipGroup := r.routerGroup.Group("/friendship")
+	{
+		friendshipGroup.POST("", friendshipHandler.CreateHandler())
+		friendshipGroup.DELETE("", friendshipHandler.DeleteHandler())
 	}
 }
