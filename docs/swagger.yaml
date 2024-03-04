@@ -1,5 +1,18 @@
 basePath: /api/v1
 definitions:
+  domain.Campaign:
+    properties:
+      campaign_id:
+        type: integer
+      description:
+        type: string
+      dungeon_master:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    type: object
   domain.Event:
     properties:
       character_id:
@@ -19,6 +32,19 @@ definitions:
       type:
         type: string
     type: object
+  domain.Session:
+    properties:
+      campaign_id:
+        type: integer
+      description:
+        type: string
+      end:
+        type: string
+      session_id:
+        type: integer
+      start:
+        type: string
+    type: object
   domain.User:
     properties:
       email:
@@ -28,6 +54,19 @@ definitions:
       name:
         type: string
       password:
+        type: string
+    type: object
+  domain.UserCampaign:
+    properties:
+      campaign_id:
+        type: integer
+      is_dm:
+        type: integer
+      is_owner:
+        type: integer
+      user_campaign_id:
+        type: integer
+      user_id:
         type: string
     type: object
   domain.UserLoginInfo:
@@ -40,6 +79,17 @@ definitions:
       email:
         type: string
       id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.CreateCampaignDto:
+    properties:
+      description:
+        type: string
+      dungeon_master:
+        type: integer
+      image:
         type: string
       name:
         type: string
@@ -61,6 +111,43 @@ definitions:
       type:
         type: string
     type: object
+  dto.CreateSessionDto:
+    properties:
+      campaign_id:
+        type: integer
+      description:
+        type: string
+      end:
+        type: string
+      start:
+        type: string
+    type: object
+  dto.CreateUserCampaignDto:
+    properties:
+      campaign_id:
+        type: integer
+      is_dm:
+        type: integer
+      is_owner:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  dto.ResponseCampaignDto:
+    properties:
+      description:
+        type: string
+      dungeon_master:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      sessions:
+        items:
+          $ref: '#/definitions/domain.Session'
+        type: array
+    type: object
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
@@ -78,6 +165,138 @@ info:
   title: Dicelogger API
   version: "1.0"
 paths:
+  /campaign:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.ResponseCampaignDto'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all campaigns
+      tags:
+      - campaign
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateCampaignDto
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCampaignDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Campaign'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create campaign
+      tags:
+      - campaign
+  /campaign/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete campaign
+      tags:
+      - campaign
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseCampaignDto'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get campaign by id
+      tags:
+      - campaign
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: CreateCampaignDto
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCampaignDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseCampaignDto'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update campaign
+      tags:
+      - campaign
+  /campaign/user/{id}:
+    get:
+      parameters:
+      - description: user_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.ResponseCampaignDto'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get campaigns by user id
+      tags:
+      - campaign
   /event:
     get:
       produces:
@@ -233,6 +452,138 @@ paths:
       summary: Get event by session id
       tags:
       - event
+  /session:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Session'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all sessions
+      tags:
+      - session
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateSessionDto
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSessionDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Session'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create session
+      tags:
+      - session
+  /session/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete session
+      tags:
+      - session
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Session'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get session by id
+      tags:
+      - session
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: CreateSessionDto
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSessionDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Session'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update session
+      tags:
+      - session
+  /session/campaign/{id}:
+    get:
+      parameters:
+      - description: campaign_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Session'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get session by campaign id
+      tags:
+      - session
   /user:
     get:
       produces:
@@ -395,4 +746,135 @@ paths:
       summary: Register user
       tags:
       - user
+  /user_campaign:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.UserCampaign'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all user_campaign
+      tags:
+      - user_campaign
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateUserCampaignDto
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserCampaignDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.UserCampaign'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create user_campaign
+      tags:
+      - user_campaign
+  /user_campaign/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete user_campaign
+      tags:
+      - user_campaign
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.UserCampaign'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get user_campaign by id
+      tags:
+      - user_campaign
+  /user_campaign/campaign/{id}:
+    get:
+      parameters:
+      - description: campaign_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.UserCampaign'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get user_campaign by campaign id
+      tags:
+      - user_campaign
+  /user_campaign/user/{id}:
+    get:
+      parameters:
+      - description: user_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.UserCampaign'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get user_campaign by user id
+      tags:
+      - user_campaign
 swagger: "2.0"

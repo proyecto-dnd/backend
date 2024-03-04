@@ -16,6 +16,15 @@ func NewSessionHandler(service *session.SessionService) *SessionHandler {
 	return &SessionHandler{service: *service}
 }
 
+// session godoc
+// @Summary Create session
+// @Tags session
+// @Accept json
+// @Produce json
+// @Param body body dto.CreateSessionDto true "CreateSessionDto"
+// @Success 201 {object} domain.Session
+// @Failure 500 {object} error
+// @Router /session [post]
 func (h *SessionHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempSession dto.CreateSessionDto
@@ -34,6 +43,13 @@ func (h *SessionHandler) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// session godoc
+// @Summary Get all sessions
+// @Tags session
+// @Produce json
+// @Success 200 {array} domain.Session
+// @Failure 500 {object} error
+// @Router /session [get]
 func (h *SessionHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		sessionList, err := h.service.GetAllSessions()
@@ -46,6 +62,14 @@ func (h *SessionHandler) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
+// session godoc
+// @Summary Get session by id
+// @Tags session
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} domain.Session
+// @Failure 500 {object} error
+// @Router /session/{id} [get]
 func (h *SessionHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -65,6 +89,14 @@ func (h *SessionHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+// session godoc
+// @Summary Get session by campaign id
+// @Tags session
+// @Produce json
+// @Param id path int true "campaign_id"
+// @Success 200 {array} domain.Session
+// @Failure 500 {object} error
+// @Router /session/campaign/{id} [get]
 func (h *SessionHandler) HandlerGetByCampaignId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -84,6 +116,16 @@ func (h *SessionHandler) HandlerGetByCampaignId() gin.HandlerFunc {
 	}
 }
 
+// session godoc
+// @Summary Update session
+// @Tags session
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param body body dto.CreateSessionDto true "CreateSessionDto"
+// @Success 200 {object} domain.Session
+// @Failure 500 {object} error
+// @Router /session/{id} [put]
 func (h *SessionHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -109,6 +151,14 @@ func (h *SessionHandler) HandlerUpdate() gin.HandlerFunc {
 	}
 }
 
+// session godoc
+// @Summary Delete session
+// @Tags session
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} string
+// @Failure 500 {object} error
+// @Router /session/{id} [delete]
 func (h *SessionHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")

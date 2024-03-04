@@ -18,6 +18,206 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
+        "/campaign": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Get all campaigns",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ResponseCampaignDto"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Create campaign",
+                "parameters": [
+                    {
+                        "description": "CreateCampaignDto",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCampaignDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Campaign"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/campaign/user/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Get campaigns by user id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ResponseCampaignDto"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/campaign/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Get campaign by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseCampaignDto"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Update campaign",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "CreateCampaignDto",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCampaignDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseCampaignDto"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign"
+                ],
+                "summary": "Delete campaign",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/event": {
             "get": {
                 "produces": [
@@ -230,6 +430,206 @@
                     "event"
                 ],
                 "summary": "Delete event",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/session": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Get all sessions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Session"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Create session",
+                "parameters": [
+                    {
+                        "description": "CreateSessionDto",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateSessionDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Session"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/session/campaign/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Get session by campaign id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "campaign_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Session"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/session/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Get session by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Session"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Update session",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "CreateSessionDto",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateSessionDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Session"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Delete session",
                 "parameters": [
                     {
                         "type": "integer",
@@ -498,9 +898,228 @@
                     }
                 }
             }
+        },
+        "/user_campaign": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user_campaign"
+                ],
+                "summary": "Get all user_campaign",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.UserCampaign"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user_campaign"
+                ],
+                "summary": "Create user_campaign",
+                "parameters": [
+                    {
+                        "description": "CreateUserCampaignDto",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateUserCampaignDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.UserCampaign"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/user_campaign/campaign/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user_campaign"
+                ],
+                "summary": "Get user_campaign by campaign id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "campaign_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.UserCampaign"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/user_campaign/user/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user_campaign"
+                ],
+                "summary": "Get user_campaign by user id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.UserCampaign"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/user_campaign/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user_campaign"
+                ],
+                "summary": "Get user_campaign by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.UserCampaign"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user_campaign"
+                ],
+                "summary": "Delete user_campaign",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "domain.Campaign": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dungeon_master": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Event": {
             "type": "object",
             "properties": {
@@ -530,6 +1149,26 @@
                 }
             }
         },
+        "domain.Session": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "session_id": {
+                    "type": "integer"
+                },
+                "start": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.User": {
             "type": "object",
             "properties": {
@@ -543,6 +1182,26 @@
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.UserCampaign": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "is_dm": {
+                    "type": "integer"
+                },
+                "is_owner": {
+                    "type": "integer"
+                },
+                "user_campaign_id": {
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -562,6 +1221,23 @@
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateCampaignDto": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "dungeon_master": {
+                    "type": "integer"
+                },
+                "image": {
                     "type": "string"
                 },
                 "name": {
@@ -592,6 +1268,63 @@
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.CreateSessionDto": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateUserCampaignDto": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "is_dm": {
+                    "type": "integer"
+                },
+                "is_owner": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ResponseCampaignDto": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "dungeon_master": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sessions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Session"
+                    }
                 }
             }
         }
