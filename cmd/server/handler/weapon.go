@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -26,6 +28,7 @@ func (h *WeaponHandler) HandlerCreate() gin.HandlerFunc {
 
 		createdWeapon, err := h.service.Create(tempWeapon)
 		if err!= nil {
+			log.Default().Println(err)
             ctx.AbortWithError(500, err)
             return
         }
@@ -53,6 +56,7 @@ func (h *WeaponHandler) HandlerGetAll() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		weapons, err := h.service.GetAll()
 		if err != nil {
+			log.Default().Println(err)
 			ctx.AbortWithError(500, err)
 			return
 		}
@@ -69,6 +73,10 @@ func (h *WeaponHandler) HandlerGetByCampaignId() gin.HandlerFunc{
 			return
 		}
 		weapons, err := h.  service.GetByCampaignId(int64(id))
+		if err == weapon.ErrNotFound {
+			ctx.AbortWithError(404, err)
+            return
+		}
 		if err != nil{
 			ctx.AbortWithError(500, err)
 			return
@@ -87,6 +95,7 @@ func (h *WeaponHandler) HandlerGetById() gin.HandlerFunc{
 		}
 		weapon, err := h.  service.GetById(int64(id))
 		if err != nil{
+			fmt.Println(err)
 			ctx.AbortWithError(500, err)
 			return
 		}
@@ -102,8 +111,16 @@ func (h *WeaponHandler) HandlerUpdate() gin.HandlerFunc {
 			ctx.AbortWithError(400, err)
             return
 		}
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			// We should change unsuccessful responses to abortwith status or abort with status json
+			ctx.AbortWithError(400, err)
+			return
+		}
 
-		updatedWeapon, err := h.service.Create(tempWeapon)
+		tempWeapon.Weapon_Id = int64(id)
+
+		updatedWeapon, err := h.service.Update(tempWeapon)
 		if err!= nil {
             ctx.AbortWithError(500, err)
             return

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
@@ -110,7 +109,17 @@ func (h * WeaponXCharacterDataHandler) HandlerUpdate() gin.HandlerFunc {
 			ctx.AbortWithError(400, err)
             return
 		}
-		updatedWeaponXCharacterData, err := h.service.Create(tempWeaponXCharacterData)
+
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			// We should change unsuccessful responses to abortwith status or abort with status json
+			ctx.AbortWithError(400, err)
+			return
+		}
+
+		tempWeaponXCharacterData.Character_Weapon_Id = int64(id)
+
+		updatedWeaponXCharacterData, err := h.service.Update(tempWeaponXCharacterData)
 		if err != nil {
 			ctx.AbortWithError(500, err)
 			return

@@ -102,7 +102,17 @@ func (h *ItemHandler) HandlerUpdate() gin.HandlerFunc {
             ctx.JSON(400, err)
             return
         }
-		updatedItem, err := h.service.Create(tempItem)
+
+        id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			// We should change unsuccessful responses to abortwith status or abort with status json
+			ctx.AbortWithError(400, err)
+			return
+		}
+
+        tempItem.Item_Id = int64(id)
+
+		updatedItem, err := h.service.Update(tempItem)
 		if err!= nil {
             ctx.JSON(500, err)
             return

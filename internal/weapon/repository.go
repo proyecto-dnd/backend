@@ -3,13 +3,15 @@ package weapon
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
 var (
 	ErrPrepareStatement    = errors.New("error preparing statement")
 	ErrGettingLastInsertId = errors.New("error getting last insert id")
-	ErrNotFound            = errors.New("Weapon not found")
+	ErrNotFound            = errors.New("weapon not found")
 )
 
 type weaponMySqlRepository struct {
@@ -38,7 +40,7 @@ func (r *weaponMySqlRepository) Create(weapon domain.Weapon) (domain.Weapon, err
 		weapon.Damage_Type,
 		weapon.Campaign_Id,
 	)
-
+	fmt.Println(weapon)
 	if err != nil {
 		return domain.Weapon{}, err
 	}
@@ -140,6 +142,10 @@ func (r *weaponMySqlRepository) GetByCampaignId(campaignId int64) ([]domain.Weap
 	if err := rows.Err(); err != nil {
 		return []domain.Weapon{}, err
 	}
+
+	if len(weapons) < 1 {
+		return []domain.Weapon{}, ErrNotFound
+	}
 	return weapons, nil
 }
 
@@ -172,7 +178,7 @@ func (r *weaponMySqlRepository) GetById(id int64) (domain.Weapon, error) {
 
 // Update implements RepositoryWeapon.
 func (r *weaponMySqlRepository) Update(weapon domain.Weapon) (domain.Weapon, error) {
-	statement, err := r.db.Prepare(QueryCreateWeapon)
+	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {
 		return domain.Weapon{}, ErrPrepareStatement
 	}

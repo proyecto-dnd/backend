@@ -189,8 +189,10 @@ func (r *router) buildWeaponRoutes(){
 }
 
 func (r *router) buildWeaponXCharacterDataRoutes(){
+	weaponRepository := weapon.NewWeaponRepository(r.db)
+    weaponService := weapon.NewWeaponService(weaponRepository)
 	weaponXCharacterDataRepository := weaponxcharacterdata.NewWeaponXCharacterDataSqlRepository(r.db)
-	weaponXCharacterDataService := weaponxcharacterdata.NewWeaponXCharacterDataService(weaponXCharacterDataRepository)
+	weaponXCharacterDataService := weaponxcharacterdata.NewWeaponXCharacterDataService(weaponXCharacterDataRepository, weaponService)
 	weaponXCharacterDataHandler := handler.NewWeaponXCharacterDataHandler(&weaponXCharacterDataService)
 
 	weaponXCharacterDataGroup := r.routerGroup.Group("/weapon_character")

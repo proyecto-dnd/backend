@@ -108,12 +108,14 @@ func (r *weaponXCharacterDataSqlRepository) GetAll() ([]domain.WeaponXCharacterD
 			&weaponXCharacterData.Weapon.Ammunition,
 			&weaponXCharacterData.Weapon.Damage_Type,
 			&weaponXCharacterData.Weapon.Campaign_Id,
+			&weaponXCharacterData.Equipped,
 		)
 		if err != nil {
 			return []domain.WeaponXCharacterData{}, err
 		}
 		weaponXCharacterDataList = append(weaponXCharacterDataList, weaponXCharacterData)
 	}
+
 	if err := rows.Err(); err != nil {
 		return []domain.WeaponXCharacterData{}, err
 	}
@@ -140,6 +142,7 @@ func (r *weaponXCharacterDataSqlRepository) GetById(id int64) (domain.WeaponXCha
 		&weaponXCharacterData.Weapon.Ammunition,
 		&weaponXCharacterData.Weapon.Damage_Type,
 		&weaponXCharacterData.Weapon.Campaign_Id,
+		&weaponXCharacterData.Equipped,
 	)
 	if err != nil {
 		return domain.WeaponXCharacterData{}, err
@@ -177,6 +180,7 @@ func (r *weaponXCharacterDataSqlRepository) GetByCharacterDataId(id int64) ([]do
 			&weaponXCharacterData.Weapon.Ammunition,
 			&weaponXCharacterData.Weapon.Damage_Type,
 			&weaponXCharacterData.Weapon.Campaign_Id,
+			&weaponXCharacterData.Equipped,
 		)
 		if err != nil {
 			return []domain.WeaponXCharacterData{}, err

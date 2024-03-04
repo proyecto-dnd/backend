@@ -13,5 +13,5 @@ type Weapon struct {
 	Versatile_Damage string `json:"veratile_damage"`
 	Ammunition int `json:"ammunition"`
 	Damage_Type string `json:"damage_type"`
-	Campaign_Id int64 `json:"campaign_id"`
+	Campaign_Id int `json:"campaign_id"`
 }

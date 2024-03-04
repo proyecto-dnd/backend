@@ -115,6 +115,16 @@ func (h *ItemXCharacterDataHandler) HandlerUpdate() gin.HandlerFunc{
 			ctx.AbortWithError(400, err)
 			return
 		}
+
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			// We should change unsuccessful responses to abortwith status or abort with status json
+			ctx.AbortWithError(400, err)
+			return
+		}
+
+		tempItemXCharacterData.ItemXCharacterData_Id = int64(id)
+
 		updatedItemXCharacterData, err := h.service.Update(tempItemXCharacterData)
 		if err != nil {
 			ctx.AbortWithError(500, err)

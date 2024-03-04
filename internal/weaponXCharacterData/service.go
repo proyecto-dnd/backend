@@ -1,18 +1,26 @@
 package weaponxcharacterdata
 
-import "github.com/proyecto-dnd/backend/internal/domain"
+import (
+	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/internal/weapon"
+)
 
 type service struct {
 	weaponXCharacterDataRepo RepositoryWeaponXCharacterData
+    weaponService weapon.ServiceWeapon
 }
 
 // Create implements ServiceItemXTableCharacter.
 func (s *service) Create(weaponXCharacterData domain.WeaponXCharacterData) (domain.WeaponXCharacterData, error) {
-	newItemRelationship, err := s.weaponXCharacterDataRepo.Create(weaponXCharacterData)
+	newWeaponRelationship, err := s.weaponXCharacterDataRepo.Create(weaponXCharacterData)
 	if err!= nil {
         return domain.WeaponXCharacterData{}, err
     }
-	return newItemRelationship, nil
+    newWeaponRelationship.Weapon, err = s.weaponService.GetById(weaponXCharacterData.Weapon.Weapon_Id)
+    if err!= nil {
+        return domain.WeaponXCharacterData{}, err
+    }
+	return newWeaponRelationship, nil
 }
 
 // Delete implements ServiceItemXTableCharacter.
@@ -35,40 +43,40 @@ func (s *service) DeleteByCharacterDataId(id int64) error {
 
 // GetAll implements ServiceItemXTableCharacter.
 func (s *service) GetAll() ([]domain.WeaponXCharacterData, error) {
-	itemRelationships, err := s.weaponXCharacterDataRepo.GetAll()
+	weaponRelationships, err := s.weaponXCharacterDataRepo.GetAll()
 	if err != nil {
-		return []domain.WeaponXCharacterData{}, nil
+		return []domain.WeaponXCharacterData{}, err
 	}
-	return itemRelationships, nil
+	return weaponRelationships, nil
 }
 
 // GetByCharacterDataId implements ServiceItemXTableCharacter.
 func (s *service) GetByCharacterDataId(id int64) ([]domain.WeaponXCharacterData, error) {
-	itemRelationships, err := s.weaponXCharacterDataRepo.GetByCharacterDataId(id)
+	weaponRelationships, err := s.weaponXCharacterDataRepo.GetByCharacterDataId(id)
     if err!= nil {
         return []domain.WeaponXCharacterData{}, nil
     }
-    return itemRelationships, nil
+    return weaponRelationships, nil
 }
 
 // GetById implements ServiceItemXTableCharacter.
 func (s *service) GetById(id int64) (domain.WeaponXCharacterData, error) {
-	itemRelationship, err := s.weaponXCharacterDataRepo.GetById(id)
+	weaponRelationship, err := s.weaponXCharacterDataRepo.GetById(id)
     if err!= nil {
         return domain.WeaponXCharacterData{}, nil
     }
-    return itemRelationship, nil
+    return weaponRelationship, nil
 }
 
 // Update implements ServiceItemXTableCharacter.
 func (s *service) Update(weaponXCharacterData domain.WeaponXCharacterData) (domain.WeaponXCharacterData, error) {
-	newItemRelationship, err := s.weaponXCharacterDataRepo.Update(weaponXCharacterData)
+	updatedWeaponRelationship, err := s.weaponXCharacterDataRepo.Update(weaponXCharacterData)
     if err!= nil {
         return domain.WeaponXCharacterData{}, err
     }
-    return newItemRelationship, nil
+    return updatedWeaponRelationship, nil
 }
 
-func NewWeaponXCharacterDataService(weaponXCharacterDataRepo RepositoryWeaponXCharacterData) ServiceWeaponXCharacterData {
-	return &service{weaponXCharacterDataRepo: weaponXCharacterDataRepo}
+func NewWeaponXCharacterDataService(weaponXCharacterDataRepo RepositoryWeaponXCharacterData, weaponService weapon.ServiceWeapon) ServiceWeaponXCharacterData {
+	return &service{weaponXCharacterDataRepo: weaponXCharacterDataRepo, weaponService: weaponService}
 }
