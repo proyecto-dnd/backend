@@ -38,13 +38,13 @@ func (r *armorXCharacterDataSqlRepository) CreateArmorXCharacterData(data domain
 		return domain.ArmorXCharacterData{}, ErrGettingLastInsertIdArmor
 	}
 
-	data.ArmorXCharacterData_Id = lastId
+	data.ArmorXCharacterData_Id = int(lastId)
 
 	return data, nil
 }
 
 // DeleteArmorXCharacterData implements RepositoryArmorXCharacterData.
-func (r *armorXCharacterDataSqlRepository) DeleteArmorXCharacterData(id int64) error {
+func (r *armorXCharacterDataSqlRepository) DeleteArmorXCharacterData(id int) error {
 	result, err := r.db.Exec(QueryDeleteCharacterArmor, id)
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (r *armorXCharacterDataSqlRepository) DeleteArmorXCharacterData(id int64) e
 	return nil
 }
 
-func (r *armorXCharacterDataSqlRepository) DeleteByCharacterDataIdArmor(id int64) error {
+func (r *armorXCharacterDataSqlRepository) DeleteByCharacterDataIdArmor(id int) error {
 	result, err := r.db.Exec(QueryDeleteByCharacterIdCharacterArmor, id)
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func (r *armorXCharacterDataSqlRepository) GetAllArmorXCharacterData() ([]domain
 	return armorXCharacterDataList, nil
 }
 
-func (r *armorXCharacterDataSqlRepository) GetByIdArmorXCharacterData(id int64) (domain.ArmorXCharacterData, error) {
+func (r *armorXCharacterDataSqlRepository) GetByIdArmorXCharacterData(id int) (domain.ArmorXCharacterData, error) {
 	row := r.db.QueryRow(QueryGetByCharacterIdCharacterArmor, id)
 	var data domain.ArmorXCharacterData
 	err := row.Scan(
@@ -122,7 +122,7 @@ func (r *armorXCharacterDataSqlRepository) GetByIdArmorXCharacterData(id int64) 
 	return data, nil
 }
 
-func (r *armorXCharacterDataSqlRepository) GetByCharacterDataIdArmor(id int64) ([]domain.ArmorXCharacterData, error) {
+func (r *armorXCharacterDataSqlRepository) GetByCharacterDataIdArmor(id int) ([]domain.ArmorXCharacterData, error) {
 	rows, err := r.db.Query(QueryGetByCharacterIdCharacterArmor, id)
 
 	if err != nil {

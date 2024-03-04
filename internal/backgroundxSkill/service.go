@@ -14,7 +14,7 @@ func (s *BackgroundXSkillsService) CreateBackgroundXSkills(data domain.Backgroun
 	return newBackgroundXSkills, nil
 }
 
-func (s *BackgroundXSkillsService) DeleteBackgroundXSkills(id int64) error {
+func (s *BackgroundXSkillsService) DeleteBackgroundXSkills(id int) error {
 	err := s.backgroundXSkillsRepo.DeleteBackgroundXSkills(id)
 	if err != nil {
 		return err
@@ -22,7 +22,7 @@ func (s *BackgroundXSkillsService) DeleteBackgroundXSkills(id int64) error {
 	return nil
 }
 
-func (s *BackgroundXSkillsService) DeleteByBackgroundId(id int64) error {
+func (s *BackgroundXSkillsService) DeleteByBackgroundId(id int) error {
 	err := s.backgroundXSkillsRepo.DeleteByBackgroundId(id)
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func (s *BackgroundXSkillsService) GetAllBackgroundXSkills() ([]domain.Backgroun
 	return backgroundXSkills, nil
 }
 
-func (s *BackgroundXSkillsService) GetByBackgroundId(id int64) ([]domain.BackgroundXSkills, error) {
+func (s *BackgroundXSkillsService) GetByBackgroundId(id int) ([]domain.BackgroundXSkills, error) {
 	backgroundXSkills, err := s.backgroundXSkillsRepo.GetByBackgroundId(id)
 	if err != nil {
 		return []domain.BackgroundXSkills{}, err
@@ -46,7 +46,7 @@ func (s *BackgroundXSkillsService) GetByBackgroundId(id int64) ([]domain.Backgro
 	return backgroundXSkills, nil
 }
 
-func (s *BackgroundXSkillsService) GetByIdBackgroundXSkills(id int64) (domain.BackgroundXSkills, error) {
+func (s *BackgroundXSkillsService) GetByIdBackgroundXSkills(id int) (domain.BackgroundXSkills, error) {
 	backgroundXSkills, err := s.backgroundXSkillsRepo.GetByIdBackgroundXSkills(id)
 	if err != nil {
 		return domain.BackgroundXSkills{}, err
