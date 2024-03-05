@@ -127,9 +127,6 @@ func (r *router) buildSessionRoutes() {
 }
 
 
-func (r *router) buildUserCampaignRoutes() {
-
-
 func (r *router) buildClassRoutes() {
 	classRepository := class.NewClassRepository(r.db)
 	classService := class.NewClassService(classRepository)
@@ -169,6 +166,8 @@ func (r *router) buildProficiencyXClassRoutes() {
 	{
 		proficiencyXClassGroup.POST("", proficiencyXClassHandler.HandlerCreate())
 		proficiencyXClassGroup.DELETE("", proficiencyXClassHandler.HandlerDelete())
+	}
+}
 
 func(r *router) buildUserCampaignRoutes() {
 

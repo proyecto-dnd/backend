@@ -2,6 +2,7 @@ package armor
 
 import (
 	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 )
@@ -39,7 +40,7 @@ func (s *armorService) CreateArmor(armorDto dto.CreateArmorDto) (domain.Armor, e
 }
 
 func (s *armorService) GetAllArmor() ([]domain.Armor, error) {
-	armors, err := s.armorRepo.GetAll()
+	armors, err := s.armorRepo.GetAllArmors()
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +49,7 @@ func (s *armorService) GetAllArmor() ([]domain.Armor, error) {
 }
 
 func (s *armorService) GetArmorByID(id int) (domain.Armor, error) {
-	armor, err := s.armorRepo.GetById(id)
+	armor, err := s.armorRepo.GetArmorById(id)
 	if err != nil {
 		return domain.Armor{}, err
 	}
@@ -72,7 +73,7 @@ func (s *armorService) UpdateArmor(armorDto dto.CreateArmorDto, id int) (domain.
 		Basic:          armorDto.Basic,
 	}
 
-	updatedArmor, err := s.armorRepo.Update(armorDomain, id)
+	updatedArmor, err := s.armorRepo.UpdateArmor(armorDomain, id)
 	if err != nil {
 		fmt.Println(err)
 		return domain.Armor{}, err
@@ -82,5 +83,5 @@ func (s *armorService) UpdateArmor(armorDto dto.CreateArmorDto, id int) (domain.
 }
 
 func (s *armorService) DeleteArmor(id int) error {
-	return s.armorRepo.Delete(id)
+	return s.armorRepo.DeleteArmor(id)
 }
