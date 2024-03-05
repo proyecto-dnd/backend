@@ -1,6 +1,8 @@
 package event
 
 import (
+	"fmt"
+
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -40,29 +42,29 @@ func (s *service) GetAllEvents() ([]dto.ResponseEventDto, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(events)
 	var eventsToReturn []dto.ResponseEventDto
-	for _, event := range events {
-		eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
-		affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
-		if err != nil {
-			affected = domain.CharacterData{}
-		}
+	// for _, event := range events {
+	// 	eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+	// 	affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+	// 	if err != nil {
+	// 		affected = domain.CharacterData{}
+	// 	}
 
-		eventToReturn := dto.ResponseEventDto{
-			EventId:            event.EventId,
-			Type:               eventType,
-			Environment:        event.Environment,
-			Session_id:         event.Session_id,
-			EventProtagonistId: event.EventProtagonistId,
-			Dice_rolled:        event.Dice_rolled,
-			Difficulty_Class:   event.Difficulty_Class,
-			EventTarget:        event.EventTarget,
-			EventResolution:    event.EventResolution,
-			Affected:           affected,
-		}
-		eventsToReturn = append(eventsToReturn, eventToReturn)
-	}
+	// 	eventToReturn := dto.ResponseEventDto{
+	// 		EventId:            event.EventId,
+	// 		Type:               eventType,
+	// 		Environment:        event.Environment,
+	// 		Session_id:         event.Session_id,
+	// 		EventProtagonistId: event.EventProtagonistId,
+	// 		Dice_rolled:        event.Dice_rolled,
+	// 		Difficulty_Class:   event.Difficulty_Class,
+	// 		EventTarget:        event.EventTarget,
+	// 		EventResolution:    event.EventResolution,
+	// 		Affected:           affected,
+	// 	}
+	// 	eventsToReturn = append(eventsToReturn, eventToReturn)
+	// }
 
 	return eventsToReturn, nil
 }
@@ -72,27 +74,28 @@ func (s *service) GetEventById(id int) (dto.ResponseEventDto, error) {
 	if err != nil {
 		return dto.ResponseEventDto{}, err
 	}
+	fmt.Println(event)
+	// eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+	// affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+	// if err != nil {
+	// 	affected = domain.CharacterData{}
+	// }
 
-	eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
-	affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
-	if err != nil {
-		affected = domain.CharacterData{}
-	}
+	// eventToReturn := dto.ResponseEventDto{
+	// 	EventId:            event.EventId,
+	// 	Type:               eventType,
+	// 	Environment:        event.Environment,
+	// 	Session_id:         event.Session_id,
+	// 	EventProtagonistId: event.EventProtagonistId,
+	// 	Dice_rolled:        event.Dice_rolled,
+	// 	Difficulty_Class:   event.Difficulty_Class,
+	// 	EventTarget:        event.EventTarget,
+	// 	EventResolution:    event.EventResolution,
+	// 	Affected:           affected,
+	// }
 
-	eventToReturn := dto.ResponseEventDto{
-		EventId:            event.EventId,
-		Type:               eventType,
-		Environment:        event.Environment,
-		Session_id:         event.Session_id,
-		EventProtagonistId: event.EventProtagonistId,
-		Dice_rolled:        event.Dice_rolled,
-		Difficulty_Class:   event.Difficulty_Class,
-		EventTarget:        event.EventTarget,
-		EventResolution:    event.EventResolution,
-		Affected:           affected,
-	}
-
-	return eventToReturn, nil
+	// return eventToReturn, nil
+	return dto.ResponseEventDto{}, nil
 }
 
 func (s *service) GetEventsByTypeId(typeid int) ([]dto.ResponseEventDto, error) {
@@ -100,29 +103,29 @@ func (s *service) GetEventsByTypeId(typeid int) ([]dto.ResponseEventDto, error) 
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(events)
 	var eventsToReturn []dto.ResponseEventDto
-	for _, event := range events {
-		eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
-		affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
-		if err != nil {
-			affected = domain.CharacterData{}
-		}
+	// for _, event := range events {
+	// 	eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+	// 	affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+	// 	if err != nil {
+	// 		affected = domain.CharacterData{}
+	// 	}
 
-		eventToReturn := dto.ResponseEventDto{
-			EventId:            event.EventId,
-			Type:               eventType,
-			Environment:        event.Environment,
-			Session_id:         event.Session_id,
-			EventProtagonistId: event.EventProtagonistId,
-			Dice_rolled:        event.Dice_rolled,
-			Difficulty_Class:   event.Difficulty_Class,
-			EventTarget:        event.EventTarget,
-			EventResolution:    event.EventResolution,
-			Affected:           affected,
-		}
-		eventsToReturn = append(eventsToReturn, eventToReturn)
-	}
+	// 	eventToReturn := dto.ResponseEventDto{
+	// 		EventId:            event.EventId,
+	// 		Type:               eventType,
+	// 		Environment:        event.Environment,
+	// 		Session_id:         event.Session_id,
+	// 		EventProtagonistId: event.EventProtagonistId,
+	// 		Dice_rolled:        event.Dice_rolled,
+	// 		Difficulty_Class:   event.Difficulty_Class,
+	// 		EventTarget:        event.EventTarget,
+	// 		EventResolution:    event.EventResolution,
+	// 		Affected:           affected,
+	// 	}
+	// 	eventsToReturn = append(eventsToReturn, eventToReturn)
+	// }
 
 	return eventsToReturn, nil
 }
@@ -132,29 +135,29 @@ func (s *service) GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, e
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(events)
 	var eventsToReturn []dto.ResponseEventDto
-	for _, event := range events {
-		eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
-		affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
-		if err != nil {
-			affected = domain.CharacterData{}
-		}
+	// for _, event := range events {
+	// 	eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+	// 	affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+	// 	if err != nil {
+	// 		affected = domain.CharacterData{}
+	// 	}
 
-		eventToReturn := dto.ResponseEventDto{
-			EventId:            event.EventId,
-			Type:               eventType,
-			Environment:        event.Environment,
-			Session_id:         event.Session_id,
-			EventProtagonistId: event.EventProtagonistId,
-			Dice_rolled:        event.Dice_rolled,
-			Difficulty_Class:   event.Difficulty_Class,
-			EventTarget:        event.EventTarget,
-			EventResolution:    event.EventResolution,
-			Affected:           affected,
-		}
-		eventsToReturn = append(eventsToReturn, eventToReturn)
-	}
+	// 	eventToReturn := dto.ResponseEventDto{
+	// 		EventId:            event.EventId,
+	// 		Type:               eventType,
+	// 		Environment:        event.Environment,
+	// 		Session_id:         event.Session_id,
+	// 		EventProtagonistId: event.EventProtagonistId,
+	// 		Dice_rolled:        event.Dice_rolled,
+	// 		Difficulty_Class:   event.Difficulty_Class,
+	// 		EventTarget:        event.EventTarget,
+	// 		EventResolution:    event.EventResolution,
+	// 		Affected:           affected,
+	// 	}
+	// 	eventsToReturn = append(eventsToReturn, eventToReturn)
+	// }
 
 	return eventsToReturn, nil
 }
@@ -164,29 +167,29 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(events)
 	var eventsToReturn []dto.ResponseEventDto
-	for _, event := range events {
-		eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
-		affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
-		if err != nil {
-			affected = domain.CharacterData{}
-		}
+	// for _, event := range events {
+	// 	eventType := domain.EventType{EventTypeId: event.Type, Name: event.TypeName}
+	// 	affected, err := s.charactersService.GetCharactersByEventId(event.EventId)
+	// 	if err != nil {
+	// 		affected = domain.CharacterData{}
+	// 	}
 
-		eventToReturn := dto.ResponseEventDto{
-			EventId:            event.EventId,
-			Type:               eventType,
-			Environment:        event.Environment,
-			Session_id:         event.Session_id,
-			EventProtagonistId: event.EventProtagonistId,
-			Dice_rolled:        event.Dice_rolled,
-			Difficulty_Class:   event.Difficulty_Class,
-			EventTarget:        event.EventTarget,
-			EventResolution:    event.EventResolution,
-			Affected:           affected,
-		}
-		eventsToReturn = append(eventsToReturn, eventToReturn)
-	}
+	// 	eventToReturn := dto.ResponseEventDto{
+	// 		EventId:            event.EventId,
+	// 		Type:               eventType,
+	// 		Environment:        event.Environment,
+	// 		Session_id:         event.Session_id,
+	// 		EventProtagonistId: event.EventProtagonistId,
+	// 		Dice_rolled:        event.Dice_rolled,
+	// 		Difficulty_Class:   event.Difficulty_Class,
+	// 		EventTarget:        event.EventTarget,
+	// 		EventResolution:    event.EventResolution,
+	// 		Affected:           affected,
+	// 	}
+	// 	eventsToReturn = append(eventsToReturn, eventToReturn)
+	// }
 
 	return eventsToReturn, nil
 }
@@ -197,25 +200,27 @@ func (s *service) GetCharactersAffectedByEventId(eventId int) (dto.ResponseEvent
 		return dto.ResponseEventDto{}, err
 	}
 
-	affected, err := s.charactersService.GetCharactersByEventId(eventId)
-	if err != nil {
-		return dto.ResponseEventDto{}, err
-	}
+	fmt.Println(event)
+	// affected, err := s.charactersService.GetCharactersByEventId(eventId)
+	// if err != nil {
+	// 	return dto.ResponseEventDto{}, err
+	// }
 
-	eventToReturn := dto.ResponseEventDto{
-		EventId:            event.EventId,
-		Type:               event.Type,
-		Environment:        event.Environment,
-		Session_id:         event.Session_id,
-		EventProtagonistId: event.EventProtagonistId,
-		Dice_rolled:        event.Dice_rolled,
-		Difficulty_Class:   event.Difficulty_Class,
-		EventTarget:        event.EventTarget,
-		EventResolution:    event.EventResolution,
-		Affected:           affected,
-	}
+	// eventToReturn := dto.ResponseEventDto{
+	// 	EventId:            event.EventId,
+	// 	Type:               event.Type,
+	// 	Environment:        event.Environment,
+	// 	Session_id:         event.Session_id,
+	// 	EventProtagonistId: event.EventProtagonistId,
+	// 	Dice_rolled:        event.Dice_rolled,
+	// 	Difficulty_Class:   event.Difficulty_Class,
+	// 	EventTarget:        event.EventTarget,
+	// 	EventResolution:    event.EventResolution,
+	// 	Affected:           affected,
+	// }
 
-	return eventToReturn, nil
+	// return eventToReturn, nil
+	return event, nil
 }
 
 func (s *service) UpdateEvent(eventDto dto.CreateEventDto, id int) (domain.Event, error) {
