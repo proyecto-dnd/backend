@@ -80,7 +80,7 @@ func (h *SessionHandler) HandlerGetById() gin.HandlerFunc {
 			return
 		}
 
-		tempSession, err := h.service.GetSessionByID(intId)
+		tempSession, err := h.service.GetSessionById(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
@@ -107,7 +107,7 @@ func (h *SessionHandler) HandlerGetByCampaignId() gin.HandlerFunc {
 			return
 		}
 
-		tempSession, err := h.service.GetSessionByCampaignID(intId)
+		tempSession, err := h.service.GetSessionsByCampaignId(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return

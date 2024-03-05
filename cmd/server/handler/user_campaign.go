@@ -80,7 +80,7 @@ func (h *UserCampaignHandler) HandlerGetById() gin.HandlerFunc {
 			return
 		}
 
-		tempUserCampaign, err := h.service.GetUserCampaignByID(intId)
+		tempUserCampaign, err := h.service.GetUserCampaignById(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
@@ -108,7 +108,7 @@ func (h *UserCampaignHandler) HandlerGetByCampaignId() gin.HandlerFunc {
 			return
 		}
 
-		tempUserCampaign, err := h.service.GetUserCampaignByCampaignID(intId)
+		tempUserCampaign, err := h.service.GetUserCampaignByCampaignId(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return

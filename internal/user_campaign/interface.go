@@ -18,8 +18,8 @@ type UserCampaignHandler interface {
 type UserCampaignService interface {
 	CreateUserCampaign(dto.CreateUserCampaignDto) (domain.UserCampaign, error)
 	GetAllUserCampaigns() ([]domain.UserCampaign, error)
-	GetUserCampaignByID(id int) (domain.UserCampaign, error)
-	GetUserCampaignByCampaignID(id int) ([]domain.UserCampaign, error)
+	GetUserCampaignById(id int) (domain.UserCampaign, error)
+	GetUserCampaignByCampaignId(id int) ([]domain.UserCampaign, error)
 	GetUserCampaignByUserId(id string) ([]domain.UserCampaign, error)
 	DeleteUserCampaign(id int) error
 }

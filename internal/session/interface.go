@@ -18,8 +18,8 @@ type SessionHandler interface {
 type SessionService interface {
 	CreateSession(dto.CreateSessionDto) (domain.Session, error)
 	GetAllSessions() ([]domain.Session, error)
-	GetSessionByID(id int) (domain.Session, error)
-	GetSessionByCampaignID(id int) ([]domain.Session, error)
+	GetSessionById(id int) (domain.Session, error)
+	GetSessionsByCampaignId(id int) ([]domain.Session, error)
 	UpdateSession(Session dto.CreateSessionDto, id int) (domain.Session, error)
 	DeleteSession(id int) error
 }

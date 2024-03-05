@@ -8,11 +8,11 @@ import (
 
 type service struct {
 	campaignRepository CampaignRepository
-	sessionRepository  session.SessionRepository
+	sessionService  session.SessionService
 }
 
-func NewCampaignService(campaignRepository CampaignRepository, sessionRepository session.SessionRepository) CampaignService {
-	return &service{campaignRepository: campaignRepository, sessionRepository: sessionRepository}
+func NewCampaignService(campaignRepository CampaignRepository, sessionService session.SessionService) CampaignService {
+	return &service{campaignRepository: campaignRepository, sessionService: sessionService}
 }
 
 func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto) (domain.Campaign, error) {
@@ -39,7 +39,7 @@ func (s *service) GetAllCampaigns() ([]dto.ResponseCampaignDto, error) {
 
 	var responseCampaigns []dto.ResponseCampaignDto
 	for _, campaign := range campaigns {
-		sessions, err := s.sessionRepository.GetByCampaignId(campaign.CampaignId)
+		sessions, err := s.sessionService.GetSessionsByCampaignId(campaign.CampaignId)
 		if err != nil {
 			return nil, err
 		}
@@ -65,7 +65,7 @@ func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
 		return dto.ResponseCampaignDto{}, err
 	}
 
-	sessions, err := s.sessionRepository.GetByCampaignId(campaign.CampaignId)
+	sessions, err := s.sessionService.GetSessionsByCampaignId(campaign.CampaignId)
 	if err != nil {
 		return dto.ResponseCampaignDto{}, err
 	}
@@ -89,7 +89,7 @@ func (s *service) GetCampaignsByUserId(id string) ([]dto.ResponseCampaignDto, er
 
 	var responseCampaigns []dto.ResponseCampaignDto
 	for _, campaign := range campaigns {
-		sessions, err := s.sessionRepository.GetByCampaignId(campaign.CampaignId)
+		sessions, err := s.sessionService.GetSessionsByCampaignId(campaign.CampaignId)
 		if err != nil {
 			return nil, err
 		}
@@ -122,7 +122,7 @@ func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto
 		return dto.ResponseCampaignDto{}, err
 	}
 
-	sessions, err := s.sessionRepository.GetByCampaignId(updatedCampaign.CampaignId)
+	sessions, err := s.sessionService.GetSessionsByCampaignId(updatedCampaign.CampaignId)
 	if err != nil {
 		return dto.ResponseCampaignDto{}, err
 	}
