@@ -3,6 +3,8 @@ package weaponxcharacterdata
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -39,13 +41,13 @@ func (r *weaponXCharacterDataSqlRepository) Create(weaponXCharacterData domain.W
 		return domain.WeaponXCharacterData{}, ErrGettingLastInsertId
 	}
 
-	weaponXCharacterData.Character_Weapon_Id = lastId
+	weaponXCharacterData.Character_Weapon_Id = int(lastId)
 
 	return weaponXCharacterData, nil
 }
 
 // Delete implements RepositoryItemXTableCharacter.
-func (r *weaponXCharacterDataSqlRepository) Delete(id int64) error {
+func (r *weaponXCharacterDataSqlRepository) Delete(id int) error {
 	result, err := r.db.Exec(QueryDelete, id)
 	if err != nil {
 		return err
@@ -62,7 +64,7 @@ func (r *weaponXCharacterDataSqlRepository) Delete(id int64) error {
 }
 
 // DeleteByTableCharacterId implements RepositoryItemXTableCharacter.
-func (r *weaponXCharacterDataSqlRepository) DeleteByCharacterDataId(id int64) error {
+func (r *weaponXCharacterDataSqlRepository) DeleteByCharacterDataId(id int) error {
 	result, err := r.db.Exec(QueryDeleteByCharacterDataId, id)
 	if err != nil {
 		return err
@@ -123,7 +125,7 @@ func (r *weaponXCharacterDataSqlRepository) GetAll() ([]domain.WeaponXCharacterD
 }
 
 // GetById implements RepositoryItemXTableCharacter.
-func (r *weaponXCharacterDataSqlRepository) GetById(id int64) (domain.WeaponXCharacterData, error) {
+func (r *weaponXCharacterDataSqlRepository) GetById(id int) (domain.WeaponXCharacterData, error) {
 	row := r.db.QueryRow(QueryGetById, id)
 	var weaponXCharacterData domain.WeaponXCharacterData
 	err := row.Scan(
@@ -152,8 +154,8 @@ func (r *weaponXCharacterDataSqlRepository) GetById(id int64) (domain.WeaponXCha
 }
 
 // GetByTableCharacterId implements RepositoryItemXTableCharacter.
-func (r *weaponXCharacterDataSqlRepository) GetByCharacterDataId(id int64) ([]domain.WeaponXCharacterData, error) {
-	rows, err := r.db.Query(QueryDeleteByCharacterDataId)
+func (r *weaponXCharacterDataSqlRepository) GetByCharacterDataId(id int) ([]domain.WeaponXCharacterData, error) {
+	rows, err := r.db.Query(QueryGetByCharacterDataId, id)
 	if err != nil {
 		return []domain.WeaponXCharacterData{}, err
 	}
@@ -168,7 +170,7 @@ func (r *weaponXCharacterDataSqlRepository) GetByCharacterDataId(id int64) ([]do
 			&weaponXCharacterData.Character_Weapon_Id,
 			&weaponXCharacterData.CharacterData_Id,
 			&weaponXCharacterData.Weapon.Weapon_Id,
-			&weaponXCharacterData.Weapon.Weapon_Type, 
+			&weaponXCharacterData.Weapon.Weapon_Type,
 			&weaponXCharacterData.Weapon.Name,
 			&weaponXCharacterData.Weapon.Weight,
 			&weaponXCharacterData.Weapon.Price,
@@ -182,6 +184,7 @@ func (r *weaponXCharacterDataSqlRepository) GetByCharacterDataId(id int64) ([]do
 			&weaponXCharacterData.Weapon.Campaign_Id,
 			&weaponXCharacterData.Equipped,
 		)
+		fmt.Println("weaponXCharacterData")
 		if err != nil {
 			return []domain.WeaponXCharacterData{}, err
 		}

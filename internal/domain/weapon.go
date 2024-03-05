@@ -1,7 +1,7 @@
 package domain
 
 type Weapon struct {
-	Weapon_Id int64 `json:"weapon_id"`
+	Weapon_Id int `json:"weapon_id"`
 	Weapon_Type string `json:"weapon_type"`
 	Name string `json:"name"`
     Weight int `json:"weight"`
@@ -13,5 +13,5 @@ type Weapon struct {
 	Versatile_Damage string `json:"veratile_damage"`
 	Ammunition int `json:"ammunition"`
 	Damage_Type string `json:"damage_type"`
-	Campaign_Id int `json:"campaign_id"`
+	Campaign_Id *int `json:"campaign_id"`
 }

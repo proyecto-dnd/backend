@@ -149,6 +149,7 @@ func (r *router) buildItemRoutes(){
 		itemGroup.POST("", itemHandler.HandlerCreate())
 		itemGroup.DELETE("/:id", itemHandler.HandlerDelete())
 		itemGroup.GET("", itemHandler.HandlerGetAll())
+		itemGroup.GET("/generic", itemHandler.HandlerGetAllGeneric())
 		itemGroup.GET("/:id", itemHandler.HandlerGetById())
 		itemGroup.GET("/campaign/:id", itemHandler.HandlerGetByCampaignId())	
 		itemGroup.PUT("/:id", itemHandler.HandlerUpdate())
@@ -156,8 +157,10 @@ func (r *router) buildItemRoutes(){
 }
 
 func (r *router) buildItemXCharacterDataRoutes(){
+	itemRepository := item.NewItemRepository(r.db)
+	itemService := item.NewItemService(itemRepository)
 	itemXCharacterDataRepository := itemxcharacterdata.NewItemXCharacterDataSqlRepository(r.db)
-    itemXCharacterDataService := itemxcharacterdata.NewItemXCharacterDataService(itemXCharacterDataRepository)
+    itemXCharacterDataService := itemxcharacterdata.NewItemXCharacterDataService(itemXCharacterDataRepository, itemService)
     itemXCharacterDataHandler := handler.NewItemXCharacterDataHandler(&itemXCharacterDataService)
 
     itemXCharacterDataGroup := r.routerGroup.Group("/item_character")
@@ -180,6 +183,7 @@ func (r *router) buildWeaponRoutes(){
     weaponGroup := r.routerGroup.Group("/weapon")
     {
         weaponGroup.POST("", weaponHandler.HandlerCreate())
+		weaponGroup.GET("/generic", weaponHandler.HandlerGetAllGeneric())
         weaponGroup.DELETE("/:id", weaponHandler.HandlerDelete())
         weaponGroup.GET("", weaponHandler.HandlerGetAll())
         weaponGroup.GET("/:id", weaponHandler.HandlerGetById())

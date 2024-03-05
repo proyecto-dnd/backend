@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,7 @@ func (h *ItemXCharacterDataHandler) HandlerCreate() gin.HandlerFunc{
 		}
 		createdItemXCharacterData, err := h.service.Create(tempItemXCharacterData)
 		if err != nil {
+			fmt.Println(err)
 			ctx.AbortWithError(500, err)
 			return
 		}
@@ -39,7 +41,7 @@ func (h *ItemXCharacterDataHandler) HandlerDelete() gin.HandlerFunc{
 			ctx.AbortWithError(400, err)
 			return
 		}
-		err = h.service.Delete(int64(id))
+		err = h.service.Delete(id)
 		if err!= nil{
 			ctx.AbortWithError(404, err)
 			return
@@ -55,7 +57,7 @@ func (h *ItemXCharacterDataHandler) HandlerDeleteByCharacterId() gin.HandlerFunc
 			ctx.AbortWithError(400, err)
 			return
 		}
-		err = h.service.Delete(int64(id))
+		err = h.service.DeleteByCharacterDataId(id)
 		if err!= nil{
 			ctx.AbortWithError(404, err)
 			return
@@ -68,6 +70,7 @@ func (h *ItemXCharacterDataHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		itemXCharacterDataList, err := h.service.GetAll()
 		if err != nil {
+			fmt.Println(err)
 			ctx.AbortWithError(500, err)
 			return
 		}
@@ -82,8 +85,9 @@ func (h *ItemXCharacterDataHandler) HandlerGetByCharacterDataId() gin.HandlerFun
 			ctx.AbortWithError(400, err)
 			return
 		}
-		itemXCharacterDataList, err := h.service.GetByCharacterDataId(int64(id))
+		itemXCharacterDataList, err := h.service.GetByCharacterDataId(id)
 		if err != nil {
+			fmt.Println(err)
 			ctx.AbortWithError(500, err)
 			return
 		}
@@ -99,9 +103,9 @@ func (h *ItemXCharacterDataHandler) HandlerGetById() gin.HandlerFunc {
 			ctx.AbortWithError(400, err)
 			return
 		}
-		itemXCharacterData, err := h.service.GetByCharacterDataId(int64(id))
+		itemXCharacterData, err := h.service.GetById(id)
 		if err != nil {
-			ctx.AbortWithError(500, err)
+			ctx.AbortWithError(404, err)
 			return
 		}
 		ctx.JSON(200, itemXCharacterData)
@@ -123,13 +127,14 @@ func (h *ItemXCharacterDataHandler) HandlerUpdate() gin.HandlerFunc{
 			return
 		}
 
-		tempItemXCharacterData.ItemXCharacterData_Id = int64(id)
+		tempItemXCharacterData.Character_Item_Id = id
 
 		updatedItemXCharacterData, err := h.service.Update(tempItemXCharacterData)
 		if err != nil {
+			fmt.Println(err)
 			ctx.AbortWithError(500, err)
 			return
 		}
-		ctx.JSON(201, updatedItemXCharacterData)
+		ctx.JSON(200, updatedItemXCharacterData)
 	}
 }

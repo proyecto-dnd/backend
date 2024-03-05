@@ -7,8 +7,18 @@ type service struct {
 }
 
 func NewWeaponService(repo RepositoryWeapon) ServiceWeapon {
-	return &service{repo: repo}
+    return &service{repo: repo}
 }
+
+// GetAllGeneric implements ServiceWeapon.
+func (s *service) GetAllGeneric() ([]domain.Weapon, error) {
+	weapons, err := s.repo.GetAllGeneric()
+	if err != nil {
+		return []domain.Weapon{}, err
+	}
+	return weapons, nil
+}
+
 
 // Create implements ServiceWeapon.
 func (s *service) Create(weapon domain.Weapon) (domain.Weapon, error) {
@@ -20,47 +30,46 @@ func (s *service) Create(weapon domain.Weapon) (domain.Weapon, error) {
 }
 
 // Delete implements ServiceWeapon.
-func (s *service) Delete(id int64) error {
+func (s *service) Delete(id int) error {
 	err := s.repo.Delete(id)
-    if err!= nil {
-        return err
-    }
-    return nil
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetAll implements ServiceWeapon.
 func (s *service) GetAll() ([]domain.Weapon, error) {
 	weapons, err := s.repo.GetAll()
-    if err!= nil {
-        return []domain.Weapon{}, err
-    }
-    return weapons, nil
+	if err != nil {
+		return []domain.Weapon{}, err
+	}
+	return weapons, nil
 }
 
 // GetByCampaignId implements ServiceWeapon.
-func (s *service) GetByCampaignId(campaignId int64) ([]domain.Weapon, error) {
+func (s *service) GetByCampaignId(campaignId int) ([]domain.Weapon, error) {
 	weapons, err := s.repo.GetByCampaignId(campaignId)
-    if err!= nil {
-        return []domain.Weapon{}, err
-    }
-    return weapons, nil
+	if err != nil {
+		return []domain.Weapon{}, err
+	}
+	return weapons, nil
 }
 
 // GetById implements ServiceWeapon.
-func (s *service) GetById(id int64) (domain.Weapon, error) {
+func (s *service) GetById(id int) (domain.Weapon, error) {
 	weapon, err := s.repo.GetById(id)
-    if err!= nil {
-        return domain.Weapon{}, err
-    }
-    return weapon, nil
+	if err != nil {
+		return domain.Weapon{}, err
+	}
+	return weapon, nil
 }
 
 // Update implements ServiceWeapon.
 func (s *service) Update(weapon domain.Weapon) (domain.Weapon, error) {
 	weapon, err := s.repo.Update(weapon)
-    if err!= nil {
-        return domain.Weapon{}, err
-    }
-    return weapon, nil
+	if err != nil {
+		return domain.Weapon{}, err
+	}
+	return weapon, nil
 }
-

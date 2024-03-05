@@ -3,7 +3,7 @@ package dto
 import "github.com/proyecto-dnd/backend/internal/domain"
 
 type FullCharacterData struct {
-	Character_Id int64  `json:"characterid"`
+	Character_Id int  `json:"characterid"`
 	User_Id      string `json:"userid"`
 	Campaign_Id  int    `json:"campaignid"`
 	Race        int    `json:"raceid"`     // TODO: Change Type from int to Race Struct

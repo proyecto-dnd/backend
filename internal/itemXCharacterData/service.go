@@ -1,9 +1,17 @@
 package itemxcharacterdata
 
-import "github.com/proyecto-dnd/backend/internal/domain"
+import (
+	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/internal/item"
+)
 
 type service struct {
-	itemXCharacterDataRepo RepositoryItemXCharacterData
+    itemXCharacterDataRepo RepositoryItemXCharacterData
+    itemService item.ServiceItem
+}
+
+func NewItemXCharacterDataService(itemXCharacterDataRepo RepositoryItemXCharacterData, itemService item.ServiceItem) ServiceItemXCharacterData {
+    return &service{itemXCharacterDataRepo: itemXCharacterDataRepo, itemService: itemService}
 }
 
 // Create implements ServiceItemXTableCharacter.
@@ -12,11 +20,15 @@ func (s *service) Create(itemXCharacterData domain.ItemXCharacterData) (domain.I
 	if err!= nil {
         return domain.ItemXCharacterData{}, err
     }
+    newItemRelationship.Item, err = s.itemService.GetById(itemXCharacterData.Item.Item_Id)
+    if err != nil {
+        return domain.ItemXCharacterData{}, err
+    }
 	return newItemRelationship, nil
 }
 
 // Delete implements ServiceItemXTableCharacter.
-func (s *service) Delete(id int64) error {
+func (s *service) Delete(id int) error {
 	err := s.itemXCharacterDataRepo.Delete(id)
     if err!= nil {
         return err
@@ -25,7 +37,7 @@ func (s *service) Delete(id int64) error {
 }
 
 // DeleteByCharacterDataId implements ServiceItemXTableCharacter.
-func (s *service) DeleteByCharacterDataId(id int64) error {
+func (s *service) DeleteByCharacterDataId(id int) error {
 	err := s.itemXCharacterDataRepo.DeleteByCharacterDataId(id)
     if err!= nil {
         return err
@@ -37,25 +49,25 @@ func (s *service) DeleteByCharacterDataId(id int64) error {
 func (s *service) GetAll() ([]domain.ItemXCharacterData, error) {
 	itemRelationships, err := s.itemXCharacterDataRepo.GetAll()
 	if err != nil {
-		return []domain.ItemXCharacterData{}, nil
+		return []domain.ItemXCharacterData{}, err
 	}
 	return itemRelationships, nil
 }
 
 // GetByCharacterDataId implements ServiceItemXTableCharacter.
-func (s *service) GetByCharacterDataId(id int64) ([]domain.ItemXCharacterData, error) {
+func (s *service) GetByCharacterDataId(id int) ([]domain.ItemXCharacterData, error) {
 	itemRelationships, err := s.itemXCharacterDataRepo.GetByCharacterDataId(id)
     if err!= nil {
-        return []domain.ItemXCharacterData{}, nil
+        return []domain.ItemXCharacterData{}, err
     }
     return itemRelationships, nil
 }
 
 // GetById implements ServiceItemXTableCharacter.
-func (s *service) GetById(id int64) (domain.ItemXCharacterData, error) {
+func (s *service) GetById(id int) (domain.ItemXCharacterData, error) {
 	itemRelationship, err := s.itemXCharacterDataRepo.GetById(id)
     if err!= nil {
-        return domain.ItemXCharacterData{}, nil
+        return domain.ItemXCharacterData{}, err
     }
     return itemRelationship, nil
 }
@@ -66,9 +78,10 @@ func (s *service) Update(itemXCharacterData domain.ItemXCharacterData) (domain.I
     if err!= nil {
         return domain.ItemXCharacterData{}, err
     }
+    newItemRelationship.Item, err = s.itemService.GetById(itemXCharacterData.Item.Item_Id)
+    if err != nil {
+        return domain.ItemXCharacterData{}, err
+    }
     return newItemRelationship, nil
 }
 
-func NewItemXCharacterDataService(itemXCharacterDataRepo RepositoryItemXCharacterData) ServiceItemXCharacterData {
-	return &service{itemXCharacterDataRepo: itemXCharacterDataRepo}
-}

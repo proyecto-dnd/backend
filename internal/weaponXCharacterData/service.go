@@ -24,7 +24,7 @@ func (s *service) Create(weaponXCharacterData domain.WeaponXCharacterData) (doma
 }
 
 // Delete implements ServiceItemXTableCharacter.
-func (s *service) Delete(id int64) error {
+func (s *service) Delete(id int) error {
 	err := s.weaponXCharacterDataRepo.Delete(id)
     if err!= nil {
         return err
@@ -33,7 +33,7 @@ func (s *service) Delete(id int64) error {
 }
 
 // DeleteByCharacterDataId implements ServiceItemXTableCharacter.
-func (s *service) DeleteByCharacterDataId(id int64) error {
+func (s *service) DeleteByCharacterDataId(id int) error {
 	err := s.weaponXCharacterDataRepo.DeleteByCharacterDataId(id)
     if err!= nil {
         return err
@@ -51,19 +51,19 @@ func (s *service) GetAll() ([]domain.WeaponXCharacterData, error) {
 }
 
 // GetByCharacterDataId implements ServiceItemXTableCharacter.
-func (s *service) GetByCharacterDataId(id int64) ([]domain.WeaponXCharacterData, error) {
+func (s *service) GetByCharacterDataId(id int) ([]domain.WeaponXCharacterData, error) {
 	weaponRelationships, err := s.weaponXCharacterDataRepo.GetByCharacterDataId(id)
     if err!= nil {
-        return []domain.WeaponXCharacterData{}, nil
+        return []domain.WeaponXCharacterData{}, err
     }
     return weaponRelationships, nil
 }
 
 // GetById implements ServiceItemXTableCharacter.
-func (s *service) GetById(id int64) (domain.WeaponXCharacterData, error) {
+func (s *service) GetById(id int) (domain.WeaponXCharacterData, error) {
 	weaponRelationship, err := s.weaponXCharacterDataRepo.GetById(id)
     if err!= nil {
-        return domain.WeaponXCharacterData{}, nil
+        return domain.WeaponXCharacterData{}, err
     }
     return weaponRelationship, nil
 }
@@ -71,6 +71,10 @@ func (s *service) GetById(id int64) (domain.WeaponXCharacterData, error) {
 // Update implements ServiceItemXTableCharacter.
 func (s *service) Update(weaponXCharacterData domain.WeaponXCharacterData) (domain.WeaponXCharacterData, error) {
 	updatedWeaponRelationship, err := s.weaponXCharacterDataRepo.Update(weaponXCharacterData)
+    if err!= nil {
+        return domain.WeaponXCharacterData{}, err
+    }
+    updatedWeaponRelationship.Weapon, err = s.weaponService.GetById(weaponXCharacterData.Weapon.Weapon_Id)
     if err!= nil {
         return domain.WeaponXCharacterData{}, err
     }

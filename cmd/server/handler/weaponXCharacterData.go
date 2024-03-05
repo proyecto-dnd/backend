@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"fmt"
 	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
@@ -39,7 +41,7 @@ func (h *WeaponXCharacterDataHandler) HandlerDelete() gin.HandlerFunc{
 			ctx.AbortWithError(400, err)
             return
 		}
-		err = h.service.Delete(int64(id))
+		err = h.service.Delete(id)
 		if err != nil{
 			ctx.AbortWithError(404, err)
 		}
@@ -54,7 +56,7 @@ func (h *WeaponXCharacterDataHandler) HandlerDeleteByCharacterDataId() gin.Handl
 			ctx.AbortWithError(400, err)
             return
 		}
-		err = h.service.Delete(int64(id))
+		err = h.service.Delete(id)
 		if err != nil{
 			ctx.AbortWithError(404, err)
 		}
@@ -79,9 +81,10 @@ func (h *WeaponXCharacterDataHandler) HandlerGetByCharacterDataId() gin.HandlerF
             ctx.AbortWithError(400, err)
             return
         }
-		weaponXCharacterDataList, err := h.service.GetByCharacterDataId(int64(id))
+		weaponXCharacterDataList, err := h.service.GetByCharacterDataId(id)
 		if err != nil {
 			ctx.AbortWithError(500, err)
+			return
 		}
 		ctx.JSON(200, weaponXCharacterDataList)
 	}
@@ -94,8 +97,9 @@ func (h *WeaponXCharacterDataHandler) HandlerGetById() gin.HandlerFunc{
             ctx.AbortWithError(400, err)
             return
         }
-		weaponXCharacterData, err := h.service.GetByCharacterDataId(int64(id))
+		weaponXCharacterData, err := h.service.GetById(id)
 		if err != nil {
+			fmt.Println(err)
 			ctx.AbortWithError(500, err)
 		}
 		ctx.JSON(200, weaponXCharacterData)
@@ -117,7 +121,7 @@ func (h * WeaponXCharacterDataHandler) HandlerUpdate() gin.HandlerFunc {
 			return
 		}
 
-		tempWeaponXCharacterData.Character_Weapon_Id = int64(id)
+		tempWeaponXCharacterData.Character_Weapon_Id = id
 
 		updatedWeaponXCharacterData, err := h.service.Update(tempWeaponXCharacterData)
 		if err != nil {
@@ -125,6 +129,6 @@ func (h * WeaponXCharacterDataHandler) HandlerUpdate() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(201, updatedWeaponXCharacterData)
+		ctx.JSON(200, updatedWeaponXCharacterData)
 	}
 }

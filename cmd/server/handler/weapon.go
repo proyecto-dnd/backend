@@ -43,7 +43,7 @@ func (h *WeaponHandler) HandlerDelete() gin.HandlerFunc{
 			ctx.AbortWithError(400, err)
 			return
 		}
-		err = h.service.Delete(int64(id))
+		err = h.service.Delete(id)
 		if err != nil {
 			ctx.AbortWithError(404, err)
 			return
@@ -56,7 +56,6 @@ func (h *WeaponHandler) HandlerGetAll() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		weapons, err := h.service.GetAll()
 		if err != nil {
-			log.Default().Println(err)
 			ctx.AbortWithError(500, err)
 			return
 		}
@@ -72,7 +71,7 @@ func (h *WeaponHandler) HandlerGetByCampaignId() gin.HandlerFunc{
 			ctx.AbortWithError(400, err)
 			return
 		}
-		weapons, err := h.  service.GetByCampaignId(int64(id))
+		weapons, err := h.  service.GetByCampaignId(id)
 		if err == weapon.ErrNotFound {
 			ctx.AbortWithError(404, err)
             return
@@ -93,7 +92,7 @@ func (h *WeaponHandler) HandlerGetById() gin.HandlerFunc{
 			ctx.AbortWithError(400, err)
 			return
 		}
-		weapon, err := h.  service.GetById(int64(id))
+		weapon, err := h.  service.GetById(id)
 		if err != nil{
 			fmt.Println(err)
 			ctx.AbortWithError(500, err)
@@ -103,6 +102,16 @@ func (h *WeaponHandler) HandlerGetById() gin.HandlerFunc{
 	}
 }
 
+func (h *WeaponHandler) HandlerGetAllGeneric() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		weapons, err := h.service.GetAllGeneric()
+		if err != nil {
+			ctx.AbortWithError(500, err)
+			return
+		}
+		ctx.JSON(200, weapons)
+	}
+}
 
 func (h *WeaponHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -118,13 +127,13 @@ func (h *WeaponHandler) HandlerUpdate() gin.HandlerFunc {
 			return
 		}
 
-		tempWeapon.Weapon_Id = int64(id)
+		tempWeapon.Weapon_Id = id
 
 		updatedWeapon, err := h.service.Update(tempWeapon)
 		if err!= nil {
             ctx.AbortWithError(500, err)
             return
         }
-		ctx.JSON(201, updatedWeapon)
+		ctx.JSON(200, updatedWeapon)
 	}
 }
