@@ -21,7 +21,6 @@ import (
 	"github.com/proyecto-dnd/backend/internal/skill"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
-	"github.com/proyecto-dnd/backend/pkg/middleware"
 )
 
 type Router interface {
@@ -72,8 +71,8 @@ func (r *router) buildUserRoutes() {
 		// TODO Add Middlewares if needed
 		userGroup.POST("/register", userFirebaseHandler.HandlerCreate())
 		userGroup.POST("/login", userFirebaseHandler.HandlerLogin())
-		userGroup.GET("", middleware.VerifySessionCookie(), userFirebaseHandler.HandlerGetAll())
-		userGroup.GET("/:id", middleware.VerifySessionCookie(), userFirebaseHandler.HandlerGetById())
+		userGroup.GET("", userFirebaseHandler.HandlerGetAll())
+		userGroup.GET("/:id", userFirebaseHandler.HandlerGetById())
 		userGroup.PUT("/:id", userFirebaseHandler.HandlerUpdate())
 		userGroup.PATCH("/:id", userFirebaseHandler.HandlerPatch())
 		userGroup.DELETE("/:id", userFirebaseHandler.HandlerDelete())
