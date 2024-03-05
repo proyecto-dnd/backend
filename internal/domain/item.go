@@ -1,10 +1,10 @@
 package domain
 
 type Item struct{
-	Item_Id int64 `json:"iditem"`
+	Item_Id int `json:"item_id"`
 	Name string `json:"name"`
-    Weight int64 `json:"weight"`
-	Price int64 `json:"price"`
+    Weight int `json:"weight"`
+	Price int `json:"price"`
 	Description string `json:"description"`
-	Campaign_Id int64 `json:"campaign"`
+	Campaign_Id *int `json:"campaign_id"`
 }

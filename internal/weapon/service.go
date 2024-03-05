@@ -1,86 +1,75 @@
 package weapon
 
-import (
-	"fmt"
-	"github.com/proyecto-dnd/backend/internal/domain"
-	"github.com/proyecto-dnd/backend/internal/dto"
-)
+import "github.com/proyecto-dnd/backend/internal/domain"
 
 type service struct {
-	weaponRepo WeaponRepository
+	repo RepositoryWeapon
 }
 
-func NewWeaponService(weaponRepo WeaponRepository) WeaponService {
-	return &service{weaponRepo: weaponRepo}
+func NewWeaponService(repo RepositoryWeapon) ServiceWeapon {
+    return &service{repo: repo}
 }
 
-func (s *service) CreateWeapon(weaponDto dto.CreateWeaponDto) (domain.Weapon, error) {
-	weaponDomain := domain.Weapon{
-		WeaponType:      weaponDto.WeaponType,
-		Name:            weaponDto.Name,
-		Weight:          weaponDto.Weight,
-		Price:           weaponDto.Price,
-		Category:        weaponDto.Category,
-		Reach:           weaponDto.Reach,
-		Description:     weaponDto.Description,
-		Damage:          weaponDto.Damage,
-		VersatileDamage: weaponDto.VersatileDamage,
-		Ammunition:      weaponDto.Ammunition,
-		DamageType:      weaponDto.DamageType,
-		Basic:           weaponDto.Basic,
-	}
-
-	createdWeapon, err := s.weaponRepo.Create(weaponDomain)
+// GetAllGeneric implements ServiceWeapon.
+func (s *service) GetAllGeneric() ([]domain.Weapon, error) {
+	weapons, err := s.repo.GetAllGeneric()
 	if err != nil {
-		return domain.Weapon{}, err
+		return []domain.Weapon{}, err
 	}
-
-	return createdWeapon, nil
-}
-
-func (s *service) GetAllWeapons() ([]domain.Weapon, error) {
-	weapons, err := s.weaponRepo.GetAllWeapons()
-	if err != nil {
-		return nil, err
-	}
-
 	return weapons, nil
 }
 
-func (s *service) GetWeaponById(id int) (domain.Weapon, error) {
-	weapon, err := s.weaponRepo.GetWeaponById(id)
+
+// Create implements ServiceWeapon.
+func (s *service) Create(weapon domain.Weapon) (domain.Weapon, error) {
+	newWeapon, err := s.repo.Create(weapon)
 	if err != nil {
 		return domain.Weapon{}, err
 	}
+	return newWeapon, nil
+}
 
+// Delete implements ServiceWeapon.
+func (s *service) Delete(id int) error {
+	err := s.repo.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetAll implements ServiceWeapon.
+func (s *service) GetAll() ([]domain.Weapon, error) {
+	weapons, err := s.repo.GetAll()
+	if err != nil {
+		return []domain.Weapon{}, err
+	}
+	return weapons, nil
+}
+
+// GetByCampaignId implements ServiceWeapon.
+func (s *service) GetByCampaignId(campaignId int) ([]domain.Weapon, error) {
+	weapons, err := s.repo.GetByCampaignId(campaignId)
+	if err != nil {
+		return []domain.Weapon{}, err
+	}
+	return weapons, nil
+}
+
+// GetById implements ServiceWeapon.
+func (s *service) GetById(id int) (domain.Weapon, error) {
+	weapon, err := s.repo.GetById(id)
+	if err != nil {
+		return domain.Weapon{}, err
+	}
 	return weapon, nil
 }
 
-func (s *service) UpdateWeapon(weaponDto dto.CreateWeaponDto, id int) (domain.Weapon, error) {
-	weaponDomain := domain.Weapon{
-		WeaponType:      weaponDto.WeaponType,
-		Name:            weaponDto.Name,
-		Weight:          weaponDto.Weight,
-		Price:           weaponDto.Price,
-		Category:        weaponDto.Category,
-		Reach:           weaponDto.Reach,
-		Description:     weaponDto.Description,
-		Damage:          weaponDto.Damage,
-		VersatileDamage: weaponDto.VersatileDamage,
-		Ammunition:      weaponDto.Ammunition,
-		DamageType:      weaponDto.DamageType,
-		Basic:           weaponDto.Basic,
-	}
-
-	updatedWeapon, err := s.weaponRepo.UpdateWeapon(weaponDomain, id)
+// Update implements ServiceWeapon.
+func (s *service) Update(weapon domain.Weapon) (domain.Weapon, error) {
+	weapon, err := s.repo.Update(weapon)
 	if err != nil {
-		fmt.Println(err)
 		return domain.Weapon{}, err
 	}
-
-	return updatedWeapon, nil
-}
-
-func (s *service) DeleteWeapon(id int) error {
-	return s.weaponRepo.DeleteWeapon(id)
+	return weapon, nil
 }

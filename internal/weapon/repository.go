@@ -3,33 +3,70 @@ package weapon
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
 var (
 	ErrPrepareStatement    = errors.New("error preparing statement")
 	ErrGettingLastInsertId = errors.New("error getting last insert id")
+	ErrNotFound            = errors.New("weapon not found")
 )
 
 type weaponMySqlRepository struct {
 	db *sql.DB
 }
 
-func NewWeaponRepository(db *sql.DB) WeaponRepository {
-	return &weaponMySqlRepository{db: db}
+func NewWeaponRepository(db *sql.DB) RepositoryWeapon {
+	return &weaponMySqlRepository{db}
 }
 
+// GetAllGeneric implements RepositoryWeapon.
+func (r *weaponMySqlRepository) GetAllGeneric() ([]domain.Weapon, error) {
+	rows, err := r.db.Query(QueryGetGeneric)
+	if err != nil {
+		return []domain.Weapon{}, err
+	}
+	defer rows.Close()
+	var weapons []domain.Weapon
+	for rows.Next() {
+		var weapon domain.Weapon
+		err := rows.Scan(
+			&weapon.Weapon_Id,
+			&weapon.Weapon_Type,
+			&weapon.Name,
+			&weapon.Weight,
+			&weapon.Price,
+			&weapon.Category,
+			&weapon.Reach,
+			&weapon.Description,
+			&weapon.Damage,
+			&weapon.Versatile_Damage,
+			&weapon.Ammunition,
+			&weapon.Damage_Type,
+			&weapon.Campaign_Id,
+		)
+		if err != nil {
+
+			return []domain.Weapon{}, err
+		}
+		weapons = append(weapons, weapon)
+	}
+	if err := rows.Err(); err != nil {
+		return []domain.Weapon{}, err
+	}
+	return weapons, nil
+}
+
+// Create implements RepositoryWeapon.
 func (r *weaponMySqlRepository) Create(weapon domain.Weapon) (domain.Weapon, error) {
 	statement, err := r.db.Prepare(QueryCreateWeapon)
 	if err != nil {
-		fmt.Println(err)
 		return domain.Weapon{}, ErrPrepareStatement
 	}
-
 	defer statement.Close()
+
 	result, err := statement.Exec(
-		weapon.WeaponType,
+		weapon.Weapon_Type,
 		weapon.Name,
 		weapon.Weight,
 		weapon.Price,
@@ -37,10 +74,10 @@ func (r *weaponMySqlRepository) Create(weapon domain.Weapon) (domain.Weapon, err
 		weapon.Reach,
 		weapon.Description,
 		weapon.Damage,
-		weapon.VersatileDamage,
+		weapon.Versatile_Damage,
 		weapon.Ammunition,
-		weapon.DamageType,
-		weapon.Basic,
+		weapon.Damage_Type,
+		weapon.Campaign_Id,
 	)
 	if err != nil {
 		return domain.Weapon{}, err
@@ -50,24 +87,42 @@ func (r *weaponMySqlRepository) Create(weapon domain.Weapon) (domain.Weapon, err
 	if err != nil {
 		return domain.Weapon{}, ErrGettingLastInsertId
 	}
-	weapon.WeaponID = int(lastId)
+
+	weapon.Weapon_Id = int(lastId)
 
 	return weapon, nil
 }
 
-func (r *weaponMySqlRepository) GetAllWeapons() ([]domain.Weapon, error) {
-	rows, err := r.db.Query(QueryGetAllWeapons)
+// Delete implements RepositoryWeapon.
+func (r *weaponMySqlRepository) Delete(id int) error {
+	result, err := r.db.Exec(QueryDelete, id)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected < 1 {
+		return ErrNotFound
+	}
+	return nil
+}
+
+// GetAll implements RepositoryWeapon.
+func (r *weaponMySqlRepository) GetAll() ([]domain.Weapon, error) {
+	rows, err := r.db.Query(QueryGetAll)
+	if err != nil {
+		return []domain.Weapon{}, err
 	}
 	defer rows.Close()
-
 	var weapons []domain.Weapon
+
 	for rows.Next() {
 		var weapon domain.Weapon
-		if err := rows.Scan(
-			&weapon.WeaponID,
-			&weapon.WeaponType,
+		err := rows.Scan(
+			&weapon.Weapon_Id,
+			&weapon.Weapon_Type,
 			&weapon.Name,
 			&weapon.Weight,
 			&weapon.Price,
@@ -75,23 +130,71 @@ func (r *weaponMySqlRepository) GetAllWeapons() ([]domain.Weapon, error) {
 			&weapon.Reach,
 			&weapon.Description,
 			&weapon.Damage,
-			&weapon.VersatileDamage,
+			&weapon.Versatile_Damage,
 			&weapon.Ammunition,
-			&weapon.DamageType,
-			&weapon.Basic,
-		); err != nil {
-			return nil, err
+			&weapon.Damage_Type,
+			&weapon.Campaign_Id,
+		)
+		if err != nil {
+			return []domain.Weapon{}, err
 		}
 		weapons = append(weapons, weapon)
+	}
+	if err := rows.Err(); err != nil {
+		return []domain.Weapon{}, err
 	}
 	return weapons, nil
 }
 
-func (r *weaponMySqlRepository) GetWeaponById(id int) (domain.Weapon, error) {
+// GetByCampaignId implements RepositoryWeapon.
+func (r *weaponMySqlRepository) GetByCampaignId(campaignId int) ([]domain.Weapon, error) {
+	rows, err := r.db.Query(QueryGetByCampaignId, campaignId)
+	if err != nil {
+		return []domain.Weapon{}, err
+	}
+	defer rows.Close()
+	var weapons []domain.Weapon
+
+	for rows.Next() {
+		var weapon domain.Weapon
+		err := rows.Scan(
+			&weapon.Weapon_Id,
+			&weapon.Weapon_Type,
+			&weapon.Name,
+			&weapon.Weight,
+			&weapon.Price,
+			&weapon.Category,
+			&weapon.Reach,
+			&weapon.Description,
+			&weapon.Damage,
+			&weapon.Versatile_Damage,
+			&weapon.Ammunition,
+			&weapon.Damage_Type,
+			&weapon.Campaign_Id,
+		)
+		if err != nil {
+			return []domain.Weapon{}, err
+		}
+		weapons = append(weapons, weapon)
+	}
+	if err := rows.Err(); err != nil {
+		return []domain.Weapon{}, err
+	}
+
+	if len(weapons) < 1 {
+		return []domain.Weapon{}, ErrNotFound
+	}
+	return weapons, nil
+}
+
+// GetById implements RepositoryWeapon.
+func (r *weaponMySqlRepository) GetById(id int) (domain.Weapon, error) {
+	row := r.db.QueryRow(QueryGetById, id)
+ 
 	var weapon domain.Weapon
-	err := r.db.QueryRow(QueryGetWeaponById, id).Scan(
-		&weapon.WeaponID,
-		&weapon.WeaponType,
+	err := row.Scan(
+		&weapon.Weapon_Id,
+		&weapon.Weapon_Type,
 		&weapon.Name,
 		&weapon.Weight,
 		&weapon.Price,
@@ -99,29 +202,28 @@ func (r *weaponMySqlRepository) GetWeaponById(id int) (domain.Weapon, error) {
 		&weapon.Reach,
 		&weapon.Description,
 		&weapon.Damage,
-		&weapon.VersatileDamage,
+		&weapon.Versatile_Damage,
 		&weapon.Ammunition,
-		&weapon.DamageType,
-		&weapon.Basic,
+		&weapon.Damage_Type,
+		&weapon.Campaign_Id,
 	)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return domain.Weapon{}, errors.New("weapon not found")
-		}
-		return domain.Weapon{}, err
+		return domain.Weapon{}, ErrNotFound
 	}
+
 	return weapon, nil
 }
 
-func (r *weaponMySqlRepository) UpdateWeapon(weapon domain.Weapon, id int) (domain.Weapon, error) {
-	statement, err := r.db.Prepare(QueryUpdateWeapon)
+// Update implements RepositoryWeapon.
+func (r *weaponMySqlRepository) Update(weapon domain.Weapon) (domain.Weapon, error) {
+	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {
 		return domain.Weapon{}, ErrPrepareStatement
 	}
 	defer statement.Close()
 
 	_, err = statement.Exec(
-		weapon.WeaponType,
+		weapon.Weapon_Type,
 		weapon.Name,
 		weapon.Weight,
 		weapon.Price,
@@ -129,27 +231,17 @@ func (r *weaponMySqlRepository) UpdateWeapon(weapon domain.Weapon, id int) (doma
 		weapon.Reach,
 		weapon.Description,
 		weapon.Damage,
-		weapon.VersatileDamage,
+		weapon.Versatile_Damage,
 		weapon.Ammunition,
-		weapon.DamageType,
-		weapon.Basic,
-		id,
+		weapon.Damage_Type,
+		weapon.Campaign_Id,
+		weapon.Weapon_Id,
 	)
+
 	if err != nil {
 		return domain.Weapon{}, err
 	}
 
-	weapon.WeaponID = id
 	return weapon, nil
 }
 
-func (r *weaponMySqlRepository) DeleteWeapon(id int) error {
-	statement, err := r.db.Prepare(QueryDeleteWeapon)
-	if err != nil {
-		return ErrPrepareStatement
-	}
-	defer statement.Close()
-
-	_, err = statement.Exec(id)
-	return err
-}

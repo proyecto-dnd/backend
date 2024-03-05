@@ -1,8 +1,8 @@
 package domain
 
 type ItemXCharacterData struct {
-	ItemXCharacterData_Id int64 `json:"itemxcharacterdataid"`
+	Character_Item_Id int `json:"character_item_id"`
+	CharacterData_Id int `json:"character_data_id"`
 	Item Item `json:"item"`
-	CharacterData_Id int64 `json:"characterdataid"`
 	Quantity int `json:"quantity"`
 }
