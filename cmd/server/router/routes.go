@@ -7,15 +7,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
 	"github.com/proyecto-dnd/backend/internal/campaign"
+	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/character_feature"
+	"github.com/proyecto-dnd/backend/internal/class"
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/event_type"
 	"github.com/proyecto-dnd/backend/internal/feature"
-	"github.com/proyecto-dnd/backend/internal/class"
 	"github.com/proyecto-dnd/backend/internal/friendship"
+	itemxcharacterdata "github.com/proyecto-dnd/backend/internal/itemXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/proficiency"
 	"github.com/proyecto-dnd/backend/internal/proficiencyXclass.go"
 	"github.com/proyecto-dnd/backend/internal/session"
+	"github.com/proyecto-dnd/backend/internal/skill"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
 	"github.com/proyecto-dnd/backend/pkg/middleware"
@@ -79,7 +82,13 @@ func (r *router) buildUserRoutes() {
 
 func (r *router) buildEventRoutes() {
 	eventRepository := event.NewEventRepository(r.db)
-	eventService := event.NewEventService(eventRepository)
+	itemCharacterRepository := itemxcharacterdata.NewItemXtableCharacterSqlRepository(r.db)
+	itemCharacterService := itemxcharacterdata.NewServiceItemXTableCharacter(itemCharacterRepository)
+	skillrepository := skill.NewSkillRepository(r.db)
+	skillService := skill.NewServiceSkill(skillrepository)
+	characterRepository := characterdata.NewCharacterDataRepository(r.db)
+	characterService := characterdata.NewServiceCharacterData(characterRepository, itemCharacterService, skillService)
+	eventService := event.NewEventService(eventRepository, characterService)
 	eventHandler := handler.NewEventHandler(&eventService)
 
 	eventGroup := r.routerGroup.Group("/event")
@@ -129,7 +138,6 @@ func (r *router) buildSessionRoutes() {
 	}
 }
 
-
 func (r *router) buildClassRoutes() {
 	classRepository := class.NewClassRepository(r.db)
 	classService := class.NewClassService(classRepository)
@@ -172,7 +180,7 @@ func (r *router) buildProficiencyXClassRoutes() {
 	}
 }
 
-func(r *router) buildUserCampaignRoutes() {
+func (r *router) buildUserCampaignRoutes() {
 
 	userCampaignRepository := user_campaign.NewUserCampaignRepository(r.db)
 	userCampaignService := user_campaign.NewUserCampaignService(userCampaignRepository)
@@ -217,7 +225,6 @@ func (r *router) buildFeatureRoutes() {
 		featureGroup.DELETE("/:id", featureHandler.HandlerDelete())
 	}
 }
-
 
 func (r *router) buildEventTypeRoutes() {
 	eventTypeRepository := event_type.NewEventTypeRepository(r.db)
