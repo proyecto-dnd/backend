@@ -11,6 +11,10 @@ import (
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/event_type"
 	"github.com/proyecto-dnd/backend/internal/feature"
+	"github.com/proyecto-dnd/backend/internal/class"
+	"github.com/proyecto-dnd/backend/internal/friendship"
+	"github.com/proyecto-dnd/backend/internal/proficiency"
+	"github.com/proyecto-dnd/backend/internal/proficiencyXclass.go"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
@@ -42,8 +46,12 @@ func (r *router) MapRoutes() {
 	r.buildEventRoutes()
 	r.buildCampaignRoutes()
 	r.buildSessionRoutes()
+	r.buildClassRoutes()
+	r.buildProficiencyRoutes()
+	r.buildProficiencyXClassRoutes()
 	r.buildUserCampaignRoutes()
 	r.buildFeatureRoutes()
+
 	// TODO Add other builders here	and write their functions
 }
 
@@ -121,7 +129,51 @@ func (r *router) buildSessionRoutes() {
 	}
 }
 
+
+func (r *router) buildClassRoutes() {
+	classRepository := class.NewClassRepository(r.db)
+	classService := class.NewClassService(classRepository)
+	classHandler := handler.NewClassHandler(&classService)
+
+	classGroup := r.routerGroup.Group("/class")
+	{
+		classGroup.POST("", classHandler.HandlerCreate())
+		classGroup.GET("", classHandler.HandlerGetAll())
+		classGroup.GET("/:id", classHandler.HandlerGetById())
+		classGroup.PUT("/:id", classHandler.HandlerUpdate())
+		classGroup.DELETE("/:id", classHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildProficiencyRoutes() {
+	proficiencyRepository := proficiency.NewProficiencyRepository(r.db)
+	proficiencyService := proficiency.NewProficiencyService(proficiencyRepository)
+	proficiencyHandler := handler.NewProficiencyHandler(&proficiencyService)
+
+	proficiencyGroup := r.routerGroup.Group("/proficiency")
+	{
+		proficiencyGroup.POST("", proficiencyHandler.HandlerCreate())
+		proficiencyGroup.GET("", proficiencyHandler.HandlerGetAll())
+		proficiencyGroup.GET("/:id", proficiencyHandler.HandlerGetById())
+		proficiencyGroup.PUT("/:id", proficiencyHandler.HandlerUpdate())
+		proficiencyGroup.DELETE("/:id", proficiencyHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildProficiencyXClassRoutes() {
+	proficiencyXClassRepository := proficiencyXclass.NewProficiencyXClassRepository(r.db)
+	proficiencyXClassService := proficiencyXclass.NewProficiencyXClassService(proficiencyXClassRepository)
+	proficiencyXClassHandler := handler.NewProficiencyXClassHandler(proficiencyXClassService)
+
+	proficiencyXClassGroup := r.routerGroup.Group("/proficiencyxclass")
+	{
+		proficiencyXClassGroup.POST("", proficiencyXClassHandler.HandlerCreate())
+		proficiencyXClassGroup.DELETE("", proficiencyXClassHandler.HandlerDelete())
+	}
+}
+
 func(r *router) buildUserCampaignRoutes() {
+
 	userCampaignRepository := user_campaign.NewUserCampaignRepository(r.db)
 	userCampaignService := user_campaign.NewUserCampaignService(userCampaignRepository)
 	userCampaignHandler := handler.NewUserCampaignHandler(&userCampaignService)
@@ -134,6 +186,19 @@ func(r *router) buildUserCampaignRoutes() {
 		userCampaignGroup.GET("/campaign/:id", userCampaignHandler.HandlerGetByCampaignId())
 		userCampaignGroup.GET("/user/:id", userCampaignHandler.HandlerGetByUserId())
 		userCampaignGroup.DELETE("/:id", userCampaignHandler.HandlerDelete())
+
+	}
+}
+
+func (r *router) buildFriendshipRoutes() {
+	friendshipRepository := friendship.NewFriendshipRepository(r.db)
+	friendshipService := friendship.NewFriendshipService(friendshipRepository)
+	friendshipHandler := handler.NewFriendshipHandler(friendshipService)
+
+	friendshipGroup := r.routerGroup.Group("/friendship")
+	{
+		friendshipGroup.POST("", friendshipHandler.CreateHandler())
+		friendshipGroup.DELETE("", friendshipHandler.DeleteHandler())
 	}
 }
 
