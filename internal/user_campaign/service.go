@@ -38,7 +38,7 @@ func (s *service) GetAllUserCampaigns() ([]domain.UserCampaign, error) {
 	return userCampaigns, nil
 }
 
-func (s *service) GetUserCampaignByID(id int) (domain.UserCampaign, error) {
+func (s *service) GetUserCampaignById(id int) (domain.UserCampaign, error) {
 	userCampaign, err := s.userCampaignRepository.GetById(id)
 	if err != nil {
 		return domain.UserCampaign{}, err
@@ -47,7 +47,7 @@ func (s *service) GetUserCampaignByID(id int) (domain.UserCampaign, error) {
 	return userCampaign, nil
 }
 
-func (s *service) GetUserCampaignByCampaignID(id int) ([]domain.UserCampaign, error) {
+func (s *service) GetUserCampaignByCampaignId(id int) ([]domain.UserCampaign, error) {
 	userCampaigns, err := s.userCampaignRepository.GetByCampaignId(id)
 	if err != nil {
 		return nil, err

@@ -7,12 +7,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
 	"github.com/proyecto-dnd/backend/internal/campaign"
+	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
+	"github.com/proyecto-dnd/backend/internal/character_feature"
+	"github.com/proyecto-dnd/backend/internal/class"
 	"github.com/proyecto-dnd/backend/internal/event"
+	"github.com/proyecto-dnd/backend/internal/event_type"
+	"github.com/proyecto-dnd/backend/internal/feature"
+	"github.com/proyecto-dnd/backend/internal/friendship"
+	itemxcharacterdata "github.com/proyecto-dnd/backend/internal/itemXCharacterData"
+	"github.com/proyecto-dnd/backend/internal/proficiency"
+	"github.com/proyecto-dnd/backend/internal/proficiencyXclass.go"
 	"github.com/proyecto-dnd/backend/internal/item"
 	itemxcharacterdata "github.com/proyecto-dnd/backend/internal/itemXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/session"
+	"github.com/proyecto-dnd/backend/internal/skill"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
+	"github.com/proyecto-dnd/backend/pkg/middleware"
 	"github.com/proyecto-dnd/backend/internal/weapon"
 	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
 	"github.com/proyecto-dnd/backend/pkg/middleware"
@@ -43,7 +54,12 @@ func (r *router) MapRoutes() {
 	r.buildEventRoutes()
 	r.buildCampaignRoutes()
 	r.buildSessionRoutes()
+	r.buildClassRoutes()
+	r.buildProficiencyRoutes()
+	r.buildProficiencyXClassRoutes()
 	r.buildUserCampaignRoutes()
+	r.buildFeatureRoutes()
+
 	r.buildItemRoutes()
 	r.buildItemXCharacterDataRoutes()
 	r.buildWeaponRoutes()
@@ -75,7 +91,13 @@ func (r *router) buildUserRoutes() {
 
 func (r *router) buildEventRoutes() {
 	eventRepository := event.NewEventRepository(r.db)
-	eventService := event.NewEventService(eventRepository)
+	itemCharacterRepository := itemxcharacterdata.NewItemXtableCharacterSqlRepository(r.db)
+	itemCharacterService := itemxcharacterdata.NewServiceItemXTableCharacter(itemCharacterRepository)
+	skillrepository := skill.NewSkillRepository(r.db)
+	skillService := skill.NewServiceSkill(skillrepository)
+	characterRepository := characterdata.NewCharacterDataRepository(r.db)
+	characterService := characterdata.NewServiceCharacterData(characterRepository, itemCharacterService, skillService)
+	eventService := event.NewEventService(eventRepository, characterService)
 	eventHandler := handler.NewEventHandler(&eventService)
 
 	eventGroup := r.routerGroup.Group("/event")
@@ -83,17 +105,19 @@ func (r *router) buildEventRoutes() {
 		eventGroup.POST("", eventHandler.HandlerCreate())
 		eventGroup.GET("", eventHandler.HandlerGetAll())
 		eventGroup.GET("/:id", eventHandler.HandlerGetById())
+		eventGroup.GET("/type/:id", eventHandler.HandlerGetByTypeId())
 		eventGroup.GET("/session/:id", eventHandler.HandlerGetBySessionId())
-		eventGroup.GET("/character/:id", eventHandler.HandlerGetByCharacterId())
+		eventGroup.GET("/protagonist/:id", eventHandler.HandlerGetByProtagonistId())
 		eventGroup.PUT("/:id", eventHandler.HandlerUpdate())
 		eventGroup.DELETE("/:id", eventHandler.HandlerDelete())
 	}
 }
 
 func (r *router) buildCampaignRoutes() {
-	campaignRepository := campaign.NewCampaignRepository(r.db)
 	sessionRepository := session.NewSessionRepository(r.db)
-	campaignService := campaign.NewCampaignService(campaignRepository, sessionRepository)
+	sessionService := session.NewSessionService(sessionRepository)
+	campaignRepository := campaign.NewCampaignRepository(r.db)
+	campaignService := campaign.NewCampaignService(campaignRepository, sessionService)
 	campaignHandler := handler.NewCampaignHandler(&campaignService)
 
 	campaignGroup := r.routerGroup.Group("/campaign")
@@ -123,7 +147,50 @@ func (r *router) buildSessionRoutes() {
 	}
 }
 
-func(r *router) buildUserCampaignRoutes() {
+func (r *router) buildClassRoutes() {
+	classRepository := class.NewClassRepository(r.db)
+	classService := class.NewClassService(classRepository)
+	classHandler := handler.NewClassHandler(&classService)
+
+	classGroup := r.routerGroup.Group("/class")
+	{
+		classGroup.POST("", classHandler.HandlerCreate())
+		classGroup.GET("", classHandler.HandlerGetAll())
+		classGroup.GET("/:id", classHandler.HandlerGetById())
+		classGroup.PUT("/:id", classHandler.HandlerUpdate())
+		classGroup.DELETE("/:id", classHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildProficiencyRoutes() {
+	proficiencyRepository := proficiency.NewProficiencyRepository(r.db)
+	proficiencyService := proficiency.NewProficiencyService(proficiencyRepository)
+	proficiencyHandler := handler.NewProficiencyHandler(&proficiencyService)
+
+	proficiencyGroup := r.routerGroup.Group("/proficiency")
+	{
+		proficiencyGroup.POST("", proficiencyHandler.HandlerCreate())
+		proficiencyGroup.GET("", proficiencyHandler.HandlerGetAll())
+		proficiencyGroup.GET("/:id", proficiencyHandler.HandlerGetById())
+		proficiencyGroup.PUT("/:id", proficiencyHandler.HandlerUpdate())
+		proficiencyGroup.DELETE("/:id", proficiencyHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildProficiencyXClassRoutes() {
+	proficiencyXClassRepository := proficiencyXclass.NewProficiencyXClassRepository(r.db)
+	proficiencyXClassService := proficiencyXclass.NewProficiencyXClassService(proficiencyXClassRepository)
+	proficiencyXClassHandler := handler.NewProficiencyXClassHandler(proficiencyXClassService)
+
+	proficiencyXClassGroup := r.routerGroup.Group("/proficiencyxclass")
+	{
+		proficiencyXClassGroup.POST("", proficiencyXClassHandler.HandlerCreate())
+		proficiencyXClassGroup.DELETE("", proficiencyXClassHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildUserCampaignRoutes() {
+
 	userCampaignRepository := user_campaign.NewUserCampaignRepository(r.db)
 	userCampaignService := user_campaign.NewUserCampaignService(userCampaignRepository)
 	userCampaignHandler := handler.NewUserCampaignHandler(&userCampaignService)
@@ -136,6 +203,66 @@ func(r *router) buildUserCampaignRoutes() {
 		userCampaignGroup.GET("/campaign/:id", userCampaignHandler.HandlerGetByCampaignId())
 		userCampaignGroup.GET("/user/:id", userCampaignHandler.HandlerGetByUserId())
 		userCampaignGroup.DELETE("/:id", userCampaignHandler.HandlerDelete())
+
+	}
+}
+
+func (r *router) buildFriendshipRoutes() {
+	friendshipRepository := friendship.NewFriendshipRepository(r.db)
+	friendshipService := friendship.NewFriendshipService(friendshipRepository)
+	friendshipHandler := handler.NewFriendshipHandler(friendshipService)
+
+	friendshipGroup := r.routerGroup.Group("/friendship")
+	{
+		friendshipGroup.POST("", friendshipHandler.CreateHandler())
+		friendshipGroup.DELETE("", friendshipHandler.DeleteHandler())
+	}
+}
+
+func (r *router) buildFeatureRoutes() {
+	featureRepository := feature.NewFeatureRepository(r.db)
+	featureService := feature.NewFeatureService(featureRepository)
+	featureHandler := handler.NewFeatureHandler(&featureService)
+
+	featureGroup := r.routerGroup.Group("/feature")
+	{
+		featureGroup.POST("", featureHandler.HandlerCreate())
+		featureGroup.GET("", featureHandler.HandlerGetAll())
+		featureGroup.GET("/character/:id", featureHandler.HandlerGetAllFeaturesByCharacterId())
+		featureGroup.GET("/:id", featureHandler.HandlerGetById())
+		featureGroup.PUT("/:id", featureHandler.HandlerUpdate())
+		featureGroup.DELETE("/:id", featureHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildEventTypeRoutes() {
+	eventTypeRepository := event_type.NewEventTypeRepository(r.db)
+	eventTypeService := event_type.NewEventTypeService(eventTypeRepository)
+	eventTypeHandler := handler.NewEventTypeHandler(&eventTypeService)
+
+	eventTypeGroup := r.routerGroup.Group("/event_type")
+	{
+		eventTypeGroup.POST("", eventTypeHandler.HandlerCreate())
+		eventTypeGroup.GET("", eventTypeHandler.HandlerGetAll())
+		eventTypeGroup.GET("/:id", eventTypeHandler.HandlerGetById())
+		eventTypeGroup.GET("/:name", eventTypeHandler.HandlerGetByName())
+		eventTypeGroup.PUT("/:id", eventTypeHandler.HandlerUpdate())
+		eventTypeGroup.DELETE("/:id", eventTypeHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildCharacterFeatureRoutes() {
+	characterFeatureRepository := character_feature.NewCharacterFeatureRepository(r.db)
+	characterFeatureService := character_feature.NewCharacterFeatureService(characterFeatureRepository)
+	characterFeatureHandler := handler.NewCharacterFeatureHandler(&characterFeatureService)
+
+	characterFeatureGroup := r.routerGroup.Group("/character_feature")
+	{
+		characterFeatureGroup.POST("", characterFeatureHandler.HandlerCreate())
+		characterFeatureGroup.GET("", characterFeatureHandler.HandlerGetAll())
+		characterFeatureGroup.GET("/feature/:id", characterFeatureHandler.HandlerGetByFeatureId())
+		characterFeatureGroup.GET("/character/:id", characterFeatureHandler.HandlerGetByCharacterId())
+		characterFeatureGroup.DELETE("/:id", characterFeatureHandler.HandlerDelete())
 	}
 }
 
