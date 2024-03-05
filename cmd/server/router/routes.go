@@ -14,19 +14,18 @@ import (
 	"github.com/proyecto-dnd/backend/internal/event_type"
 	"github.com/proyecto-dnd/backend/internal/feature"
 	"github.com/proyecto-dnd/backend/internal/friendship"
-	itemxcharacterdata "github.com/proyecto-dnd/backend/internal/itemXCharacterData"
+	"github.com/proyecto-dnd/backend/internal/itemXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/proficiency"
 	"github.com/proyecto-dnd/backend/internal/proficiencyXclass.go"
 	"github.com/proyecto-dnd/backend/internal/item"
-	itemxcharacterdata "github.com/proyecto-dnd/backend/internal/itemXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/skill"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
 	"github.com/proyecto-dnd/backend/pkg/middleware"
 	"github.com/proyecto-dnd/backend/internal/weapon"
-	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
-	"github.com/proyecto-dnd/backend/pkg/middleware"
+	"github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
+
 )
 
 type Router interface {
@@ -91,8 +90,10 @@ func (r *router) buildUserRoutes() {
 
 func (r *router) buildEventRoutes() {
 	eventRepository := event.NewEventRepository(r.db)
-	itemCharacterRepository := itemxcharacterdata.NewItemXtableCharacterSqlRepository(r.db)
-	itemCharacterService := itemxcharacterdata.NewServiceItemXTableCharacter(itemCharacterRepository)
+	itemRepository := item.NewItemRepository(r.db)
+	itemService := item.NewItemService(itemRepository)
+	itemCharacterRepository := itemxcharacterdata.NewItemXCharacterDataSqlRepository(r.db)
+	itemCharacterService := itemxcharacterdata.NewItemXCharacterDataService(itemCharacterRepository, itemService)
 	skillrepository := skill.NewSkillRepository(r.db)
 	skillService := skill.NewServiceSkill(skillrepository)
 	characterRepository := characterdata.NewCharacterDataRepository(r.db)
