@@ -1,10 +1,7 @@
 package handler
 
 import (
-	"fmt"
-	"log"
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/weapon"
@@ -28,7 +25,6 @@ func (h *WeaponHandler) HandlerCreate() gin.HandlerFunc {
 
 		createdWeapon, err := h.service.Create(tempWeapon)
 		if err!= nil {
-			log.Default().Println(err)
             ctx.AbortWithError(500, err)
             return
         }
@@ -94,7 +90,6 @@ func (h *WeaponHandler) HandlerGetById() gin.HandlerFunc{
 		}
 		weapon, err := h.  service.GetById(id)
 		if err != nil{
-			fmt.Println(err)
 			ctx.AbortWithError(500, err)
 			return
 		}

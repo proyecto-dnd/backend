@@ -3,8 +3,6 @@ package weapon
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -81,7 +79,6 @@ func (r *weaponMySqlRepository) Create(weapon domain.Weapon) (domain.Weapon, err
 		weapon.Damage_Type,
 		weapon.Campaign_Id,
 	)
-	fmt.Println(weapon)
 	if err != nil {
 		return domain.Weapon{}, err
 	}
