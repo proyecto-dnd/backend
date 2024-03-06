@@ -46,7 +46,7 @@ func (h *EventHandler) HandlerCreate() gin.HandlerFunc {
 // @Summary Get all events
 // @Tags event
 // @Produce json
-// @Success 200 {array} domain.Event
+// @Success 200 {array} dto.ResponseEventDto
 // @Failure 500 {object} error
 // @Router /event [get]
 func (h *EventHandler) HandlerGetAll() gin.HandlerFunc {
@@ -65,7 +65,7 @@ func (h *EventHandler) HandlerGetAll() gin.HandlerFunc {
 // @Tags event
 // @Produce json
 // @Param id path int true "id"
-// @Success 200 {object} domain.Event
+// @Success 200 {object} dto.ResponseEventDto
 // @Failure 500 {object} error
 // @Router /event/{id} [get]
 func (h *EventHandler) HandlerGetById() gin.HandlerFunc {
@@ -87,6 +87,14 @@ func (h *EventHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+// event godoc
+// @Summary Get event by id
+// @Tags event
+// @Produce json
+// @Param id path int true "type_id"
+// @Success 200 {array} dto.ResponseEventDto
+// @Failure 500 {object} error
+// @Router /event/type/{id} [get]
 func (h *EventHandler) HandlerGetByTypeId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -111,7 +119,7 @@ func (h *EventHandler) HandlerGetByTypeId() gin.HandlerFunc {
 // @Tags event
 // @Produce json
 // @Param id path int true "session_id"
-// @Success 200 {array} domain.Event
+// @Success 200 {array} dto.ResponseEventDto
 // @Failure 500 {object} error
 // @Router /event/session/{id} [get]
 func (h *EventHandler) HandlerGetBySessionId() gin.HandlerFunc {
@@ -135,13 +143,13 @@ func (h *EventHandler) HandlerGetBySessionId() gin.HandlerFunc {
 
 
 // event godoc
-// @Summary Get event by character id
+// @Summary Get event by protagonist id
 // @Tags event
 // @Produce json
-// @Param id path int true "character_id"
-// @Success 200 {array} domain.Event
+// @Param id path int true "protagonist_id"
+// @Success 200 {array} dto.ResponseEventDto
 // @Failure 500 {object} error
-// @Router /event/character/{id} [get]
+// @Router /event/protagonist/{id} [get]
 func (h *EventHandler) HandlerGetByProtagonistId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")

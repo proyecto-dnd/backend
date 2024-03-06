@@ -22,12 +22,10 @@ import (
 	"github.com/proyecto-dnd/backend/internal/skill"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
-	swaggerFiles "github.com/swaggo/files"
-  ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/proyecto-dnd/backend/pkg/middleware"
 	"github.com/proyecto-dnd/backend/internal/weapon"
 	"github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
-
+	swaggerFiles "github.com/swaggo/files"
+  ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Router interface {
@@ -113,11 +111,11 @@ func (r *router) buildEventRoutes() {
 		eventGroup.POST("", eventHandler.HandlerCreate())
 		eventGroup.GET("", eventHandler.HandlerGetAll())
 		eventGroup.GET("/:id", eventHandler.HandlerGetById())
-		// eventGroup.GET("/type/:id", eventHandler.HandlerGetByTypeId())
-		// eventGroup.GET("/session/:id", eventHandler.HandlerGetBySessionId())
-		// eventGroup.GET("/protagonist/:id", eventHandler.HandlerGetByProtagonistId())
-		// eventGroup.PUT("/:id", eventHandler.HandlerUpdate())
-		// eventGroup.DELETE("/:id", eventHandler.HandlerDelete())
+		eventGroup.GET("/type/:id", eventHandler.HandlerGetByTypeId())
+		eventGroup.GET("/session/:id", eventHandler.HandlerGetBySessionId())
+		eventGroup.GET("/protagonist/:id", eventHandler.HandlerGetByProtagonistId())
+		eventGroup.PUT("/:id", eventHandler.HandlerUpdate())
+		eventGroup.DELETE("/:id", eventHandler.HandlerDelete())
 	}
 }
 

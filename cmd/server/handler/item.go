@@ -15,6 +15,16 @@ func NewItemHandler(service *item.ServiceItem) *ItemHandler {
     return &ItemHandler{service: *service}
 }
 
+// item godoc
+// @Summary Create item
+// @Tags item
+// @Accept json
+// @Produce json
+// @Param body body domain.Item true "Item"
+// @Success 201 {object} domain.Item
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /item [post]
 func (h *ItemHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempItem domain.Item
@@ -31,6 +41,15 @@ func (h *ItemHandler) HandlerCreate() gin.HandlerFunc {
     }
 }
 
+// item godoc
+// @Summary Delete item
+// @Tags item
+// @Produce json
+// @Param id path int true "id"
+// @Success 204 {object} nil
+// @Failure 400 {object} error
+// @Failure 404 {object} error
+// @Router /item/{id} [delete]
 func (h *ItemHandler) HandlerDelete() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
         id, err := strconv.Atoi(ctx.Param("id"))
@@ -47,6 +66,13 @@ func (h *ItemHandler) HandlerDelete() gin.HandlerFunc{
     }
 }
 
+// item godoc
+// @Summary Get all items
+// @Tags item
+// @Produce json
+// @Success 200 {array} domain.Item
+// @Failure 500 {object} error
+// @Router /item [get]
 func (h *ItemHandler) HandlerGetAll() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		items, err := h.service.GetAll()
@@ -58,6 +84,14 @@ func (h *ItemHandler) HandlerGetAll() gin.HandlerFunc{
 	}
 }
 
+// item godoc
+// @Summary Get items by campaign id
+// @Tags item
+// @Produce json
+// @Param id path int true "campaign_id"
+// @Success 200 {array} domain.Item
+// @Failure 500 {object} error
+// @Router /item/campaign/{id} [get]
 func (h *ItemHandler) HandlerGetByCampaignId() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
         id := ctx.Param("id")
@@ -76,6 +110,15 @@ func (h *ItemHandler) HandlerGetByCampaignId() gin.HandlerFunc{
     }
 }
 
+// item godoc
+// @Summary Get item by id
+// @Tags item
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} domain.Item
+// @Failure 404 {object} error
+// @Failure 500 {object} error
+// @Router /item/{id} [get]
 func (h *ItemHandler) HandlerGetById() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
         id := ctx.Param("id")
@@ -94,6 +137,13 @@ func (h *ItemHandler) HandlerGetById() gin.HandlerFunc{
     }
 }
 
+// item godoc
+// @Summary Get all generic items
+// @Tags item
+// @Produce json
+// @Success 200 {array} domain.Item
+// @Failure 500 {object} error
+// @Router /item/generic [get]
 func (h *ItemHandler) HandlerGetAllGeneric() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		items, err := h.service.GetAllGeneric()
@@ -105,6 +155,17 @@ func (h *ItemHandler) HandlerGetAllGeneric() gin.HandlerFunc{
 	}
 }
 
+// item godoc
+// @Summary Update item
+// @Tags item
+// @Accept json
+// @Produce json
+// @Param body body domain.Item true "Item"
+// @Param id path int true "id"
+// @Success 200 {object} domain.Item
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /item/{id} [put]
 func (h *ItemHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempItem domain.Item

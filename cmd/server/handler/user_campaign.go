@@ -145,7 +145,7 @@ func (h *UserCampaignHandler) HandlerGetByUserId() gin.HandlerFunc {
 // @Tags user_campaign
 // @Produce json
 // @Param id path int true "id"
-// @Success 200 {array} string
+// @Success 200 {object} string
 // @Failure 500 {object} error
 // @Router /user_campaign/{id} [delete]
 func (h *UserCampaignHandler) HandlerDelete() gin.HandlerFunc {

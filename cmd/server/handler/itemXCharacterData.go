@@ -17,6 +17,16 @@ func NewItemXCharacterDataHandler(service *itemxcharacterdata.ServiceItemXCharac
     return &ItemXCharacterDataHandler{service: *service}
 }
 
+// itemXCharacterData godoc
+// @Summary Create itemXCharacterData
+// @Tags itemXCharacterData
+// @Accept json
+// @Produce json
+// @Param body body domain.ItemXCharacterData true "ItemXCharacterData"
+// @Success 201 {object} domain.ItemXCharacterData
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /item_character [post]
 func (h *ItemXCharacterDataHandler) HandlerCreate() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		var tempItemXCharacterData domain.ItemXCharacterData
@@ -34,6 +44,15 @@ func (h *ItemXCharacterDataHandler) HandlerCreate() gin.HandlerFunc{
 	}
 }
 
+// itemXCharacterData godoc
+// @Summary Delete itemXCharacterData
+// @Tags itemXCharacterData
+// @Produce json
+// @Param id path int true "id"
+// @Success 204 {object} nil
+// @Failure 400 {object} error
+// @Failure 404 {object} error
+// @Router /item_character/{id} [delete]
 func (h *ItemXCharacterDataHandler) HandlerDelete() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -50,6 +69,15 @@ func (h *ItemXCharacterDataHandler) HandlerDelete() gin.HandlerFunc{
 	}
 }
 
+// itemXCharacterData godoc
+// @Summary Delete itemXCharacterData by character id
+// @Tags itemXCharacterData
+// @Produce json
+// @Param id path int true "character_id"
+// @Success 204 {object} nil
+// @Failure 400 {object} error
+// @Failure 404 {object} error
+// @Router /item_character/character/{id} [delete]
 func (h *ItemXCharacterDataHandler) HandlerDeleteByCharacterId() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -66,6 +94,13 @@ func (h *ItemXCharacterDataHandler) HandlerDeleteByCharacterId() gin.HandlerFunc
 	}
 }
 
+// itemXCharacterData godoc
+// @Summary Get all itemXCharacterData
+// @Tags itemXCharacterData
+// @Produce json
+// @Success 200 {array} domain.ItemXCharacterData
+// @Failure 500 {object} error
+// @Router /item_character [get]
 func (h *ItemXCharacterDataHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		itemXCharacterDataList, err := h.service.GetAll()
@@ -78,6 +113,15 @@ func (h *ItemXCharacterDataHandler) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
+// itemXCharacterData godoc
+// @Summary Get itemXCharacterData by character id
+// @Tags itemXCharacterData
+// @Produce json
+// @Param id path int true "character_id"
+// @Success 200 {array} domain.ItemXCharacterData
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /item_character/character/{id} [get]
 func (h *ItemXCharacterDataHandler) HandlerGetByCharacterDataId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -95,7 +139,15 @@ func (h *ItemXCharacterDataHandler) HandlerGetByCharacterDataId() gin.HandlerFun
 	}
 }
 
-
+// itemXCharacterData godoc
+// @Summary Get itemXCharacterData by id
+// @Tags itemXCharacterData
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} domain.ItemXCharacterData
+// @Failure 400 {object} error
+// @Failure 404 {object} error
+// @Router /item_character/{id} [get]
 func (h *ItemXCharacterDataHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -112,6 +164,17 @@ func (h *ItemXCharacterDataHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+// itemXCharacterData godoc
+// @Summary Update itemXCharacterData
+// @Tags itemXCharacterData
+// @Accept json
+// @Produce json
+// @Param body body domain.ItemXCharacterData true "ItemXCharacterData"
+// @Param id path int true "id"
+// @Success 200 {object} domain.ItemXCharacterData
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /item_character/{id} [put]
 func (h *ItemXCharacterDataHandler) HandlerUpdate() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		var tempItemXCharacterData domain.ItemXCharacterData
