@@ -209,6 +209,5 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 		// log.Println(cookie)
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, "Setted Cookie")
-		return
 	}
 }

@@ -1,111 +1,134 @@
 package handler
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/proyecto-dnd/backend/internal/dto"
-	"github.com/proyecto-dnd/backend/internal/weapon"
 	"strconv"
+	"github.com/gin-gonic/gin"
+	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/internal/weapon"
 )
 
 type WeaponHandler struct {
-	service weapon.WeaponService
+	service weapon.ServiceWeapon
 }
 
-func NewWeaponHandler(service *weapon.WeaponService) *WeaponHandler {
-	return &WeaponHandler{service: *service}
+func NewWeaponHandler(service *weapon.ServiceWeapon) WeaponHandler{
+	return WeaponHandler{service: *service}
 }
 
 func (h *WeaponHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var tempWeapon dto.CreateWeaponDto
+		var tempWeapon domain.Weapon
 		if err := ctx.BindJSON(&tempWeapon); err != nil {
-			ctx.JSON(500, err)
-			return
+			ctx.AbortWithError(400, err)
+            return
 		}
 
-		createdWeapon, err := h.service.CreateWeapon(tempWeapon)
-		if err != nil {
-			ctx.JSON(500, err)
-			return
-		}
-
+		createdWeapon, err := h.service.Create(tempWeapon)
+		if err!= nil {
+            ctx.AbortWithError(500, err)
+            return
+        }
 		ctx.JSON(201, createdWeapon)
 	}
 }
 
-func (h *WeaponHandler) HandlerGetAll() gin.HandlerFunc {
+func (h *WeaponHandler) HandlerDelete() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
-		weaponList, err := h.service.GetAllWeapons()
+		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+			ctx.AbortWithError(400, err)
 			return
 		}
-		ctx.JSON(200, weaponList)
+		err = h.service.Delete(id)
+		if err != nil {
+			ctx.AbortWithError(404, err)
+			return
+		}
+		ctx.JSON(204, nil)
 	}
 }
 
-func (h *WeaponHandler) HandlerGetById() gin.HandlerFunc {
+func (h *WeaponHandler) HandlerGetAll() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
-
-		intId, err := strconv.Atoi(id)
+		weapons, err := h.service.GetAll()
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.AbortWithError(500, err)
 			return
 		}
+		ctx.JSON(200, weapons)
+	}
+}
 
-		tempWeapon, err := h.service.GetWeaponById(intId)
+func (h *WeaponHandler) HandlerGetByCampaignId() gin.HandlerFunc{
+	return func(ctx *gin.Context) {
+		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.JSON(500, err)
+			// We should change unsuccessful responses to abortwith status or abort with status json
+			ctx.AbortWithError(400, err)
 			return
 		}
-		ctx.JSON(200, tempWeapon)
+		weapons, err := h.  service.GetByCampaignId(id)
+		if err == weapon.ErrNotFound {
+			ctx.AbortWithError(404, err)
+            return
+		}
+		if err != nil{
+			ctx.AbortWithError(500, err)
+			return
+		}
+		ctx.JSON(200, weapons)
+	}
+}
+
+func (h *WeaponHandler) HandlerGetById() gin.HandlerFunc{
+	return func(ctx *gin.Context) {
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			// We should change unsuccessful responses to abortwith status or abort with status json
+			ctx.AbortWithError(400, err)
+			return
+		}
+		weapon, err := h.  service.GetById(id)
+		if err != nil{
+			ctx.AbortWithError(500, err)
+			return
+		}
+		ctx.JSON(200, weapon)
+	}
+}
+
+func (h *WeaponHandler) HandlerGetAllGeneric() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		weapons, err := h.service.GetAllGeneric()
+		if err != nil {
+			ctx.AbortWithError(500, err)
+			return
+		}
+		ctx.JSON(200, weapons)
 	}
 }
 
 func (h *WeaponHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		intId, err := strconv.Atoi(id)
-		if err != nil {
-			ctx.JSON(500, err)
-			return
-		}
-
-		var tempWeapon dto.CreateWeaponDto
+		var tempWeapon domain.Weapon
 		if err := ctx.BindJSON(&tempWeapon); err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+			ctx.AbortWithError(400, err)
+            return
+		}
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			// We should change unsuccessful responses to abortwith status or abort with status json
+			ctx.AbortWithError(400, err)
 			return
 		}
 
-		updatedWeapon, err := h.service.UpdateWeapon(tempWeapon, intId)
-		if err != nil {
-			ctx.JSON(500, err)
-			return
-		}
+		tempWeapon.Weapon_Id = id
+
+		updatedWeapon, err := h.service.Update(tempWeapon)
+		if err!= nil {
+            ctx.AbortWithError(500, err)
+            return
+        }
 		ctx.JSON(200, updatedWeapon)
-	}
-}
-
-func (h *WeaponHandler) HandlerDelete() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
-
-		intId, err := strconv.Atoi(id)
-		if err != nil {
-			ctx.JSON(500, err)
-			return
-		}
-
-		serviceErr := h.service.DeleteWeapon(intId)
-		if serviceErr != nil {
-			ctx.JSON(500, serviceErr)
-			return
-		}
-
-		ctx.JSON(200, "Deleted Weapon with id "+id)
 	}
 }

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/item"
@@ -39,7 +38,7 @@ func (h *ItemHandler) HandlerDelete() gin.HandlerFunc{
             ctx.JSON(400, err)
             return
         }
-        err = h.service.Delete(int64(id))
+        err = h.service.Delete(id)
         if err!= nil {
             ctx.JSON(404, err)
             return
@@ -68,11 +67,66 @@ func (h *ItemHandler) HandlerGetByCampaignId() gin.HandlerFunc{
             ctx.JSON(500, err)
             return
         }
-        items, err := h.service.GetByCampaignId(int64(intId))
+        items, err := h.service.GetByCampaignId(intId)
         if err!= nil {
             ctx.JSON(500, err)
             return
         }
         ctx.JSON(200, items)
+    }
+}
+
+func (h *ItemHandler) HandlerGetById() gin.HandlerFunc{
+	return func(ctx *gin.Context) {
+        id := ctx.Param("id")
+
+        intId, err := strconv.Atoi(id)
+        if err!= nil {
+            ctx.JSON(500, err)
+            return
+        }
+        items, err := h.service.GetById(intId)
+        if err!= nil {
+            ctx.JSON(404, err)
+            return
+        }
+        ctx.JSON(200, items)
+    }
+}
+
+func (h *ItemHandler) HandlerGetAllGeneric() gin.HandlerFunc{
+	return func(ctx *gin.Context) {
+		items, err := h.service.GetAllGeneric()
+        if err!= nil {
+            ctx.JSON(500, err)
+            return
+        }
+        ctx.JSON(200, items)
+	}
+}
+
+func (h *ItemHandler) HandlerUpdate() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var tempItem domain.Item
+        if err := ctx.BindJSON(&tempItem); err!= nil {
+            ctx.JSON(400, err)
+            return
+        }
+
+        id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			// We should change unsuccessful responses to abortwith status or abort with status json
+			ctx.AbortWithError(400, err)
+			return
+		}
+
+        tempItem.Item_Id = id
+
+		updatedItem, err := h.service.Update(tempItem)
+		if err!= nil {
+            ctx.JSON(500, err)
+            return
+        }
+		ctx.JSON(200, updatedItem)
     }
 }
