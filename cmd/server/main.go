@@ -58,6 +58,7 @@ func main() {
 	router := router.NewRouter(engine, db, firebaseApp)
 	router.MapRoutes()
 
+	//PARA DOCKERIZAR CAMBIAR localhost por 0.0.0.0
 	if err := engine.Run("localhost:8080"); err != nil {
 		panic(err)
 	}
