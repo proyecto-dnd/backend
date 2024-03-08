@@ -14,6 +14,15 @@ func NewFriendshipHandler(service friendship.FriendshipService) *FriendshipHandl
 	return &FriendshipHandler{service: service}
 }
 
+// friendship godoc
+// @Summary Create friendship
+// @Tags friendship
+// @Accept json
+// @Produce json
+// @Param body body domain.Friendship true "Friendship"
+// @Success 201 {object} domain.Friendship
+// @Failure 500 {object} error
+// @Router /friendship [post]
 func (h *FriendshipHandler) CreateHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempFriendship domain.Friendship
@@ -31,6 +40,15 @@ func (h *FriendshipHandler) CreateHandler() gin.HandlerFunc {
 	}
 }
 
+// friendship godoc
+// @Summary Delete friendship
+// @Tags friendship
+// @Accept json
+// @Produce json
+// @Param body body domain.Friendship true "Friendship"
+// @Success 200 {object} string
+// @Failure 500 {object} error
+// @Router /friendship [delete]
 func (h *FriendshipHandler) DeleteHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempFriendship domain.Friendship

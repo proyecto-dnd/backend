@@ -15,6 +15,16 @@ func NewWeaponHandler(service *weapon.ServiceWeapon) WeaponHandler{
 	return WeaponHandler{service: *service}
 }
 
+// weapon godoc
+// @Summary Create weapon
+// @Tags weapon
+// @Accept json
+// @Produce json
+// @Param body body domain.Weapon true "Weapon"
+// @Success 201 {object} domain.Weapon
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /weapon [post]
 func (h *WeaponHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempWeapon domain.Weapon
@@ -32,6 +42,15 @@ func (h *WeaponHandler) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// weapon godoc
+// @Summary Delete weapon
+// @Tags weapon
+// @Produce json
+// @Param id path int true "id"
+// @Success 204 {object} nil
+// @Failure 400 {object} error
+// @Failure 404 {object} error
+// @Router /weapon/{id} [delete]
 func (h *WeaponHandler) HandlerDelete() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -48,6 +67,13 @@ func (h *WeaponHandler) HandlerDelete() gin.HandlerFunc{
 	}
 }
 
+// weapon godoc
+// @Summary Get all weapons
+// @Tags weapon
+// @Produce json
+// @Success 200 {array} domain.Weapon
+// @Failure 500 {object} error
+// @Router /weapon [get]
 func (h *WeaponHandler) HandlerGetAll() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		weapons, err := h.service.GetAll()
@@ -59,6 +85,16 @@ func (h *WeaponHandler) HandlerGetAll() gin.HandlerFunc{
 	}
 }
 
+// weapon godoc
+// @Summary Get weapons by campaign id
+// @Tags weapon
+// @Produce json
+// @Param id path int true "campaign_id"
+// @Success 200 {array} domain.Weapon
+// @Failure 400 {object} error
+// @Failure 404 {object} error
+// @Failure 500 {object} error
+// @Router /weapon/campaign/{id} [get]
 func (h *WeaponHandler) HandlerGetByCampaignId() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -80,6 +116,15 @@ func (h *WeaponHandler) HandlerGetByCampaignId() gin.HandlerFunc{
 	}
 }
 
+// weapon godoc
+// @Summary Get weapon by id
+// @Tags weapon
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} domain.Weapon
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /weapon/{id} [get]
 func (h *WeaponHandler) HandlerGetById() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -97,6 +142,13 @@ func (h *WeaponHandler) HandlerGetById() gin.HandlerFunc{
 	}
 }
 
+// weapon godoc
+// @Summary Get all generic weapons
+// @Tags weapon
+// @Produce json
+// @Success 200 {array} domain.Weapon
+// @Failure 500 {object} error
+// @Router /weapon/generic [get]
 func (h *WeaponHandler) HandlerGetAllGeneric() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		weapons, err := h.service.GetAllGeneric()
@@ -108,6 +160,17 @@ func (h *WeaponHandler) HandlerGetAllGeneric() gin.HandlerFunc {
 	}
 }
 
+// weapon godoc
+// @Summary Update weapon
+// @Tags weapon
+// @Accept json
+// @Produce json
+// @Param body body domain.Weapon true "Weapon"
+// @Param id path int true "id"
+// @Success 200 {object} domain.Weapon
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /weapon/{id} [put]
 func (h *WeaponHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempWeapon domain.Weapon

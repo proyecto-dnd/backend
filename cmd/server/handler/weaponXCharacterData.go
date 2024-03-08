@@ -17,6 +17,16 @@ func NewWeaponXCharacterDataHandler(service *weaponxcharacterdata.ServiceWeaponX
     return &WeaponXCharacterDataHandler{service: *service}
 }
 
+// weaponXCharacterData godoc
+// @Summary Create weaponXCharacterData
+// @Tags weaponXCharacterData
+// @Accept json
+// @Produce json
+// @Param body body domain.WeaponXCharacterData true "WeaponXCharacterData"
+// @Success 201 {object} domain.WeaponXCharacterData
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /weapon_character [post]
 func (h * WeaponXCharacterDataHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempWeaponXCharacterData domain.WeaponXCharacterData
@@ -34,6 +44,15 @@ func (h * WeaponXCharacterDataHandler) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// weaponXCharacterData godoc
+// @Summary Delete weaponXCharacterData
+// @Tags weaponXCharacterData
+// @Produce json
+// @Param id path int true "id"
+// @Success 204 {object} nil
+// @Failure 400 {object} error
+// @Failure 404 {object} error
+// @Router /weapon_character/{id} [delete]
 func (h *WeaponXCharacterDataHandler) HandlerDelete() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -49,6 +68,15 @@ func (h *WeaponXCharacterDataHandler) HandlerDelete() gin.HandlerFunc{
 	}
 }
 
+// weaponXCharacterData godoc
+// @Summary Delete weaponXCharacterData by character id
+// @Tags weaponXCharacterData
+// @Produce json
+// @Param id path int true "character_id"
+// @Success 204 {object} nil
+// @Failure 400 {object} error
+// @Failure 404 {object} error
+// @Router /weapon_character/character/{id} [delete]
 func (h *WeaponXCharacterDataHandler) HandlerDeleteByCharacterDataId() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -64,6 +92,13 @@ func (h *WeaponXCharacterDataHandler) HandlerDeleteByCharacterDataId() gin.Handl
 	}
 }
 
+// weaponXCharacterData godoc
+// @Summary Get all weaponXCharacterData
+// @Tags weaponXCharacterData
+// @Produce json
+// @Success 200 {array} domain.WeaponXCharacterData
+// @Failure 500 {object} error
+// @Router /weapon_character [get]
 func (h *WeaponXCharacterDataHandler) HandlerGetAll() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		weaponXCharacterDataList, err := h.service.GetAll()
@@ -74,6 +109,15 @@ func (h *WeaponXCharacterDataHandler) HandlerGetAll() gin.HandlerFunc{
 	}
 }
 
+// weaponXCharacterData godoc
+// @Summary Get weaponXCharacterData by character id
+// @Tags weaponXCharacterData
+// @Produce json
+// @Param id path int true "character_id"
+// @Success 200 {array} domain.WeaponXCharacterData
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /weapon_character/character/{id} [get]
 func (h *WeaponXCharacterDataHandler) HandlerGetByCharacterDataId() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -90,6 +134,15 @@ func (h *WeaponXCharacterDataHandler) HandlerGetByCharacterDataId() gin.HandlerF
 	}
 }
 
+// weaponXCharacterData godoc
+// @Summary Get weaponXCharacterData by id
+// @Tags weaponXCharacterData
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} domain.WeaponXCharacterData
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /weapon_character/{id} [get]
 func (h *WeaponXCharacterDataHandler) HandlerGetById() gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -106,6 +159,17 @@ func (h *WeaponXCharacterDataHandler) HandlerGetById() gin.HandlerFunc{
 	}
 }
 
+// weaponXCharacterData godoc
+// @Summary Update weaponXCharacterData
+// @Tags weaponXCharacterData
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param body body domain.WeaponXCharacterData true "WeaponXCharacterData"
+// @Success 200 {object} domain.WeaponXCharacterData
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /weapon_character/{id} [put]
 func (h * WeaponXCharacterDataHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempWeaponXCharacterData domain.WeaponXCharacterData

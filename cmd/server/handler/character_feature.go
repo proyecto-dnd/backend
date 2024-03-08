@@ -15,6 +15,15 @@ func NewCharacterFeatureHandler(service *character_feature.CharacterFeatureServi
 	return &CharacterFeature{service: *service}
 }
 
+// characterFeature godoc
+// @Summary Create characterFeature
+// @Tags characterFeature
+// @Accept json
+// @Produce json
+// @Param body body dto.CreateCharacterFeatureDto true "CreateCharacterFeatureDto"
+// @Success 201 {object} domain.CharacterFeature
+// @Failure 500 {object} error
+// @Router /character_feature [post]
 func (h *CharacterFeature) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempCharacterFeature dto.CreateCharacterFeatureDto
@@ -33,6 +42,13 @@ func (h *CharacterFeature) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// characterFeature godoc
+// @Summary Get all characterFeatures
+// @Tags characterFeature
+// @Produce json
+// @Success 200 {array} domain.CharacterFeature
+// @Failure 500 {object} error
+// @Router /character_feature [get]
 func (h *CharacterFeature) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		characterFeatures, err := h.service.GetAllCharacterFeatures()
@@ -44,6 +60,14 @@ func (h *CharacterFeature) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
+// characterFeature godoc
+// @Summary Get characterFeature by feature id
+// @Tags characterFeature
+// @Produce json
+// @Param id path int true "feature_id"
+// @Success 200 {array} domain.CharacterFeature
+// @Failure 500 {object} error
+// @Router /character_feature/feature/{id} [get]
 func (h *CharacterFeature) HandlerGetByFeatureId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -64,6 +88,14 @@ func (h *CharacterFeature) HandlerGetByFeatureId() gin.HandlerFunc {
 	}
 }
 
+// characterFeature godoc
+// @Summary Get characterFeature by character id
+// @Tags characterFeature
+// @Produce json
+// @Param id path int true "character_id"
+// @Success 200 {array} domain.CharacterFeature
+// @Failure 500 {object} error
+// @Router /character_feature/character/{id} [get]
 func (h *CharacterFeature) HandlerGetByCharacterId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -84,6 +116,14 @@ func (h *CharacterFeature) HandlerGetByCharacterId() gin.HandlerFunc {
 	}
 }
 
+// characterFeature godoc
+// @Summary Delete characterFeature
+// @Tags characterFeature
+// @Produce json
+// @Param body body dto.CreateCharacterFeatureDto true "CreateCharacterFeatureDto"
+// @Success 204
+// @Failure 500 {object} error
+// @Router /character_feature [delete]
 func (h *CharacterFeature) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		idFeature, err := strconv.Atoi(ctx.Param("idFeature"))
