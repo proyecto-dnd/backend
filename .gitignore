@@ -22,4 +22,4 @@ go.work
 
 .env
 cmd/.env
-cmd/serviceAccountKey.json
+serviceAccountKey.json
