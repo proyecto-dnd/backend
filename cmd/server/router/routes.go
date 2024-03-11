@@ -6,9 +6,11 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
+	backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
 	"github.com/proyecto-dnd/backend/internal/event"
+	raceXproficiency "github.com/proyecto-dnd/backend/internal/raceXProficiency"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/spell"
 	"github.com/proyecto-dnd/backend/internal/user"
@@ -44,6 +46,8 @@ func (r *router) MapRoutes() {
 	r.buildUserCampaignRoutes()
 	r.buildSpellRoutes()
 	r.buildClassXSpellRoutes()
+	r.buildRaceXProficiencyRoutes()
+	r.buildBackgroundXProficiencyRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -159,5 +163,29 @@ func (r *router) buildClassXSpellRoutes() {
 	{
 		classXSpellGroup.POST("", classXSpellHandler.HandlerCreate())
 		classXSpellGroup.DELETE("", classXSpellHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildRaceXProficiencyRoutes() {
+	raceXProficiencyRepository := raceXproficiency.NewRaceXProficiencyRepository(r.db)
+	raceXProficiencyService := raceXproficiency.NewRaceXProficiencyService(raceXProficiencyRepository)
+	raceXProficiencyHandler := handler.NewRaceXProficiencyHandler(raceXProficiencyService)
+
+	cassXProficiencyGroup := r.routerGroup.Group("/raceXproficiency")
+	{
+		cassXProficiencyGroup.POST("", raceXProficiencyHandler.HandlerCreate())
+		cassXProficiencyGroup.DELETE("", raceXProficiencyHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildBackgroundXProficiencyRoutes() {
+	backgroundXProficiencyRepository := backgroundXproficiency.NewBackgroundXProficiencyRepository(r.db)
+	backgroundXProficiencyService := backgroundXproficiency.NewBackgroundXProficiencyService(backgroundXProficiencyRepository)
+	backgroundXProficiencyHandler := handler.NewBackgroundXProficiencyHandler(backgroundXProficiencyService)
+
+	backgroundXProficiencyGroup := r.routerGroup.Group("/backgroundXproficiency")
+	{
+		backgroundXProficiencyGroup.POST("", backgroundXProficiencyHandler.HandlerCreate())
+		backgroundXProficiencyGroup.DELETE("", backgroundXProficiencyHandler.HandlerDelete())
 	}
 }
