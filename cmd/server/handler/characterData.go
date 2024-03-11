@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/proyecto-dnd/backend/internal/characterData"
+	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -72,7 +72,7 @@ func (h *CharacterHandler) HandlerGetByCampaignIdAndUserId() gin.HandlerFunc {
 			return
 		}
 
-		if errCampaign != nil{
+		if errCampaign != nil {
 			characters, err := h.service.GetByUserId(userid)
 			if err != nil {
 				ctx.JSON(500, err)
@@ -82,7 +82,7 @@ func (h *CharacterHandler) HandlerGetByCampaignIdAndUserId() gin.HandlerFunc {
 			return
 		}
 
-		if userid == ""{
+		if userid == "" {
 			characters, err := h.service.GetByCampaignId(campaignid)
 			if err != nil {
 				ctx.JSON(500, err)
@@ -104,10 +104,10 @@ func (h *CharacterHandler) HandlerGetByCampaignIdAndUserId() gin.HandlerFunc {
 func (h *CharacterHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
-		if err!= nil {
-            ctx.JSON(400, err)
-            return
-        }
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
 		characters, err := h.service.GetById(id)
 		if err != nil {
 			ctx.JSON(404, err)
@@ -129,7 +129,9 @@ func (h *CharacterHandler) HandlerUpdate() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
-		tempCharacterData.Character_Id = int64(id)
+
+		tempCharacterData.Character_Id = id
+
 		createdCharacterData, err := h.service.Update(tempCharacterData)
 		if err != nil {
 			ctx.JSON(500, err)

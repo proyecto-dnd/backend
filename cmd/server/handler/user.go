@@ -17,6 +17,15 @@ func NewUserHandler(service *user.ServiceUsers) *UserHandler {
 	return &UserHandler{service: *service}
 }
 
+// user godoc
+// @Summary Register user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param body body domain.User true "User"
+// @Success 201 {object} domain.UserResponse
+// @Failure 500 {object} error
+// @Router /user/register [post]
 func (h *UserHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var userTemp domain.User
@@ -38,6 +47,13 @@ func (h *UserHandler) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// user godoc
+// @Summary Get all users
+// @Tags user
+// @Produce json
+// @Success 200 {array} domain.UserResponse
+// @Failure 500 {object} error
+// @Router /user [get]
 func (h *UserHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userList, err := h.service.GetAll()
@@ -52,6 +68,14 @@ func (h *UserHandler) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
+// user godoc
+// @Summary Get user by id
+// @Tags user
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} domain.UserResponse
+// @Failure 500 {object} error
+// @Router /user/{id} [get]
 func (h *UserHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -67,6 +91,16 @@ func (h *UserHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+// user godoc
+// @Summary Update user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param body body domain.User true "User"
+// @Success 200 {object} domain.User
+// @Failure 500 {object} error
+// @Router /user/{id} [put]
 func (h *UserHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -88,6 +122,16 @@ func (h *UserHandler) HandlerUpdate() gin.HandlerFunc {
 	}
 }
 
+// user godoc
+// @Summary Partially update user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param body body domain.User true "User"
+// @Success 200 {object} domain.User
+// @Failure 500 {object} error
+// @Router /user/{id} [patch]
 func (h *UserHandler) HandlerPatch() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -109,6 +153,14 @@ func (h *UserHandler) HandlerPatch() gin.HandlerFunc {
 	}
 }
 
+// user godoc
+// @Summary Delete user
+// @Tags user
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} string
+// @Failure 500 {object} error
+// @Router /user/{id} [delete]
 func (h *UserHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -125,6 +177,15 @@ func (h *UserHandler) HandlerDelete() gin.HandlerFunc {
 	}
 }
 
+// user godoc
+// @Summary Login user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param body body domain.UserLoginInfo true "UserLoginInfo"
+// @Success 200 {object} string
+// @Failure 500 {object} error
+// @Router /user/login [post]
 func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempUserInfo domain.UserLoginInfo
@@ -148,6 +209,5 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 		// log.Println(cookie)
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, "Setted Cookie")
-		return
 	}
 }

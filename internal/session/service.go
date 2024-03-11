@@ -39,7 +39,7 @@ func (s *service) GetAllSessions() ([]domain.Session, error) {
 	return sessions, nil
 }
 
-func (s *service) GetSessionByID(id int) (domain.Session, error) {
+func (s *service) GetSessionById(id int) (domain.Session, error) {
 	session, err := s.sessionRepo.GetById(id)
 	if err != nil {
 		return domain.Session{}, err
@@ -48,7 +48,7 @@ func (s *service) GetSessionByID(id int) (domain.Session, error) {
 	return session, nil
 }
 
-func (s *service) GetSessionByCampaignID(id int) ([]domain.Session, error) {
+func (s *service) GetSessionsByCampaignId(id int) ([]domain.Session, error) {
 	sessions, err := s.sessionRepo.GetByCampaignId(id)
 	if err != nil {
 		return nil, err

@@ -60,7 +60,7 @@ func (r *CharacterDataMySqlRepository) Create(character domain.CharacterData) (d
 	if err != nil {
 		return domain.CharacterData{}, ErrGettingLastInsertId
 	}
-	character.Character_Id = lastId
+	character.Character_Id = int(lastId)
 	return character, nil
 }
 

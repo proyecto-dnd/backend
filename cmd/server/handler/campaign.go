@@ -16,6 +16,15 @@ func NewCampaignHandler(service *campaign.CampaignService) *CampaignHandler {
 	return &CampaignHandler{service: *service}
 }
 
+// campaign godoc
+// @Summary Create campaign
+// @Tags campaign
+// @Accept json
+// @Produce json
+// @Param body body dto.CreateCampaignDto true "CreateCampaignDto"
+// @Success 201 {object} domain.Campaign
+// @Failure 500 {object} error
+// @Router /campaign [post]
 func (h *CampaignHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempCampaign dto.CreateCampaignDto
@@ -34,6 +43,13 @@ func (h *CampaignHandler) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// campaign godoc
+// @Summary Get all campaigns
+// @Tags campaign
+// @Produce json
+// @Success 200 {array} dto.ResponseCampaignDto
+// @Failure 500 {object} error
+// @Router /campaign [get]
 func (h *CampaignHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		campaignList, err := h.service.GetAllCampaigns()
@@ -46,6 +62,14 @@ func (h *CampaignHandler) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
+// campaign godoc
+// @Summary Get campaign by id
+// @Tags campaign
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} dto.ResponseCampaignDto
+// @Failure 500 {object} error
+// @Router /campaign/{id} [get]
 func (h *CampaignHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -65,6 +89,14 @@ func (h *CampaignHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+// campaign godoc
+// @Summary Get campaigns by user id
+// @Tags campaign
+// @Produce json
+// @Param id path int true "user_id"
+// @Success 200 {array} dto.ResponseCampaignDto
+// @Failure 500 {object} error
+// @Router /campaign/user/{id} [get]
 func (h *CampaignHandler) HandlerGetByUserId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -78,6 +110,16 @@ func (h *CampaignHandler) HandlerGetByUserId() gin.HandlerFunc {
 	}
 }
 
+// campaign godoc
+// @Summary Update campaign
+// @Tags campaign
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param body body dto.CreateCampaignDto true "CreateCampaignDto"
+// @Success 200 {object} dto.ResponseCampaignDto
+// @Failure 500 {object} error
+// @Router /campaign/{id} [put]
 func (h *CampaignHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -103,6 +145,14 @@ func (h *CampaignHandler) HandlerUpdate() gin.HandlerFunc {
 	}
 }
 
+// campaign godoc
+// @Summary Delete campaign
+// @Tags campaign
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} string
+// @Failure 500 {object} error
+// @Router /campaign/{id} [delete]
 func (h *CampaignHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")

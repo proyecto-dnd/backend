@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -16,6 +15,15 @@ func NewEventHandler(service *event.EventService) *EventHandler {
 	return &EventHandler{service: *service}
 }
 
+// event godoc
+// @Summary Create event
+// @Tags event
+// @Accept json
+// @Produce json
+// @Param body body dto.CreateEventDto true "CreateEventDto"
+// @Success 201 {object} domain.Event
+// @Failure 500 {object} error
+// @Router /event [post]
 func (h *EventHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempEvent dto.CreateEventDto
@@ -34,11 +42,17 @@ func (h *EventHandler) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// event godoc
+// @Summary Get all events
+// @Tags event
+// @Produce json
+// @Success 200 {array} dto.ResponseEventDto
+// @Failure 500 {object} error
+// @Router /event [get]
 func (h *EventHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		eventList, err := h.service.GetAllEvents()
 		if err != nil {
-			fmt.Println(err)
 			ctx.JSON(500, err)
 			return
 		}
@@ -46,6 +60,14 @@ func (h *EventHandler) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
+// event godoc
+// @Summary Get event by id
+// @Tags event
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} dto.ResponseEventDto
+// @Failure 500 {object} error
+// @Router /event/{id} [get]
 func (h *EventHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -56,7 +78,7 @@ func (h *EventHandler) HandlerGetById() gin.HandlerFunc {
 			return
 		}
 
-		tempEvent, err := h.service.GetEventByID(intId)
+		tempEvent, err := h.service.GetEventById(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
@@ -65,6 +87,41 @@ func (h *EventHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+// event godoc
+// @Summary Get event by id
+// @Tags event
+// @Produce json
+// @Param id path int true "type_id"
+// @Success 200 {array} dto.ResponseEventDto
+// @Failure 500 {object} error
+// @Router /event/type/{id} [get]
+func (h *EventHandler) HandlerGetByTypeId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+
+		eventList, err := h.service.GetEventsByTypeId(intId)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, eventList)
+	}
+}
+
+// event godoc
+// @Summary Get event by session id
+// @Tags event
+// @Produce json
+// @Param id path int true "session_id"
+// @Success 200 {array} dto.ResponseEventDto
+// @Failure 500 {object} error
+// @Router /event/session/{id} [get]
 func (h *EventHandler) HandlerGetBySessionId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -75,7 +132,7 @@ func (h *EventHandler) HandlerGetBySessionId() gin.HandlerFunc {
 			return
 		}
 
-		eventList, err := h.service.GetEventsBySessionID(intId)
+		eventList, err := h.service.GetEventsBySessionId(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
@@ -84,7 +141,16 @@ func (h *EventHandler) HandlerGetBySessionId() gin.HandlerFunc {
 	}
 }
 
-func (h *EventHandler) HandlerGetByCharacterId() gin.HandlerFunc {
+
+// event godoc
+// @Summary Get event by protagonist id
+// @Tags event
+// @Produce json
+// @Param id path int true "protagonist_id"
+// @Success 200 {array} dto.ResponseEventDto
+// @Failure 500 {object} error
+// @Router /event/protagonist/{id} [get]
+func (h *EventHandler) HandlerGetByProtagonistId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 
@@ -94,7 +160,7 @@ func (h *EventHandler) HandlerGetByCharacterId() gin.HandlerFunc {
 			return
 		}
 
-		eventList, err := h.service.GetEventsByCharacterID(intId)
+		eventList, err := h.service.GetEventsByProtagonistId(intId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
@@ -103,6 +169,16 @@ func (h *EventHandler) HandlerGetByCharacterId() gin.HandlerFunc {
 	}
 }
 
+// event godoc
+// @Summary Update event
+// @Tags event
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param body body dto.CreateEventDto true "CreateEventDto"
+// @Success 200 {object} domain.Event
+// @Failure 500 {object} error
+// @Router /event/{id} [put]
 func (h *EventHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -127,6 +203,33 @@ func (h *EventHandler) HandlerUpdate() gin.HandlerFunc {
 	}
 }
 
+func (h *EventHandler) HandlerGetCharactersAffectedByEventId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+
+		tempEvent, err := h.service.GetCharactersAffectedByEventId(intId)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, tempEvent)
+	}
+}
+
+// event godoc
+// @Summary Delete event
+// @Tags event
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} string
+// @Failure 500 {object} error
+// @Router /event/{id} [delete]
 func (h *EventHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
