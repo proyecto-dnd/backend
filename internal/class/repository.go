@@ -67,10 +67,10 @@ func (r *repositoryMysqlRepository) GetAll() ([]domain.Class, error) {
 	defer rows.Close()
 
 	var classes []domain.Class
-
+	
 	for rows.Next() {
 		var class domain.Class
-		if err := rows.Scan(&class.ClassId, &class.Description, &class.ProficiencyBonus, &class.HitDice, &class.ArmorProficiencies, &class.WeaponProficiencies, &class.ToolProficiencies, &class.SpellcastingAbility); err != nil {
+		if err := rows.Scan(&class.ClassId, &class.Name, &class.Description, &class.ProficiencyBonus, &class.HitDice, &class.ArmorProficiencies, &class.WeaponProficiencies, &class.ToolProficiencies, &class.SpellcastingAbility); err != nil {
 			return nil, err
 		}
 		classes = append(classes, class)

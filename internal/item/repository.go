@@ -16,6 +16,41 @@ type itemMySqlRepository struct {
 	db *sql.DB
 }
 
+func NewItemRepository(db *sql.DB) RepositoryItem {
+	return &itemMySqlRepository{db}
+}
+
+// GetAllGeneric implements RepositoryItem.
+func (r *itemMySqlRepository) GetAllGeneric() ([]domain.Item, error) {
+	rows, err := r.db.Query(QueryGetAllGeneric)
+	if err != nil {
+		return []domain.Item{}, err
+	}
+	defer rows.Close()
+	var items []domain.Item
+
+	for rows.Next() {
+		var item domain.Item
+		err := rows.Scan(
+			&item.Item_Id,
+			&item.Name,
+			&item.Weight,
+			&item.Price,
+			&item.Description,
+			&item.Campaign_Id,
+		)
+		if err != nil {
+			return []domain.Item{}, err
+		}
+		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		return []domain.Item{}, err
+	}
+	return items, nil
+}
+
+
 // Create implements RepositoryItem.
 func (r *itemMySqlRepository) Create(item domain.Item) (domain.Item, error) {
 	statement, err := r.db.Prepare(QueryCreateItem)
@@ -41,13 +76,13 @@ func (r *itemMySqlRepository) Create(item domain.Item) (domain.Item, error) {
 		return domain.Item{}, ErrGettingLastInsertId
 	}
 
-	item.Item_Id = lastId
+	item.Item_Id = int(lastId)
 
 	return item, nil
 }
 
 // Delete implements RepositoryItem.
-func (r *itemMySqlRepository) Delete(id int64) error {
+func (r *itemMySqlRepository) Delete(id int) error {
 	result, err := r.db.Exec(QueryDelete, id)
 	if err != nil {
 		return err
@@ -93,7 +128,7 @@ func (r *itemMySqlRepository) GetAll() ([]domain.Item, error) {
 }
 
 // GetByCampaignId implements RepositoryItem.
-func (r *itemMySqlRepository) GetByCampaignId(campaignId int64) ([]domain.Item, error) {
+func (r *itemMySqlRepository) GetByCampaignId(campaignId int) ([]domain.Item, error) {
 	rows, err := r.db.Query(QueryGetByCampaignId, campaignId)
 	if err != nil {
 		return []domain.Item{}, err
@@ -123,7 +158,7 @@ func (r *itemMySqlRepository) GetByCampaignId(campaignId int64) ([]domain.Item, 
 }
 
 // GetById implements RepositoryItem.
-func (r *itemMySqlRepository) GetById(id int64) (domain.Item, error) {
+func (r *itemMySqlRepository) GetById(id int) (domain.Item, error) {
 	row := r.db.QueryRow(QueryGetById, id)
 
 	var item domain.Item
@@ -144,7 +179,7 @@ func (r *itemMySqlRepository) GetById(id int64) (domain.Item, error) {
 
 // Update implements RepositoryItem.
 func (r *itemMySqlRepository) Update(item domain.Item) (domain.Item, error) {
-	statement, err := r.db.Prepare(QueryCreateItem)
+	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {
 		return domain.Item{}, ErrPrepareStatement
 	}
@@ -164,8 +199,4 @@ func (r *itemMySqlRepository) Update(item domain.Item) (domain.Item, error) {
 	}
 
 	return item, nil
-}
-
-func NewItemRepository(db *sql.DB) RepositoryItem {
-	return &itemMySqlRepository{db}
 }

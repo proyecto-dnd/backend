@@ -24,7 +24,7 @@ type repositoryFirebase struct {
 func NewUserFirebaseRepository(app *firebase.App) RepositoryUsers {
 	authClient, err := app.Auth(ctx)
 	if err != nil {
-		log.Fatalf("Error initializing Firebase Auth client: %v", err)
+		log.Printf("Error initializing Firebase Auth client: %v", err)
 	}
 	return &repositoryFirebase{app: app, authClient: authClient}
 }
@@ -40,7 +40,7 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 
 	newUser, err := r.authClient.CreateUser(ctx, params)
 	if err != nil {
-		log.Fatalf("Error creating user: %v", err)
+		log.Printf("Error creating user: %v", err)
 	}
 
 	var userTemp domain.User
@@ -59,7 +59,7 @@ func (r *repositoryFirebase) GetAll() ([]domain.User, error) {
 		var authUsers []*auth.ExportedUserRecord
 		nextPageToken, err := pager.NextPage(&authUsers)
 		if err != nil {
-			log.Fatalf("paging error %v\n", err)
+			log.Printf("paging error %v\n", err)
 		}
 		for _, u := range authUsers {
 			user.Username = u.DisplayName
@@ -80,7 +80,7 @@ func (r *repositoryFirebase) GetById(id string) (domain.User, error) {
 	u, err := r.authClient.GetUser(ctx, id)
 	if err != nil {
 		//TODO RETURN ERROR
-		log.Fatalf("error getting user %s: %v\n", id, err)
+		log.Printf("error getting user %s: %v\n", id, err)
 	}
 
 	var user domain.User
@@ -98,7 +98,7 @@ func (r *repositoryFirebase) Update(user domain.User, id string) (domain.User, e
 	_, err := r.authClient.UpdateUser(ctx, id, params)
 	if err != nil {
 		//TODO RETURN ERROR
-		log.Fatalf("error updating user: %v\n", err)
+		log.Printf("error updating user: %v\n", err)
 	}
 	// log.Printf("Successfully updated user: %v\n", u)
 
@@ -108,7 +108,7 @@ func (r *repositoryFirebase) Delete(id string) error {
 
 	err := r.authClient.DeleteUser(ctx, id)
 	if err != nil {
-		log.Fatalf("error deleting user: %v\n", err)
+		log.Printf("error deleting user: %v\n", err)
 	}
 
 	log.Printf("Successfully deleted user: %s\n", id)

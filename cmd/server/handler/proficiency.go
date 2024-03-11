@@ -16,6 +16,15 @@ func NewProficiencyHandler(service *proficiency.ProficiencyService) *Proficiency
 	return &ProficiencyHandler{service: *service}
 }
 
+// proficiency godoc
+// @Summary Create proficiency
+// @Tags proficiency
+// @Accept json
+// @Produce json
+// @Param body body dto.ProficiencyDto true "ProficiencyDto"
+// @Success 201 {object} domain.Proficiency
+// @Failure 500 {object} error
+// @Router /proficiency [post]
 func (h *ProficiencyHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempProficiency dto.ProficiencyDto
@@ -31,6 +40,13 @@ func (h *ProficiencyHandler) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// proficiency godoc
+// @Summary Get all proficiencies
+// @Tags proficiency
+// @Produce json
+// @Success 200 {array} domain.Proficiency
+// @Failure 500 {object} error
+// @Router /proficiency [get]
 func (h *ProficiencyHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		proficiencyList, err := h.service.GetAll()
@@ -42,6 +58,14 @@ func (h *ProficiencyHandler) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
+// proficiency godoc
+// @Summary Get proficiency by id
+// @Tags proficiency
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} domain.Proficiency
+// @Failure 500 {object} error
+// @Router /proficiency/{id} [get]
 func (h *ProficiencyHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -60,6 +84,16 @@ func (h *ProficiencyHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+// proficiency godoc
+// @Summary Update proficiency
+// @Tags proficiency
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param body body dto.ProficiencyDto true "ProficiencyDto"
+// @Success 200 {object} domain.Proficiency
+// @Failure 500 {object} error
+// @Router /proficiency/{id} [put]
 func (h *ProficiencyHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -83,6 +117,13 @@ func (h *ProficiencyHandler) HandlerUpdate() gin.HandlerFunc {
 	}
 }
 
+// proficiency godoc
+// @Summary Delete proficiency
+// @Tags proficiency
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} string
+// @Failure 500 {object} error
 func (h *ProficiencyHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")

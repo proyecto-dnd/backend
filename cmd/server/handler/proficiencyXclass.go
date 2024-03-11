@@ -16,6 +16,15 @@ func NewProficiencyXClassHandler(service proficiencyXclass.ProficiencyXClassServ
 	return &ProficiencyXClassHandler{service: service}
 }
 
+// proficiencyXclass godoc
+// @Summary Create proficiencyXclass
+// @Tags proficiencyXclass
+// @Accept json
+// @Produce json
+// @Param body body domain.ProficiencyXClass true "ProficiencyXClass"
+// @Success 201 {object} domain.ProficiencyXClass
+// @Failure 500 {object} error
+// @Router /proficiencyxclass [post]
 func (h *ProficiencyXClassHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempProficiencyXClass domain.ProficiencyXClass
@@ -32,6 +41,15 @@ func (h *ProficiencyXClassHandler) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// proficiencyXclass godoc
+// @Summary Delete proficiencyXclass
+// @Tags proficiencyXclass
+// @Accept json
+// @Produce json
+// @Param body body domain.ProficiencyXClass true "ProficiencyXClass"
+// @Success 200 {object} string
+// @Failure 500 {object} error
+// @Router /proficiencyxclass [delete]
 func (h *ProficiencyXClassHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempProficiencyXClass domain.ProficiencyXClass

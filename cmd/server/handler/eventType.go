@@ -15,6 +15,15 @@ func NewEventTypeHandler(service *event_type.EventTypeService) *EventTypeHandler
 	return &EventTypeHandler{service: *service}
 }
 
+// eventType godoc
+// @Summary Create eventType
+// @Tags eventType
+// @Accept json
+// @Produce json
+// @Param body body dto.CreateEventTypeDto true "CreateEventTypeDto"
+// @Success 201 {object} domain.EventType
+// @Failure 500 {object} error
+// @Router /event_type [post]
 func (h *EventTypeHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempEventType dto.CreateEventTypeDto
@@ -33,6 +42,13 @@ func (h *EventTypeHandler) HandlerCreate() gin.HandlerFunc {
 	}
 }
 
+// eventType godoc
+// @Summary Get all eventTypes
+// @Tags eventType
+// @Produce json
+// @Success 200 {array} domain.EventType
+// @Failure 500 {object} error
+// @Router /event_type [get]
 func (h *EventTypeHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		eventTypeList, err := h.service.GetAllEventTypes()
@@ -44,6 +60,14 @@ func (h *EventTypeHandler) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
+// eventType godoc
+// @Summary Get eventType by id
+// @Tags eventType
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} domain.EventType
+// @Failure 500 {object} error
+// @Router /event_type/{id} [get]
 func (h *EventTypeHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -63,6 +87,14 @@ func (h *EventTypeHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+// eventType godoc
+// @Summary Get eventType by name
+// @Tags eventType
+// @Produce json
+// @Param name path string true "name"
+// @Success 200 {object} domain.EventType
+// @Failure 500 {object} error
+// @Router /event_type/{name} [get]
 func (h *EventTypeHandler) HandlerGetByName() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		name := ctx.Param("name")
@@ -76,6 +108,16 @@ func (h *EventTypeHandler) HandlerGetByName() gin.HandlerFunc {
 	}
 }
 
+// eventType godoc
+// @Summary Update eventType
+// @Tags eventType
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param body body dto.CreateEventTypeDto true "CreateEventTypeDto"
+// @Success 200 {object} domain.EventType
+// @Failure 500 {object} error
+// @Router /event_type/{id} [put]
 func (h *EventTypeHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempEventType dto.CreateEventTypeDto
@@ -102,6 +144,14 @@ func (h *EventTypeHandler) HandlerUpdate() gin.HandlerFunc {
 	}
 }
 
+// eventType godoc
+// @Summary Delete eventType
+// @Tags eventType
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} string
+// @Failure 500 {object} error
+// @Router /event_type/{id} [delete]
 func (h *EventTypeHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")

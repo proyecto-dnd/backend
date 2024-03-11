@@ -12,21 +12,21 @@ var (
 	ErrNotFound            = errors.New("item not found")
 )
 
-type itemXtableCharacterSqlRepository struct {
+type itemXCharacterDataSqlRepository struct {
 	db *sql.DB
 }
 
 // Create implements RepositoryItemXTableCharacter.
-func (r *itemXtableCharacterSqlRepository) Create(itemXCharacterData domain.ItemXCharacterData) (domain.ItemXCharacterData, error) {
-	statement, err := r.db.Prepare(QueryCreateItemXTableCharacter)
+func (r *itemXCharacterDataSqlRepository) Create(itemXCharacterData domain.ItemXCharacterData) (domain.ItemXCharacterData, error) {
+	statement, err := r.db.Prepare(QueryCreateItemXCharacterData)
 	if err != nil {
 		return domain.ItemXCharacterData{}, ErrPrepareStatement
 	}
 	defer statement.Close()
 
 	result, err := statement.Exec(
-		itemXCharacterData.Item.Item_Id,
 		itemXCharacterData.CharacterData_Id,
+		itemXCharacterData.Item.Item_Id,
 		itemXCharacterData.Quantity,
 	)
 
@@ -39,13 +39,13 @@ func (r *itemXtableCharacterSqlRepository) Create(itemXCharacterData domain.Item
 		return domain.ItemXCharacterData{}, ErrGettingLastInsertId
 	}
 
-	itemXCharacterData.ItemXCharacterData_Id = lastId
+	itemXCharacterData.Character_Item_Id = int(lastId)
 
 	return itemXCharacterData, nil
 }
 
 // Delete implements RepositoryItemXTableCharacter.
-func (r *itemXtableCharacterSqlRepository) Delete(id int64) error {
+func (r *itemXCharacterDataSqlRepository) Delete(id int) error {
 	result, err := r.db.Exec(QueryDelete, id)
 	if err != nil {
 		return err
@@ -62,8 +62,8 @@ func (r *itemXtableCharacterSqlRepository) Delete(id int64) error {
 }
 
 // DeleteByTableCharacterId implements RepositoryItemXTableCharacter.
-func (r *itemXtableCharacterSqlRepository) DeleteByCharacterDataId(id int64) error {
-	result, err := r.db.Exec(QueryDeleteByTableCharacterId, id)
+func (r *itemXCharacterDataSqlRepository) DeleteByCharacterDataId(id int) error {
+	result, err := r.db.Exec(QueryDeleteByCharacterDataId, id)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (r *itemXtableCharacterSqlRepository) DeleteByCharacterDataId(id int64) err
 }
 
 // GetAll implements RepositoryItemXTableCharacter.
-func (r *itemXtableCharacterSqlRepository) GetAll() ([]domain.ItemXCharacterData, error) {
+func (r *itemXCharacterDataSqlRepository) GetAll() ([]domain.ItemXCharacterData, error) {
 	rows, err := r.db.Query(QueryGetAll)
 
 	if err != nil {
@@ -93,14 +93,14 @@ func (r *itemXtableCharacterSqlRepository) GetAll() ([]domain.ItemXCharacterData
 	for rows.Next() {
 		var itemXCharacterData domain.ItemXCharacterData
 		err := rows.Scan(
-			&itemXCharacterData.ItemXCharacterData_Id,
+			&itemXCharacterData.Character_Item_Id,
+			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Item.Item_Id,
 			&itemXCharacterData.Item.Name,
 			&itemXCharacterData.Item.Weight,
 			&itemXCharacterData.Item.Price,
 			&itemXCharacterData.Item.Description,
 			&itemXCharacterData.Item.Campaign_Id,
-			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Quantity,
 		)
 		if err != nil {
@@ -115,18 +115,18 @@ func (r *itemXtableCharacterSqlRepository) GetAll() ([]domain.ItemXCharacterData
 }
 
 // GetById implements RepositoryItemXTableCharacter.
-func (r *itemXtableCharacterSqlRepository) GetById(id int64) (domain.ItemXCharacterData, error) {
+func (r *itemXCharacterDataSqlRepository) GetById(id int) (domain.ItemXCharacterData, error) {
 	row := r.db.QueryRow(QueryGetById, id)
 	var itemXCharacterData domain.ItemXCharacterData
 	err := row.Scan(
-		&itemXCharacterData.ItemXCharacterData_Id,
+		&itemXCharacterData.Character_Item_Id,
+		&itemXCharacterData.CharacterData_Id,
 		&itemXCharacterData.Item.Item_Id,
 		&itemXCharacterData.Item.Name,
 		&itemXCharacterData.Item.Weight,
 		&itemXCharacterData.Item.Price,
 		&itemXCharacterData.Item.Description,
 		&itemXCharacterData.Item.Campaign_Id,
-		&itemXCharacterData.CharacterData_Id,
 		&itemXCharacterData.Quantity,
 	)
 	if err != nil {
@@ -137,8 +137,8 @@ func (r *itemXtableCharacterSqlRepository) GetById(id int64) (domain.ItemXCharac
 }
 
 // GetByTableCharacterId implements RepositoryItemXTableCharacter.
-func (r *itemXtableCharacterSqlRepository) GetByCharacterDataId(id int64) ([]domain.ItemXCharacterData, error) {
-	rows, err := r.db.Query(QueryDeleteByTableCharacterId, id)
+func (r *itemXCharacterDataSqlRepository) GetByCharacterDataId(id int) ([]domain.ItemXCharacterData, error) {
+	rows, err := r.db.Query(QueryGetByCharacterDataId, id)
 
 	if err != nil {
 		return []domain.ItemXCharacterData{}, err
@@ -151,14 +151,14 @@ func (r *itemXtableCharacterSqlRepository) GetByCharacterDataId(id int64) ([]dom
 	for rows.Next() {
 		var itemXCharacterData domain.ItemXCharacterData
 		err := rows.Scan(
-			&itemXCharacterData.ItemXCharacterData_Id,
+			&itemXCharacterData.Character_Item_Id,
+			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Item.Item_Id,
 			&itemXCharacterData.Item.Name,
 			&itemXCharacterData.Item.Weight,
 			&itemXCharacterData.Item.Price,
 			&itemXCharacterData.Item.Description,
 			&itemXCharacterData.Item.Campaign_Id,
-			&itemXCharacterData.CharacterData_Id,
 			&itemXCharacterData.Quantity,
 		)
 		if err != nil {
@@ -173,18 +173,18 @@ func (r *itemXtableCharacterSqlRepository) GetByCharacterDataId(id int64) ([]dom
 }
 
 // Update implements RepositoryItemXTableCharacter.
-func (r *itemXtableCharacterSqlRepository) Update(itemXCharacterData domain.ItemXCharacterData) (domain.ItemXCharacterData, error) {
-	statement, err := r.db.Prepare(QueryCreateItemXTableCharacter)
+func (r *itemXCharacterDataSqlRepository) Update(itemXCharacterData domain.ItemXCharacterData) (domain.ItemXCharacterData, error) {
+	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {
 		return domain.ItemXCharacterData{}, ErrPrepareStatement
 	}
 	defer statement.Close()
 
 	_, err = statement.Exec(
-		itemXCharacterData.ItemXCharacterData_Id,
-		itemXCharacterData.Item.Item_Id,
 		itemXCharacterData.CharacterData_Id,
+		itemXCharacterData.Item.Item_Id,
 		itemXCharacterData.Quantity,
+		itemXCharacterData.Character_Item_Id,
 	)
 
 	if err != nil {
@@ -194,6 +194,6 @@ func (r *itemXtableCharacterSqlRepository) Update(itemXCharacterData domain.Item
 	return itemXCharacterData, nil
 }
 
-func NewItemXtableCharacterSqlRepository(db *sql.DB) RepositoryItemXCharacterData {
-	return &itemXtableCharacterSqlRepository{db}
+func NewItemXCharacterDataSqlRepository(db *sql.DB) RepositoryItemXCharacterData {
+	return &itemXCharacterDataSqlRepository{db}
 }

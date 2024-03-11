@@ -14,13 +14,18 @@ import (
 	"github.com/proyecto-dnd/backend/internal/event_type"
 	"github.com/proyecto-dnd/backend/internal/feature"
 	"github.com/proyecto-dnd/backend/internal/friendship"
-	itemxcharacterdata "github.com/proyecto-dnd/backend/internal/itemXCharacterData"
+	"github.com/proyecto-dnd/backend/internal/itemXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/proficiency"
 	"github.com/proyecto-dnd/backend/internal/proficiencyXclass.go"
+	"github.com/proyecto-dnd/backend/internal/item"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/skill"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
+	"github.com/proyecto-dnd/backend/internal/weapon"
+	"github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
+	swaggerFiles "github.com/swaggo/files"
+  ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Router interface {
@@ -44,6 +49,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 
 func (r *router) MapRoutes() {
 	r.setGroup()
+	r.setSwaggerRoute()
 	r.buildUserRoutes()
 	r.buildEventRoutes()
 	r.buildCampaignRoutes()
@@ -54,11 +60,19 @@ func (r *router) MapRoutes() {
 	r.buildUserCampaignRoutes()
 	r.buildFeatureRoutes()
 
+	r.buildItemRoutes()
+	r.buildItemXCharacterDataRoutes()
+	r.buildWeaponRoutes()
+	r.buildWeaponXCharacterDataRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
 func (r *router) setGroup() {
 	r.routerGroup = r.engine.Group("/api/v1")
+}
+
+func (r *router) setSwaggerRoute() {
+	r.routerGroup.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 
 func (r *router) buildUserRoutes() {
@@ -81,8 +95,10 @@ func (r *router) buildUserRoutes() {
 
 func (r *router) buildEventRoutes() {
 	eventRepository := event.NewEventRepository(r.db)
-	itemCharacterRepository := itemxcharacterdata.NewItemXtableCharacterSqlRepository(r.db)
-	itemCharacterService := itemxcharacterdata.NewServiceItemXTableCharacter(itemCharacterRepository)
+	itemRepository := item.NewItemRepository(r.db)
+	itemService := item.NewItemService(itemRepository)
+	itemCharacterRepository := itemxcharacterdata.NewItemXCharacterDataSqlRepository(r.db)
+	itemCharacterService := itemxcharacterdata.NewItemXCharacterDataService(itemCharacterRepository, itemService)
 	skillrepository := skill.NewSkillRepository(r.db)
 	skillService := skill.NewServiceSkill(skillrepository)
 	characterRepository := characterdata.NewCharacterDataRepository(r.db)
@@ -253,5 +269,77 @@ func (r *router) buildCharacterFeatureRoutes() {
 		characterFeatureGroup.GET("/feature/:id", characterFeatureHandler.HandlerGetByFeatureId())
 		characterFeatureGroup.GET("/character/:id", characterFeatureHandler.HandlerGetByCharacterId())
 		characterFeatureGroup.DELETE("/:id", characterFeatureHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildItemRoutes(){
+	itemRepository := item.NewItemRepository(r.db)
+	itemService := item.NewItemService(itemRepository)
+	itemHandler := handler.NewItemHandler(&itemService)
+
+	itemGroup := r.routerGroup.Group("/item")
+	{
+		itemGroup.POST("", itemHandler.HandlerCreate())
+		itemGroup.DELETE("/:id", itemHandler.HandlerDelete())
+		itemGroup.GET("", itemHandler.HandlerGetAll())
+		itemGroup.GET("/generic", itemHandler.HandlerGetAllGeneric())
+		itemGroup.GET("/:id", itemHandler.HandlerGetById())
+		itemGroup.GET("/campaign/:id", itemHandler.HandlerGetByCampaignId())	
+		itemGroup.PUT("/:id", itemHandler.HandlerUpdate())
+	}
+}
+
+func (r *router) buildItemXCharacterDataRoutes(){
+	itemRepository := item.NewItemRepository(r.db)
+	itemService := item.NewItemService(itemRepository)
+	itemXCharacterDataRepository := itemxcharacterdata.NewItemXCharacterDataSqlRepository(r.db)
+    itemXCharacterDataService := itemxcharacterdata.NewItemXCharacterDataService(itemXCharacterDataRepository, itemService)
+    itemXCharacterDataHandler := handler.NewItemXCharacterDataHandler(&itemXCharacterDataService)
+
+    itemXCharacterDataGroup := r.routerGroup.Group("/item_character")
+    {
+        itemXCharacterDataGroup.POST("", itemXCharacterDataHandler.HandlerCreate())
+        itemXCharacterDataGroup.DELETE("/:id", itemXCharacterDataHandler.HandlerDelete())
+		itemXCharacterDataGroup.DELETE("/character/:id", itemXCharacterDataHandler.HandlerDeleteByCharacterId())
+        itemXCharacterDataGroup.GET("", itemXCharacterDataHandler.HandlerGetAll())
+        itemXCharacterDataGroup.GET("/:id", itemXCharacterDataHandler.HandlerGetById())
+		itemXCharacterDataGroup.GET("/character/:id", itemXCharacterDataHandler.HandlerGetByCharacterDataId())
+        itemXCharacterDataGroup.PUT("/:id", itemXCharacterDataHandler.HandlerUpdate())
+    }
+}
+
+func (r *router) buildWeaponRoutes(){
+	weaponRepository := weapon.NewWeaponRepository(r.db)
+    weaponService := weapon.NewWeaponService(weaponRepository)
+    weaponHandler := handler.NewWeaponHandler(&weaponService)
+
+    weaponGroup := r.routerGroup.Group("/weapon")
+    {
+        weaponGroup.POST("", weaponHandler.HandlerCreate())
+		weaponGroup.GET("/generic", weaponHandler.HandlerGetAllGeneric())
+        weaponGroup.DELETE("/:id", weaponHandler.HandlerDelete())
+        weaponGroup.GET("", weaponHandler.HandlerGetAll())
+        weaponGroup.GET("/:id", weaponHandler.HandlerGetById())
+        weaponGroup.GET("/campaign/:id", weaponHandler.HandlerGetByCampaignId())    
+        weaponGroup.PUT("/:id", weaponHandler.HandlerUpdate())
+    }
+}
+
+func (r *router) buildWeaponXCharacterDataRoutes(){
+	weaponRepository := weapon.NewWeaponRepository(r.db)
+    weaponService := weapon.NewWeaponService(weaponRepository)
+	weaponXCharacterDataRepository := weaponxcharacterdata.NewWeaponXCharacterDataSqlRepository(r.db)
+	weaponXCharacterDataService := weaponxcharacterdata.NewWeaponXCharacterDataService(weaponXCharacterDataRepository, weaponService)
+	weaponXCharacterDataHandler := handler.NewWeaponXCharacterDataHandler(&weaponXCharacterDataService)
+
+	weaponXCharacterDataGroup := r.routerGroup.Group("/weapon_character")
+	{
+		weaponXCharacterDataGroup.POST("", weaponXCharacterDataHandler.HandlerCreate())
+        weaponXCharacterDataGroup.DELETE("/:id", weaponXCharacterDataHandler.HandlerDelete())
+        weaponXCharacterDataGroup.DELETE("/character/:id", weaponXCharacterDataHandler.HandlerDeleteByCharacterDataId())
+        weaponXCharacterDataGroup.GET("", weaponXCharacterDataHandler.HandlerGetAll())
+        weaponXCharacterDataGroup.GET("/:id", weaponXCharacterDataHandler.HandlerGetById())
+        weaponXCharacterDataGroup.GET("/character/:id", weaponXCharacterDataHandler.HandlerGetByCharacterDataId())
+        weaponXCharacterDataGroup.PUT("/:id", weaponXCharacterDataHandler.HandlerUpdate())
 	}
 }
