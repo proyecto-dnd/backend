@@ -8,6 +8,7 @@ import (
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
 	backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
 	"github.com/proyecto-dnd/backend/internal/campaign"
+	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
 	"github.com/proyecto-dnd/backend/internal/event"
 	raceXproficiency "github.com/proyecto-dnd/backend/internal/raceXProficiency"
@@ -48,6 +49,7 @@ func (r *router) MapRoutes() {
 	r.buildClassXSpellRoutes()
 	r.buildRaceXProficiencyRoutes()
 	r.buildBackgroundXProficiencyRoutes()
+	r.buildCharacterXSpellRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -187,5 +189,17 @@ func (r *router) buildBackgroundXProficiencyRoutes() {
 	{
 		backgroundXProficiencyGroup.POST("", backgroundXProficiencyHandler.HandlerCreate())
 		backgroundXProficiencyGroup.DELETE("", backgroundXProficiencyHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildCharacterXSpellRoutes() {
+	characterXSpellRepository := characterXspell.NewCharacterXSpellRepository(r.db)
+	characterXSpellService := characterXspell.NewCharacterXSpellService(characterXSpellRepository)
+	characterXSpellHandler := handler.NewCharacterXSpellHandler(characterXSpellService)
+
+	characterXSpellGroup := r.routerGroup.Group("/characterXspell")
+	{
+		characterXSpellGroup.POST("", characterXSpellHandler.HandlerCreate())
+		characterXSpellGroup.DELETE("/:id", characterXSpellHandler.HandlerDelete())
 	}
 }
