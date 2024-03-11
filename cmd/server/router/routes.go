@@ -6,7 +6,19 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
+	backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
 	"github.com/proyecto-dnd/backend/internal/campaign"
+
+	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
+	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
+	"github.com/proyecto-dnd/backend/internal/event"
+	raceXproficiency "github.com/proyecto-dnd/backend/internal/raceXProficiency"
+	"github.com/proyecto-dnd/backend/internal/session"
+	"github.com/proyecto-dnd/backend/internal/spell"
+	"github.com/proyecto-dnd/backend/internal/user"
+	"github.com/proyecto-dnd/backend/internal/user_campaign"
+	"github.com/proyecto-dnd/backend/pkg/middleware"
+
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/character_feature"
 	"github.com/proyecto-dnd/backend/internal/class"
@@ -26,6 +38,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
 	swaggerFiles "github.com/swaggo/files"
   ginSwagger "github.com/swaggo/gin-swagger"
+
 )
 
 type Router interface {
@@ -58,12 +71,19 @@ func (r *router) MapRoutes() {
 	r.buildProficiencyRoutes()
 	r.buildProficiencyXClassRoutes()
 	r.buildUserCampaignRoutes()
+  r.buildSpellRoutes()
+	r.buildClassXSpellRoutes()
+	r.buildRaceXProficiencyRoutes()
+	r.buildBackgroundXProficiencyRoutes()
+	r.buildCharacterXSpellRoutes()
+
 	r.buildFeatureRoutes()
 
 	r.buildItemRoutes()
 	r.buildItemXCharacterDataRoutes()
 	r.buildWeaponRoutes()
 	r.buildWeaponXCharacterDataRoutes()
+
 	// TODO Add other builders here	and write their functions
 }
 
@@ -153,6 +173,7 @@ func (r *router) buildSessionRoutes() {
 	}
 }
 
+
 func (r *router) buildClassRoutes() {
 	classRepository := class.NewClassRepository(r.db)
 	classService := class.NewClassService(classRepository)
@@ -238,6 +259,70 @@ func (r *router) buildFeatureRoutes() {
 		featureGroup.GET("/:id", featureHandler.HandlerGetById())
 		featureGroup.PUT("/:id", featureHandler.HandlerUpdate())
 		featureGroup.DELETE("/:id", featureHandler.HandlerDelete())
+	}
+}
+
+
+func (r *router) buildSpellRoutes() {
+	spellRepository := spell.NewSpellRepository(r.db)
+	spellService := spell.NewSpellService(spellRepository)
+	spellHandler := handler.NewSpellHandler(&spellService)
+
+	spellGroup := r.routerGroup.Group("/spell")
+	{
+		spellGroup.POST("", spellHandler.HandlerCreate())
+		spellGroup.GET("", spellHandler.HandlergetAll())
+		spellGroup.GET("/:id", spellHandler.HandlerGetById())
+		spellGroup.PUT("/:id", spellHandler.HandlerUpdate())
+		spellGroup.DELETE("/:id", spellHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildClassXSpellRoutes() {
+	classXSpellRepository := classXspell.NewClassXSpellRepository(r.db)
+	classXSpellService := classXspell.NewClassXSpelService(classXSpellRepository)
+	classXSpellHandler := handler.NewClassXSpellHandler(&classXSpellService)
+
+	classXSpellGroup := r.routerGroup.Group("/classxspell")
+	{
+		classXSpellGroup.POST("", classXSpellHandler.HandlerCreate())
+		classXSpellGroup.DELETE("", classXSpellHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildRaceXProficiencyRoutes() {
+	raceXProficiencyRepository := raceXproficiency.NewRaceXProficiencyRepository(r.db)
+	raceXProficiencyService := raceXproficiency.NewRaceXProficiencyService(raceXProficiencyRepository)
+	raceXProficiencyHandler := handler.NewRaceXProficiencyHandler(raceXProficiencyService)
+
+	cassXProficiencyGroup := r.routerGroup.Group("/raceXproficiency")
+	{
+		cassXProficiencyGroup.POST("", raceXProficiencyHandler.HandlerCreate())
+		cassXProficiencyGroup.DELETE("", raceXProficiencyHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildBackgroundXProficiencyRoutes() {
+	backgroundXProficiencyRepository := backgroundXproficiency.NewBackgroundXProficiencyRepository(r.db)
+	backgroundXProficiencyService := backgroundXproficiency.NewBackgroundXProficiencyService(backgroundXProficiencyRepository)
+	backgroundXProficiencyHandler := handler.NewBackgroundXProficiencyHandler(backgroundXProficiencyService)
+
+	backgroundXProficiencyGroup := r.routerGroup.Group("/backgroundXproficiency")
+	{
+		backgroundXProficiencyGroup.POST("", backgroundXProficiencyHandler.HandlerCreate())
+		backgroundXProficiencyGroup.DELETE("", backgroundXProficiencyHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildCharacterXSpellRoutes() {
+	characterXSpellRepository := characterXspell.NewCharacterXSpellRepository(r.db)
+	characterXSpellService := characterXspell.NewCharacterXSpellService(characterXSpellRepository)
+	characterXSpellHandler := handler.NewCharacterXSpellHandler(characterXSpellService)
+
+	characterXSpellGroup := r.routerGroup.Group("/characterXspell")
+	{
+		characterXSpellGroup.POST("", characterXSpellHandler.HandlerCreate())
+		characterXSpellGroup.DELETE("/:id", characterXSpellHandler.HandlerDelete())
 	}
 }
 
@@ -343,3 +428,4 @@ func (r *router) buildWeaponXCharacterDataRoutes(){
         weaponXCharacterDataGroup.PUT("/:id", weaponXCharacterDataHandler.HandlerUpdate())
 	}
 }
+
