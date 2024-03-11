@@ -4,9 +4,9 @@ type CharacterData struct {
 	Character_Id int64  `json:"characterid"`
 	User_Id      string `json:"userid"`
 	Campaign_Id  int    `json:"campaignid"`
-	Race        int    `json:"raceid"`     // TODO: Change Type from int to Race Struct
-	Class       int    `json:"classid"`    // TODO: Change Type from int to Class Struct
-	Background  int    `json:"background"` // TODO: Change Type from string to Background Struct
+	Race        Race    `json:"race"`     // TODO: Change Type from int to Race Struct
+	Class       Class    `json:"class"`    // TODO: Change Type from int to Class Struct
+	Background  Background    `json:"background"` // TODO: Change Type from string to Background Struct
 	Name        string `json:"name"`
 	Story       string `json:"story"`
 	Alignment   string `json:"alignment"`
