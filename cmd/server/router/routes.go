@@ -10,6 +10,7 @@ import (
 	backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
+	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	"github.com/proyecto-dnd/backend/internal/character_feature"
 	"github.com/proyecto-dnd/backend/internal/class"
@@ -135,13 +136,12 @@ func (r *router) MapRoutes() {
 	r.buildRaceXProficiencyRoutes()
 	r.buildBackgroundXProficiencyRoutes()
 	r.buildCharacterXSpellRoutes()
-
 	r.buildFeatureRoutes()
-
 	r.buildItemRoutes()
 	r.buildItemXCharacterDataRoutes()
 	r.buildWeaponRoutes()
 	r.buildWeaponXCharacterDataRoutes()
+	r.buildCharacterXProficiencyRoutes()
 
 	// TODO Add other builders here	and write their functions
 }
@@ -483,5 +483,17 @@ func (r *router) buildWeaponXCharacterDataRoutes() {
 		weaponXCharacterDataGroup.GET("/:id", weaponXCharacterDataHandler.HandlerGetById())
 		weaponXCharacterDataGroup.GET("/character/:id", weaponXCharacterDataHandler.HandlerGetByCharacterDataId())
 		weaponXCharacterDataGroup.PUT("/:id", weaponXCharacterDataHandler.HandlerUpdate())
+	}
+}
+
+func (r *router) buildCharacterXProficiencyRoutes() {
+	characterXProficiencyRepository := characterXproficiency.NewCharacterXProficiencyRepository(r.db)
+	characterXProficiencyService := characterXproficiency.NewCharacterXProficiencyService(characterXProficiencyRepository)
+	characterXProficiencyHandler := handler.NewCharacterXProficiencyHandler(characterXProficiencyService)
+
+	characterXProficiencyGroup := r.routerGroup.Group("/character_proficiency")
+	{
+		characterXProficiencyGroup.POST("", characterXProficiencyHandler.HandlerCreate())
+		characterXProficiencyGroup.DELETE("/:id", characterXProficiencyHandler.HandlerDelete())
 	}
 }
