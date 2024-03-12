@@ -92,7 +92,12 @@ var (
 	itemXCharacterDataRepository itemxcharacterdata.RepositoryItemXCharacterData
 	itemXCharacterDataService itemxcharacterdata.ServiceItemXCharacterData
 	itemxcharacterdataHandler handler.ItemXCharacterDataHandler
-	weaponRepository 
+	weaponRepository weapon.RepositoryWeapon
+	weaponService weapon.ServiceWeapon
+	weaponHandler handler.WeaponHandler
+	weaponXCharacterDataRepository weaponxcharacterdata.RepositoryWeaponXCharacterData
+	weaponXCharacterDataService weaponxcharacterdata.ServiceWeaponXCharacterData
+	weaponxcharacterdataHandler handler.WeaponXCharacterDataHandler
 )
 
 type Router interface {
