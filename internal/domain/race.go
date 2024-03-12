@@ -7,7 +7,7 @@ type Race struct {
 	Speed       int    `json:"speed"`
 	Str         int    `json:"str"`
 	Dex         int    `json:"dex"`
-	Inte        int    `json:"inte"`
+	Int         int    `json:"int"`
 	Con         int    `json:"con"`
 	Wiz         int    `json:"wiz"`
 	Cha         int    `json:"cha"`

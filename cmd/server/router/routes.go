@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+	"fmt"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
@@ -31,6 +32,67 @@ import (
 	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+)
+
+var (
+	userFirebaseRepository user.RepositoryUsers
+	userFirebaseService user.ServiceUsers
+	userFirebaseHandler handler.UserHandler
+	eventRepository event.EventRepository
+	eventService event.EventService
+	ventHandler handler.EventHandler
+	campaignRepository campaign.CampaignRepository
+	campaignService campaign.CampaignService
+	campaignHandler handler.CampaignHandler
+	sessionRepository session.SessionRepository
+	sessionService session.SessionService
+	sessionHandler handler.SessionHandler
+	classRepository class.RepositoryCharacterClass
+	classService class.ClassService
+	classHandler handler.ClassHandler
+	proficiencyRepository proficiency.RepositoryProficiency
+	proficiencyService proficiency.ProficiencyService
+	proficiencyHandler handler.ProficiencyHandler
+	proficiencyXClassRepository proficiencyXclass.ProficiencyXClassRepository
+	proficiencyxclassService proficiencyXclass.ProficiencyXClassService
+	proficiencyXClassHandler handler.ProficiencyXClassHandler
+	userCampaignRepository user_campaign.UserCampaignRepository
+	userCampaignService user_campaign.UserCampaignService
+	userCampaignHandler handler.UserCampaignHandler
+	friendshipRepository friendship.FriendshipRepository
+	friendshipService friendship.FriendshipService
+	friendshipHandler handler.FriendshipHandler
+	featureRepository feature.FeatureRepository
+	featureService feature.FeatureService
+	featureHandler feature.FeatureHandler
+	spellRepository spell.RepositorySpell
+	spellService spell.ServiceSpell
+	spellHandler handler.SpellHandler
+	classXSpellRepository classXspell.ClassXSpellSqlRepository
+	classxspellService classXspell.ServiceClassXSpell
+	classXSpellHandler handler.ClassXSpellHandler
+	raceXProficiencyRepository raceXproficiency.RaceXProficiencyRepository
+	racexproficiencyService raceXproficiency.RaceXProficiencyService
+	raceXProficiencyHandler handler.RaceXProficiencyHandler
+	backgroundXProficiencyRepository backgroundXproficiency.BackgroundXProficiencyRepository
+	backgroundXProficiencyService backgroundXproficiency.BackgroundXProficiencyService
+	backgroundXProficiencyHandler handler.BackgroundXProficiencyHandler
+	characterXSpellRepository characterXspell.CharacterXSpellRepository
+	characterXSpellService characterXspell.CharacterXSpellService
+	characterXSpellHandler handler.CharacterXSpellHandler
+	eventTypeRepository event_type.EventTypeRepository
+	eventTypeService event_type.EventTypeService
+	eventTypeHandler handler.EventTypeHandler
+	characterFeatureRepository character_feature.CharacterFeatureRepository
+	characterFeatureService character_feature.CharacterFeatureService
+	characterFeatureHandler handler.CharacterFeature
+	itemRepository item.RepositoryItem
+	itemService item.ServiceItem
+	itemHandler handler.ItemHandler
+	itemXCharacterDataRepository itemxcharacterdata.RepositoryItemXCharacterData
+	itemXCharacterDataService itemxcharacterdata.ServiceItemXCharacterData
+	itemxcharacterdataHandler handler.ItemXCharacterDataHandler
+	weaponRepository 
 )
 
 type Router interface {
