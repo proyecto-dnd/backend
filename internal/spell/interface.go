@@ -9,6 +9,7 @@ type RepositorySpell interface {
 	Create(spell dto.SpellDto) (domain.Spell, error)
 	GetAll() ([]domain.Spell, error)
 	GetById(id int) (domain.Spell, error)
+	GetByCharacterDataId(id int) ([]domain.Spell, error)
 	Update(spell dto.SpellDto, id int) (domain.Spell, error)
 	Delete(id int) error
 }
@@ -18,6 +19,7 @@ type ServiceSpell interface {
 	Create(spell dto.SpellDto) (domain.Spell, error)
 	GetAll() ([]domain.Spell, error)
 	GetById(id int) (domain.Spell, error)
+	GetByCharacterDataId(id int) ([]domain.Spell, error)
 	Update(spell dto.SpellDto, id int) (domain.Spell, error)
 	Delete(id int) error
 }

@@ -35,7 +35,7 @@ func (s *service) Create(character domain.CharacterData) (dto.FullCharacterData,
 	if err != nil {
 		return dto.FullCharacterData{}, err
 	}
-	return *characterDataToFullCharacterData(newCharacter, []domain.ItemXCharacterData{}, []domain.WeaponXCharacterData{}, []domain.ArmorXCharacterData{}, []domain.Skill{}, []domain.Feature{}, []domain.Spell{}, []domain.Proficiency{}), nil
+	return characterDataToFullCharacterData(newCharacter, []domain.ItemXCharacterData{}, []domain.WeaponXCharacterData{}, []domain.ArmorXCharacterData{}, []domain.Skill{}, []domain.Feature{}, []domain.Spell{}, []domain.Proficiency{}), nil
 }
 
 // Delete implements ServiceCharacterData.
@@ -59,7 +59,7 @@ func (s *service) GetAll() ([]dto.FullCharacterData, error) {
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
-		fullCharacters = append(fullCharacters, *fullCharacter)
+		fullCharacters = append(fullCharacters, fullCharacter)
 
 	}
 	return fullCharacters, nil
@@ -77,7 +77,7 @@ func (s *service) GetByCampaignId(campaignid int) ([]dto.FullCharacterData, erro
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
-		fullCharacters = append(fullCharacters, *fullCharacter)
+		fullCharacters = append(fullCharacters, fullCharacter)
 
 	}
 	return fullCharacters, nil
@@ -94,7 +94,7 @@ func (s *service) GetById(id int) (dto.FullCharacterData, error) {
 		if err != nil {
 			return dto.FullCharacterData{}, err
 		}
-	return *fullCharacter, nil
+	return fullCharacter, nil
 }
 
 // GetByUserId implements ServiceCharacterData.
@@ -110,7 +110,7 @@ func (s *service) GetByUserId(userid string) ([]dto.FullCharacterData, error) {
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
-		fullCharacters = append(fullCharacters, *fullCharacter)
+		fullCharacters = append(fullCharacters, fullCharacter)
 
 	}
 	return fullCharacters, nil
@@ -129,7 +129,7 @@ func (s *service) GetByUserIdAndCampaignId(userid string, campaignid int) ([]dto
 		if err != nil {
 			return []dto.FullCharacterData{}, err
 		}
-		fullCharacters = append(fullCharacters, *fullCharacter)
+		fullCharacters = append(fullCharacters, fullCharacter)
 
 	}
 
@@ -147,11 +147,11 @@ func (s *service) Update(character domain.CharacterData) (dto.FullCharacterData,
 	if err != nil {
 		return dto.FullCharacterData{}, err
 	}
-	return *updatedFullCharacter, nil
+	return updatedFullCharacter, nil
 }
 
-func characterDataToFullCharacterData(character domain.CharacterData, items []domain.ItemXCharacterData, weapons []domain.WeaponXCharacterData, armor []domain.ArmorXCharacterData, skills []domain.Skill, features []domain.Feature, spells []domain.Spell, proficiencies []domain.Proficiency) *dto.FullCharacterData {
-	return &dto.FullCharacterData{
+func characterDataToFullCharacterData(character domain.CharacterData, items []domain.ItemXCharacterData, weapons []domain.WeaponXCharacterData, armor []domain.ArmorXCharacterData, skills []domain.Skill, features []domain.Feature, spells []domain.Spell, proficiencies []domain.Proficiency) dto.FullCharacterData {
+	return dto.FullCharacterData{
 		Character_Id:  character.Character_Id,
 		User_Id:       character.User_Id,
 		Campaign_Id:   character.Campaign_Id,
@@ -190,8 +190,8 @@ func characterDataToFullCharacterData(character domain.CharacterData, items []do
 	}
 }
 
-func fullCharacterDataToCharacterData(character dto.FullCharacterData) *domain.CharacterData {
-	return &domain.CharacterData{
+func fullCharacterDataToCharacterData(character dto.FullCharacterData) domain.CharacterData {
+	return domain.CharacterData{
 		Character_Id: character.Character_Id,
 		User_Id:      character.User_Id,
 		Campaign_Id:  character.Campaign_Id,
@@ -224,34 +224,34 @@ func fullCharacterDataToCharacterData(character dto.FullCharacterData) *domain.C
 }
 
 // TO DO: Implement this function using Goroutines
-func (s *service) fetchAndConvertToFullCharacterData(character *domain.CharacterData) (*dto.FullCharacterData, error) {
+func (s *service) fetchAndConvertToFullCharacterData(character *domain.CharacterData) (dto.FullCharacterData, error) {
 	items, err := s.itemService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
-		return &dto.FullCharacterData{}, err
+		return dto.FullCharacterData{}, err
 	}
 	weapons, err := s.weaponService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
-		return &dto.FullCharacterData{}, err
+		return dto.FullCharacterData{}, err
 	}
 	armor, err := s.armorService.GetByCharacterDataIdArmor(character.Character_Id)
 	if err != nil {
-		return &dto.FullCharacterData{}, err
+		return dto.FullCharacterData{}, err
 	}
 	skills, err := s.skillService.GetByCharacterId(character.Character_Id)
 	if err != nil {
-		return &dto.FullCharacterData{}, err
+		return dto.FullCharacterData{}, err
 	}
-	features, err := s.featureService.GetByCharacterDataId(character.Character_Id)
+	featuresDto, err := s.featureService.GetAllFeaturesByCharacterId(character.Character_Id)
 	if err != nil {
-		return &dto.FullCharacterData{}, err
+		return dto.FullCharacterData{}, err
 	}
 	spells, err := s.spellService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
-		return &dto.FullCharacterData{}, err
+		return dto.FullCharacterData{}, err
 	}
 	proficiencies, err := s.proficiencyService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
-		return &dto.FullCharacterData{}, err
+		return dto.FullCharacterData{}, err
 	}
-	return characterDataToFullCharacterData(*character, items, weapons, armor, skills, features, spells, proficiencies), nil
+	return characterDataToFullCharacterData(*character, items, weapons, armor, skills, featuresDto.Features, spells, proficiencies), nil
 }

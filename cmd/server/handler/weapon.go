@@ -11,8 +11,8 @@ type WeaponHandler struct {
 	service weapon.ServiceWeapon
 }
 
-func NewWeaponHandler(service *weapon.ServiceWeapon) WeaponHandler{
-	return WeaponHandler{service: *service}
+func NewWeaponHandler(service *weapon.ServiceWeapon) *WeaponHandler{
+	return &WeaponHandler{service: *service}
 }
 
 // weapon godoc

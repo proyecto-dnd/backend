@@ -245,13 +245,11 @@ func NewCharacterDataRepository(db *sql.DB) RepositoryCharacterData {
 	return &CharacterDataMySqlRepository{db}
 }
 
-
 type scannable interface{
 	Scan(dest ...any) error
 }
 
 func ScanCharacterData(rows scannable, characterData *domain.CharacterData ) error {
-
 	err := rows.Scan(
 		&characterData.Character_Id,
 		&characterData.User_Id,

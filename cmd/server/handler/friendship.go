@@ -10,8 +10,8 @@ type FriendshipHandler struct {
 	service friendship.FriendshipService
 }
 
-func NewFriendshipHandler(service friendship.FriendshipService) *FriendshipHandler {
-	return &FriendshipHandler{service: service}
+func NewFriendshipHandler(service *friendship.FriendshipService) *FriendshipHandler {
+	return &FriendshipHandler{service: *service}
 }
 
 // friendship godoc
