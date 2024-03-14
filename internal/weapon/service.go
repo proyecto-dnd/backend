@@ -9,7 +9,7 @@ type service struct {
 func NewWeaponService(repo RepositoryWeapon) ServiceWeapon {
     return &service{repo: repo}
 }
-
+ 
 // GetAllGeneric implements ServiceWeapon.
 func (s *service) GetAllGeneric() ([]domain.Weapon, error) {
 	weapons, err := s.repo.GetAllGeneric()
