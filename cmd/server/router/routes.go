@@ -28,7 +28,7 @@ import (
 	raceXproficiency "github.com/proyecto-dnd/backend/internal/raceXProficiency"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/skill"
-	"github.com/proyecto-dnd/backend/internal/skillxcharacterdata"
+	skillxcharacterdata "github.com/proyecto-dnd/backend/internal/skillXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/spell"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
@@ -82,7 +82,7 @@ var (
 	skillRepository               skill.RepositorySkill
 	skillService                  skill.ServiceSkill
 	skillHandler                  handler.SkillHandler
-	skillXCharacterDataRepository skillxcharacterdata.RepositorySkillXCharacterData
+	skillXCharacterDataRepository skillxcharacterdata.RepositorySkillXCharacter
 	// skillXCharacterDataService skillxcharacterdata.ServiceSkillXCharacterData TO DO
 	// skillXCharacterDataHandler handler.skillXCharacterDataHandler  TO DO
 
