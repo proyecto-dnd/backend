@@ -62,7 +62,7 @@ func (h *SkillHandler) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
-func (h *SkillHandler) HendlerGetByCampaignId() gin.HandlerFunc {
+func (h *SkillHandler) HandlerGetByCampaignId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 

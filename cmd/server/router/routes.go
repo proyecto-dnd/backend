@@ -83,8 +83,8 @@ var (
 	skillService                  skill.ServiceSkill
 	skillHandler                  handler.SkillHandler
 	skillXCharacterDataRepository skillxcharacterdata.RepositorySkillXCharacter
-	// skillXCharacterDataService skillxcharacterdata.ServiceSkillXCharacterData TO DO
-	// skillXCharacterDataHandler handler.skillXCharacterDataHandler  TO DO
+	skillXCharacterDataService    skillxcharacterdata.ServiceSkillXCharacter
+	skillXCharacterHandler        handler.SkillXCharacterHandler
 
 	spellRepository       spell.RepositorySpell
 	spellService          spell.ServiceSpell
