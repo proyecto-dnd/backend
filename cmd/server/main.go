@@ -14,7 +14,7 @@ import (
 
 	"github.com/proyecto-dnd/backend/cmd/server/router"
 	"github.com/proyecto-dnd/backend/pkg/firebaseConnection"
-	
+
 	_ "github.com/proyecto-dnd/backend/docs"
 )
 

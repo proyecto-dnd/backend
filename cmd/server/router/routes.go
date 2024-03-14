@@ -6,14 +6,18 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
-	backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
+
+	// backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
-	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
-	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
+	// "github.com/proyecto-dnd/backend/internal/ws"
+
+	// characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
+	// characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	"github.com/proyecto-dnd/backend/internal/character_feature"
 	"github.com/proyecto-dnd/backend/internal/class"
-	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
+
+	// classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/event_type"
 	"github.com/proyecto-dnd/backend/internal/feature"
@@ -22,10 +26,12 @@ import (
 	itemxcharacterdata "github.com/proyecto-dnd/backend/internal/itemXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/proficiency"
 	"github.com/proyecto-dnd/backend/internal/proficiencyXclass.go"
-	raceXproficiency "github.com/proyecto-dnd/backend/internal/raceXProficiency"
+
+	// raceXproficiency "github.com/proyecto-dnd/backend/internal/raceXProficiency"
 	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/skill"
-	"github.com/proyecto-dnd/backend/internal/spell"
+
+	// "github.com/proyecto-dnd/backend/internal/spell"
 	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
 	"github.com/proyecto-dnd/backend/internal/weapon"
@@ -64,18 +70,18 @@ func (r *router) MapRoutes() {
 	r.buildProficiencyRoutes()
 	r.buildProficiencyXClassRoutes()
 	r.buildUserCampaignRoutes()
-	r.buildSpellRoutes()
-	r.buildClassXSpellRoutes()
-	r.buildRaceXProficiencyRoutes()
-	r.buildBackgroundXProficiencyRoutes()
-	r.buildCharacterXSpellRoutes()
+	// r.buildSpellRoutes()
+	// r.buildClassXSpellRoutes()
+	// r.buildRaceXProficiencyRoutes()
+	// r.buildBackgroundXProficiencyRoutes()
+	// r.buildCharacterXSpellRoutes()
 	r.buildFeatureRoutes()
 	r.buildItemRoutes()
 	r.buildItemXCharacterDataRoutes()
 	r.buildWeaponRoutes()
 	r.buildWeaponXCharacterDataRoutes()
-	r.buildCharacterXProficiencyRoutes()
-
+	// r.buildCharacterXProficiencyRoutes()
+	
 	// TODO Add other builders here	and write their functions
 }
 
@@ -253,68 +259,68 @@ func (r *router) buildFeatureRoutes() {
 	}
 }
 
-func (r *router) buildSpellRoutes() {
-	spellRepository := spell.NewSpellRepository(r.db)
-	spellService := spell.NewSpellService(spellRepository)
-	spellHandler := handler.NewSpellHandler(&spellService)
+// func (r *router) buildSpellRoutes() {
+// 	spellRepository := spell.NewSpellRepository(r.db)
+// 	spellService := spell.NewSpellService(spellRepository)
+// 	spellHandler := handler.NewSpellHandler(&spellService)
 
-	spellGroup := r.routerGroup.Group("/spell")
-	{
-		spellGroup.POST("", spellHandler.HandlerCreate())
-		spellGroup.GET("", spellHandler.HandlergetAll())
-		spellGroup.GET("/:id", spellHandler.HandlerGetById())
-		spellGroup.PUT("/:id", spellHandler.HandlerUpdate())
-		spellGroup.DELETE("/:id", spellHandler.HandlerDelete())
-	}
-}
+// 	spellGroup := r.routerGroup.Group("/spell")
+// 	{
+// 		spellGroup.POST("", spellHandler.HandlerCreate())
+// 		spellGroup.GET("", spellHandler.HandlergetAll())
+// 		spellGroup.GET("/:id", spellHandler.HandlerGetById())
+// 		spellGroup.PUT("/:id", spellHandler.HandlerUpdate())
+// 		spellGroup.DELETE("/:id", spellHandler.HandlerDelete())
+// 	}
+// }
 
-func (r *router) buildClassXSpellRoutes() {
-	classXSpellRepository := classXspell.NewClassXSpellRepository(r.db)
-	classXSpellService := classXspell.NewClassXSpelService(classXSpellRepository)
-	classXSpellHandler := handler.NewClassXSpellHandler(&classXSpellService)
+// func (r *router) buildClassXSpellRoutes() {
+// 	classXSpellRepository := classXspell.NewClassXSpellRepository(r.db)
+// 	// classXSpellService := classXspell.NewClassXSpelService(classXSpellRepository)
+// 	classXSpellHandler := handler.NewClassXSpellHandler(&classXSpellService)
 
-	classXSpellGroup := r.routerGroup.Group("/classxspell")
-	{
-		classXSpellGroup.POST("", classXSpellHandler.HandlerCreate())
-		classXSpellGroup.DELETE("", classXSpellHandler.HandlerDelete())
-	}
-}
+// 	classXSpellGroup := r.routerGroup.Group("/classxspell")
+// 	{
+// 		classXSpellGroup.POST("", classXSpellHandler.HandlerCreate())
+// 		classXSpellGroup.DELETE("", classXSpellHandler.HandlerDelete())
+// 	}
+// }
 
-func (r *router) buildRaceXProficiencyRoutes() {
-	raceXProficiencyRepository := raceXproficiency.NewRaceXProficiencyRepository(r.db)
-	raceXProficiencyService := raceXproficiency.NewRaceXProficiencyService(raceXProficiencyRepository)
-	raceXProficiencyHandler := handler.NewRaceXProficiencyHandler(raceXProficiencyService)
+// func (r *router) buildRaceXProficiencyRoutes() {
+// 	raceXProficiencyRepository := raceXproficiency.NewRaceXProficiencyRepository(r.db)
+// 	raceXProficiencyService := raceXproficiency.NewRaceXProficiencyService(raceXProficiencyRepository)
+// 	// raceXProficiencyHandler := handler.NewRaceXProficiencyHandler(raceXProficiencyService)
 
-	cassXProficiencyGroup := r.routerGroup.Group("/raceXproficiency")
-	{
-		cassXProficiencyGroup.POST("", raceXProficiencyHandler.HandlerCreate())
-		cassXProficiencyGroup.DELETE("", raceXProficiencyHandler.HandlerDelete())
-	}
-}
+// 	cassXProficiencyGroup := r.routerGroup.Group("/raceXproficiency")
+// 	{
+// 		cassXProficiencyGroup.POST("", raceXProficiencyHandler.HandlerCreate())
+// 		cassXProficiencyGroup.DELETE("", raceXProficiencyHandler.HandlerDelete())
+// 	}
+// }
 
-func (r *router) buildBackgroundXProficiencyRoutes() {
-	backgroundXProficiencyRepository := backgroundXproficiency.NewBackgroundXProficiencyRepository(r.db)
-	backgroundXProficiencyService := backgroundXproficiency.NewBackgroundXProficiencyService(backgroundXProficiencyRepository)
-	backgroundXProficiencyHandler := handler.NewBackgroundXProficiencyHandler(backgroundXProficiencyService)
+// func (r *router) buildBackgroundXProficiencyRoutes() {
+// 	backgroundXProficiencyRepository := backgroundXproficiency.NewBackgroundXProficiencyRepository(r.db)
+// 	backgroundXProficiencyService := backgroundXproficiency.NewBackgroundXProficiencyService(backgroundXProficiencyRepository)
+// 	backgroundXProficiencyHandler := handler.NewBackgroundXProficiencyHandler(backgroundXProficiencyService)
 
-	backgroundXProficiencyGroup := r.routerGroup.Group("/backgroundXproficiency")
-	{
-		backgroundXProficiencyGroup.POST("", backgroundXProficiencyHandler.HandlerCreate())
-		backgroundXProficiencyGroup.DELETE("", backgroundXProficiencyHandler.HandlerDelete())
-	}
-}
+// 	backgroundXProficiencyGroup := r.routerGroup.Group("/backgroundXproficiency")
+// 	{
+// 		backgroundXProficiencyGroup.POST("", backgroundXProficiencyHandler.HandlerCreate())
+// 		backgroundXProficiencyGroup.DELETE("", backgroundXProficiencyHandler.HandlerDelete())
+// 	}
+// }
 
-func (r *router) buildCharacterXSpellRoutes() {
-	characterXSpellRepository := characterXspell.NewCharacterXSpellRepository(r.db)
-	characterXSpellService := characterXspell.NewCharacterXSpellService(characterXSpellRepository)
-	characterXSpellHandler := handler.NewCharacterXSpellHandler(characterXSpellService)
+// func (r *router) buildCharacterXSpellRoutes() {
+// 	characterXSpellRepository := characterXspell.NewCharacterXSpellRepository(r.db)
+// 	characterXSpellService := characterXspell.NewCharacterXSpellService(characterXSpellRepository)
+// 	characterXSpellHandler := handler.NewCharacterXSpellHandler(characterXSpellService)
 
-	characterXSpellGroup := r.routerGroup.Group("/characterXspell")
-	{
-		characterXSpellGroup.POST("", characterXSpellHandler.HandlerCreate())
-		characterXSpellGroup.DELETE("/:id", characterXSpellHandler.HandlerDelete())
-	}
-}
+// 	characterXSpellGroup := r.routerGroup.Group("/characterXspell")
+// 	{
+// 		characterXSpellGroup.POST("", characterXSpellHandler.HandlerCreate())
+// 		characterXSpellGroup.DELETE("/:id", characterXSpellHandler.HandlerDelete())
+// 	}
+// }
 
 func (r *router) buildEventTypeRoutes() {
 	eventTypeRepository := event_type.NewEventTypeRepository(r.db)
@@ -419,14 +425,15 @@ func (r *router) buildWeaponXCharacterDataRoutes() {
 	}
 }
 
-func (r *router) buildCharacterXProficiencyRoutes() {
-	characterXProficiencyRepository := characterXproficiency.NewCharacterXProficiencyRepository(r.db)
-	characterXProficiencyService := characterXproficiency.NewCharacterXProficiencyService(characterXProficiencyRepository)
-	characterXProficiencyHandler := handler.NewCharacterXProficiencyHandler(characterXProficiencyService)
+// func (r *router) buildCharacterXProficiencyRoutes() {
+// 	characterXProficiencyRepository := characterXproficiency.NewCharacterXProficiencyRepository(r.db)
+// 	characterXProficiencyService := characterXproficiency.NewCharacterXProficiencyService(characterXProficiencyRepository)
+// 	characterXProficiencyHandler := handler.NewCharacterXProficiencyHandler(characterXProficiencyService)
 
-	characterXProficiencyGroup := r.routerGroup.Group("/character_proficiency")
-	{
-		characterXProficiencyGroup.POST("", characterXProficiencyHandler.HandlerCreate())
-		characterXProficiencyGroup.DELETE("/:id", characterXProficiencyHandler.HandlerDelete())
-	}
-}
+// 	characterXProficiencyGroup := r.routerGroup.Group("/character_proficiency")
+// 	{
+// 		characterXProficiencyGroup.POST("", characterXProficiencyHandler.HandlerCreate())
+// 		characterXProficiencyGroup.DELETE("/:id", characterXProficiencyHandler.HandlerDelete())
+// 	}
+// }
+
