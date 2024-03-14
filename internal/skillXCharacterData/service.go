@@ -5,10 +5,10 @@ import (
 )
 
 type service struct {
-	repository RepositorySkillXCharacterData
+	repository RepositorySkillXCharacter
 }
 
-func NewService(repository RepositorySkillXCharacterData) *service {
+func NewSkillXCharacterService(repository RepositorySkillXCharacter) ServiceSkillXCharacter {
 	return &service{repository: repository}
 }
 

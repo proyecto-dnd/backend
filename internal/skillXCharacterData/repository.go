@@ -27,7 +27,7 @@ func (r *skillxCharacterDataSqlRepository) Create(skillXCharacterData domain.Ski
 
 	_, err = statement.Exec(
 		skillXCharacterData.SkillID,
-		skillXCharacterData.CharacterDataID,
+		skillXCharacterData.CharacterID,
 	)
 
 	if err != nil {
@@ -39,7 +39,7 @@ func (r *skillxCharacterDataSqlRepository) Create(skillXCharacterData domain.Ski
 
 // Delete implements RepositorySkillXCharacterData.
 func (r *skillxCharacterDataSqlRepository) Delete(skillXCharacterData domain.SkillXCharacterData) error {
-	result, err := r.db.Exec(QueryDeleteSkillXCharacter, skillXCharacterData.SkillID, skillXCharacterData.CharacterDataID, nil)
+	result, err := r.db.Exec(QueryDeleteSkillXCharacter, skillXCharacterData.SkillID, skillXCharacterData.CharacterID, nil)
 	if err != nil {
 		return err
 	}
@@ -53,6 +53,6 @@ func (r *skillxCharacterDataSqlRepository) Delete(skillXCharacterData domain.Ski
 	return nil
 }
 
-func NewSkillxCharacterDataRepository(db *sql.DB) RepositorySkillXCharacterData {
+func NewSkillxCharacterDataRepository(db *sql.DB) RepositorySkillXCharacter {
 	return &skillxCharacterDataSqlRepository{db}
 }
