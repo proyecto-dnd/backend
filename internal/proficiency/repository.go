@@ -108,3 +108,20 @@ func (r *repositorySqlProficiency) Delete(id int) error {
 
 	return nil
 }
+
+func (r *repositorySqlProficiency) GetByCharacterDataId(characterId int) ([]domain.Proficiency, error) {
+	rows, err := r.db.Query(QueryGetByCharacterDataId)
+	if err != nil {
+		return []domain.Proficiency{}, err
+	}
+	var proficiencyList []domain.Proficiency
+	for rows.Next() {
+		var proficiency domain.Proficiency
+		if err := rows.Scan(&proficiency.ProficiencyId, &proficiency.Name, &proficiency.Type); err != nil {
+			return []domain.Proficiency{}, err
+		}
+		proficiencyList = append(proficiencyList, proficiency)
+	}
+	
+	return proficiencyList, nil
+}
