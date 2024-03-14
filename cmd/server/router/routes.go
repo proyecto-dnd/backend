@@ -272,7 +272,7 @@ func (r *router) MapRoutes() {
 	r.buildWeaponRoutes()
 	r.buildWeaponXCharacterDataRoutes()
 	r.buildCharacterXProficiencyRoutes()
-
+	r.buildSkillRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -353,6 +353,7 @@ func (r *router) buildProficiencyRoutes() {
 		proficiencyGroup.POST("", proficiencyHandler.HandlerCreate())
 		proficiencyGroup.GET("", proficiencyHandler.HandlerGetAll())
 		proficiencyGroup.GET("/:id", proficiencyHandler.HandlerGetById())
+		proficiencyGroup.GET("/character/:characterId", proficiencyHandler.HandlerGetByCharacterId())
 		proficiencyGroup.PUT("/:id", proficiencyHandler.HandlerUpdate())
 		proficiencyGroup.DELETE("/:id", proficiencyHandler.HandlerDelete())
 	}
@@ -392,7 +393,7 @@ func (r *router) buildFeatureRoutes() {
 	{
 		featureGroup.POST("", featureHandler.HandlerCreate())
 		featureGroup.GET("", featureHandler.HandlerGetAll())
-		featureGroup.GET("/character/:id", featureHandler.HandlerGetAllFeaturesByCharacterId())
+		featureGroup.GET("/character/:characterId", featureHandler.HandlerGetAllFeaturesByCharacterId())
 		featureGroup.GET("/:id", featureHandler.HandlerGetById())
 		featureGroup.PUT("/:id", featureHandler.HandlerUpdate())
 		featureGroup.DELETE("/:id", featureHandler.HandlerDelete())
@@ -405,6 +406,7 @@ func (r *router) buildSpellRoutes() {
 		spellGroup.POST("", spellHandler.HandlerCreate())
 		spellGroup.GET("", spellHandler.HandlergetAll())
 		spellGroup.GET("/:id", spellHandler.HandlerGetById())
+		spellGroup.GET("/character/:id", spellHandler.HandlerGetByCharacterId())
 		spellGroup.PUT("/:id", spellHandler.HandlerUpdate())
 		spellGroup.DELETE("/:id", spellHandler.HandlerDelete())
 	}
@@ -522,5 +524,17 @@ func (r *router) buildCharacterXProficiencyRoutes() {
 	{
 		characterXProficiencyGroup.POST("", characterXProficiencyHandler.HandlerCreate())
 		characterXProficiencyGroup.DELETE("/:id", characterXProficiencyHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildSkillRoutes() {
+	skillGroup := r.routerGroup.Group("/skill")
+	{
+		skillGroup.POST("", skillHandler.HandlerCreate())
+		skillGroup.GET("", skillHandler.HandlerGetAll())
+		skillGroup.GET("/:id", skillHandler.HandlerGetById())
+		skillGroup.GET("/character/:characterId", skillHandler.HandlerGetByCharacterId())
+		skillGroup.PUT("/:id", skillHandler.HandlerUpdate())
+		skillGroup.DELETE("/:id", skillHandler.HandlerDelete())
 	}
 }
