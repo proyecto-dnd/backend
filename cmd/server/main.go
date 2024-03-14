@@ -14,7 +14,7 @@ import (
 
 	"github.com/proyecto-dnd/backend/cmd/server/router"
 	"github.com/proyecto-dnd/backend/pkg/firebaseConnection"
-	
+
 	_ "github.com/proyecto-dnd/backend/docs"
 )
 
@@ -59,7 +59,7 @@ func main() {
 	router.MapRoutes()
 
 	//PARA DOCKERIZAR CAMBIAR localhost por 0.0.0.0
-	if err := engine.Run("localhost:8080"); err != nil {
+	if err := engine.Run("0.0.0.0:8080"); err != nil {
 		panic(err)
 	}
 	defer db.Close()
