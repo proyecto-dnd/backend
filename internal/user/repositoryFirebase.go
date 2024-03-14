@@ -75,6 +75,51 @@ func (r *repositoryFirebase) GetAll() ([]domain.User, error) {
 
 	return users, nil
 }
+func (r *repositoryFirebase) GetByName(name string) ([]domain.User, error) {
+	var user domain.User
+	var users []domain.User
+	pager := iterator.NewPager(r.authClient.Users(ctx, ""), 50, "")
+	for {
+		var authUsers []*auth.ExportedUserRecord
+		nextPageToken, err := pager.NextPage(&authUsers)
+		if err != nil {
+			log.Printf("paging error %v\n", err)
+		}
+		for _, u := range authUsers {
+			if u.DisplayName == name {
+				user.Username = u.DisplayName
+				user.Id = u.UID
+				users = append(users, user)
+			}
+		}
+		if nextPageToken == "" {
+			break
+		}
+	}
+	return users, nil
+
+	/*
+		function debounce(func, delay) {
+		let timeoutId;
+		return function() {
+			const context = this;
+			const args = arguments;
+			clearTimeout(timeoutId);
+			timeoutId = setTimeout(() => {
+			func.apply(context, args);
+			}, delay);
+		};
+		}
+
+		// Usage example
+		const debouncedFunction = debounce(function() {
+		console.log("Function debounced!");
+		}, 300); // Debounce delay of 300 milliseconds
+
+		// Attach this debounced function to your input event listener
+		input.addEventListener("input", debouncedFunction);
+	*/
+}
 func (r *repositoryFirebase) GetById(id string) (domain.User, error) {
 
 	u, err := r.authClient.GetUser(ctx, id)

@@ -19,6 +19,14 @@ func NewFriendshipRepository(db *sql.DB) FriendshipRepository {
 	return &repositoryFriendship{db: db}
 }
 
+// func (r *repositoryFriendship) SearchFollowers(friendship domain.Friendship) error {
+// 	rows, err := r.db.Query(QuerySearchFollowers, friendship.User1Id, friendship.User2Id)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// }
+
 func (r *repositoryFriendship) Create(friendship domain.Friendship) (domain.Friendship, error) {
 	statement, err := r.db.Prepare(QueryCreate)
 	if err != nil {
@@ -71,7 +79,7 @@ func (r *repositoryFriendship) IsFriends(userId1 string, userId2 string) (bool, 
 	return count > 0, nil
 }
 
-func (r *repositoryFriendship) GetFriends(userId string) ([]domain.Friendship, error) {	
+func (r *repositoryFriendship) GetFriends(userId string) ([]domain.Friendship, error) {
 	statement, err := r.db.Prepare(QueryGetFriends)
 	if err != nil {
 		return nil, ErrPrepareStatement

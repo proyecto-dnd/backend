@@ -13,9 +13,16 @@ import (
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
+	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
+
+	// "github.com/proyecto-dnd/backend/internal/ws"
+
+	// characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
+	// characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	"github.com/proyecto-dnd/backend/internal/character_feature"
 	"github.com/proyecto-dnd/backend/internal/class"
-	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
+
+	// classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/event_type"
 	"github.com/proyecto-dnd/backend/internal/feature"
@@ -261,11 +268,11 @@ func (r *router) MapRoutes() {
 	r.buildProficiencyRoutes()
 	r.buildProficiencyXClassRoutes()
 	r.buildUserCampaignRoutes()
-	r.buildSpellRoutes()
-	r.buildClassXSpellRoutes()
-	r.buildRaceXProficiencyRoutes()
-	r.buildBackgroundXProficiencyRoutes()
-	r.buildCharacterXSpellRoutes()
+	// r.buildSpellRoutes()
+	// r.buildClassXSpellRoutes()
+	// r.buildRaceXProficiencyRoutes()
+	// r.buildBackgroundXProficiencyRoutes()
+	// r.buildCharacterXSpellRoutes()
 	r.buildFeatureRoutes()
 	r.buildItemRoutes()
 	r.buildItemXCharacterDataRoutes()
