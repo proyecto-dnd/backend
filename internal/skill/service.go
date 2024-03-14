@@ -81,4 +81,3 @@ func (s *service) Update(skill domain.Skill) (domain.Skill, error) {
 	}
 	return skill, nil
 }
-

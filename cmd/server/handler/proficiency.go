@@ -84,6 +84,23 @@ func (h *ProficiencyHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+func (h *ProficiencyHandler) HandlerGetByCharacterId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("characterId")
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		proficiencyList, err := h.service.GetByCharacterDataId(intId)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, proficiencyList)
+	}
+}
+
 // proficiency godoc
 // @Summary Update proficiency
 // @Tags proficiency

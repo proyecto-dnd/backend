@@ -47,3 +47,4 @@ func (h *SkillXCharacterHandler) HandlerDelete() gin.HandlerFunc {
 		ctx.JSON(201, "Successfully deleted row with skill_id="+strconv.Itoa(int(tempSkillXCharacter.SkillID))+" and character_id="+strconv.Itoa(int(tempSkillXCharacter.CharacterID)))
 	}
 }
+
