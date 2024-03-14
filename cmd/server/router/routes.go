@@ -10,6 +10,8 @@ import (
 	// backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
+	"github.com/proyecto-dnd/backend/internal/ws"
+
 	// "github.com/proyecto-dnd/backend/internal/ws"
 
 	// characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
@@ -81,6 +83,8 @@ func (r *router) MapRoutes() {
 	r.buildWeaponRoutes()
 	r.buildWeaponXCharacterDataRoutes()
 	// r.buildCharacterXProficiencyRoutes()
+	r.buildWebsocketRoutes()
+	
 	
 	// TODO Add other builders here	and write their functions
 }
@@ -437,3 +441,10 @@ func (r *router) buildWeaponXCharacterDataRoutes() {
 // 	}
 // }
 
+func (r *router) buildWebsocketRoutes() {
+	manager := ws.NewManager()
+	wsGroup := r.routerGroup.Group("/ws")
+	{
+		wsGroup.GET("", manager.ServeWS)
+	}
+}
