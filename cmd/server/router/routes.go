@@ -42,15 +42,19 @@ var (
 	userFirebaseRepository user.RepositoryUsers
 	userFirebaseService user.ServiceUsers
 	userFirebaseHandler *handler.UserHandler
+	
 	campaignRepository campaign.CampaignRepository
 	campaignService campaign.CampaignService
 	campaignHandler *handler.CampaignHandler
+
 	sessionRepository session.SessionRepository
 	sessionService session.SessionService
 	sessionHandler *handler.SessionHandler
+
 	classRepository class.RepositoryCharacterClass
 	classService class.ClassService
 	classHandler *handler.ClassHandler
+
 	proficiencyRepository proficiency.RepositoryProficiency
 	proficiencyService proficiency.ProficiencyService
 	proficiencyHandler *handler.ProficiencyHandler
