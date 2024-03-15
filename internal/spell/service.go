@@ -53,3 +53,11 @@ func (s *service) Update(spellDto dto.SpellDto, id int) (domain.Spell, error) {
 func (s *service) Delete(id int) error {
 	return s.repository.Delete(id)
 }
+
+func (s *service) GetByCharacterDataId(characterId int) ([]domain.Spell, error) {
+	spellList, err := s.repository.GetByCharacterDataId(characterId)
+	if err != nil {
+		return []domain.Spell{}, err
+	}
+	return spellList, nil
+}

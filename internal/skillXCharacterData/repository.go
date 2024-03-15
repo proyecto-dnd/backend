@@ -19,15 +19,15 @@ type skillxCharacterDataSqlRepository struct {
 
 // Create implements RepositorySkillXCharacterData.
 func (r *skillxCharacterDataSqlRepository) Create(skillXCharacterData domain.SkillXCharacterData) (domain.SkillXCharacterData, error) {
-	statement, err := r.db.Prepare(QueryCreateItemXCharacterData)
-	if err!= nil {
-        return domain.SkillXCharacterData{}, ErrPrepareStatement
-    }
+	statement, err := r.db.Prepare(QueryCreateSkillXCharacter)
+	if err != nil {
+		return domain.SkillXCharacterData{}, ErrPrepareStatement
+	}
 	defer statement.Close()
 
 	_, err = statement.Exec(
 		skillXCharacterData.SkillID,
-		skillXCharacterData.CharacterDataID,
+		skillXCharacterData.CharacterID,
 	)
 
 	if err != nil {
@@ -39,20 +39,20 @@ func (r *skillxCharacterDataSqlRepository) Create(skillXCharacterData domain.Ski
 
 // Delete implements RepositorySkillXCharacterData.
 func (r *skillxCharacterDataSqlRepository) Delete(skillXCharacterData domain.SkillXCharacterData) error {
-	result, err := r.db.Exec(QueryDeleteItemXCharacterData, skillXCharacterData.SkillID, skillXCharacterData.CharacterDataID, nil)
+	result, err := r.db.Exec(QueryDeleteSkillXCharacter, skillXCharacterData.SkillID, skillXCharacterData.CharacterID, nil)
 	if err != nil {
 		return err
 	}
 	rowsAffected, err := result.RowsAffected()
-	if err!= nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 	if rowsAffected < 1 {
-        return ErrNotFound
-    }
+		return ErrNotFound
+	}
 	return nil
 }
 
-func NewSkillxCharacterDataRepository(db *sql.DB) RepositorySkillXCharacterData {
+func NewSkillxCharacterDataRepository(db *sql.DB) RepositorySkillXCharacter {
 	return &skillxCharacterDataSqlRepository{db}
 }

@@ -62,87 +62,87 @@ var (
 	proficiencyXClassService proficiencyXclass.ProficiencyXClassService
 	proficiencyXClassHandler *handler.ProficiencyXClassHandler
 	backgroundXProficiencyRepository backgroundXproficiency.BackgroundXProficiencyRepository
-	backgroundXProficiencyService backgroundXproficiency.BackgroundXProficiencyService
-	backgroundXProficiencyHandler *handler.BackgroundXProficiencyHandler
-	
+	backgroundXProficiencyService    backgroundXproficiency.BackgroundXProficiencyService
+	backgroundXProficiencyHandler    *handler.BackgroundXProficiencyHandler
+
 	userCampaignRepository user_campaign.UserCampaignRepository
-	userCampaignService user_campaign.UserCampaignService
-	userCampaignHandler *handler.UserCampaignHandler
-	friendshipRepository friendship.FriendshipRepository
-	friendshipService friendship.FriendshipService
-	friendshipHandler *handler.FriendshipHandler
-	
-	featureRepository feature.FeatureRepository
-	featureService feature.FeatureService
-	featureHandler *handler.FeatureHandler
+	userCampaignService    user_campaign.UserCampaignService
+	userCampaignHandler    *handler.UserCampaignHandler
+	friendshipRepository   friendship.FriendshipRepository
+	friendshipService      friendship.FriendshipService
+	friendshipHandler      *handler.FriendshipHandler
+
+	featureRepository               feature.FeatureRepository
+	featureService                  feature.FeatureService
+	featureHandler                  *handler.FeatureHandler
 	featureXCharacterDataRepository character_feature.CharacterFeatureRepository
-	featureXCharacterDataService character_feature.CharacterFeatureService
-	featureXCharacterDataHandler handler.CharacterFeature
+	featureXCharacterDataService    character_feature.CharacterFeatureService
+	featureXCharacterDataHandler    handler.CharacterFeature
 
 	characterFeatureRepository character_feature.CharacterFeatureRepository
-	characterFeatureService character_feature.CharacterFeatureService
-	characterFeatureHandler *handler.CharacterFeature
-	
-	skillRepository skill.RepositorySkill
-	skillService skill.ServiceSkill
-	skillHandler handler.SkillHandler
-	skillXCharacterDataRepository skillxcharacterdata.RepositorySkillXCharacterData
-	// skillXCharacterDataService skillxcharacterdata.ServiceSkillXCharacterData TO DO
-	// skillXCharacterDataHandler handler.skillXCharacterDataHandler  TO DO
-	
-	spellRepository spell.RepositorySpell
-	spellService spell.ServiceSpell
-	spellHandler *handler.SpellHandler
+	characterFeatureService    character_feature.CharacterFeatureService
+	characterFeatureHandler    *handler.CharacterFeature
+
+	skillRepository               skill.RepositorySkill
+	skillService                  skill.ServiceSkill
+	skillHandler                  handler.SkillHandler
+	skillXCharacterDataRepository skillxcharacterdata.RepositorySkillXCharacter
+	skillXCharacterDataService    skillxcharacterdata.ServiceSkillXCharacter
+	skillXCharacterHandler        handler.SkillXCharacterHandler
+
+	spellRepository       spell.RepositorySpell
+	spellService          spell.ServiceSpell
+	spellHandler          *handler.SpellHandler
 	classXSpellRepository classXspell.ServiceClassXSpell
-	classXSpellService classXspell.ServiceClassXSpell
-	classXSpellHandler *handler.ClassXSpellHandler
-	
-	raceRepository race.RaceRepository
-	raceService race.RaceService
-	raceHandler *handler.RaceHandler
+	classXSpellService    classXspell.ServiceClassXSpell
+	classXSpellHandler    *handler.ClassXSpellHandler
+
+	raceRepository             race.RaceRepository
+	raceService                race.RaceService
+	raceHandler                *handler.RaceHandler
 	raceXProficiencyRepository raceXproficiency.RaceXProficiencyRepository
-	racexproficiencyService raceXproficiency.RaceXProficiencyService
-	raceXProficiencyHandler *handler.RaceXProficiencyHandler
-	
+	racexproficiencyService    raceXproficiency.RaceXProficiencyService
+	raceXProficiencyHandler    *handler.RaceXProficiencyHandler
+
 	characterXSpellRepository characterXspell.CharacterXSpellRepository
-	characterXSpellService characterXspell.CharacterXSpellService
-	characterXSpellHandler *handler.CharacterXSpellHandler
-	
-	eventRepository event.EventRepository
-	eventService event.EventService
-	eventHandler *handler.EventHandler
+	characterXSpellService    characterXspell.CharacterXSpellService
+	characterXSpellHandler    *handler.CharacterXSpellHandler
+
+	eventRepository     event.EventRepository
+	eventService        event.EventService
+	eventHandler        *handler.EventHandler
 	eventTypeRepository event_type.EventTypeRepository
-	eventTypeService event_type.EventTypeService
-	eventTypeHandler *handler.EventTypeHandler
-	
-	itemRepository item.RepositoryItem
-	itemService item.ServiceItem
-	itemHandler *handler.ItemHandler
+	eventTypeService    event_type.EventTypeService
+	eventTypeHandler    *handler.EventTypeHandler
+
+	itemRepository               item.RepositoryItem
+	itemService                  item.ServiceItem
+	itemHandler                  *handler.ItemHandler
 	itemXCharacterDataRepository itemxcharacterdata.RepositoryItemXCharacterData
-	itemXCharacterDataService itemxcharacterdata.ServiceItemXCharacterData
-	itemXCharacterDataHandler *handler.ItemXCharacterDataHandler
+	itemXCharacterDataService    itemxcharacterdata.ServiceItemXCharacterData
+	itemXCharacterDataHandler    *handler.ItemXCharacterDataHandler
 
-	weaponRepository weapon.RepositoryWeapon
-	weaponService weapon.ServiceWeapon
-	weaponHandler *handler.WeaponHandler
+	weaponRepository               weapon.RepositoryWeapon
+	weaponService                  weapon.ServiceWeapon
+	weaponHandler                  *handler.WeaponHandler
 	weaponXCharacterDataRepository weaponxcharacterdata.RepositoryWeaponXCharacterData
-	weaponXCharacterDataService weaponxcharacterdata.ServiceWeaponXCharacterData
-	weaponXCharacterDataHandler *handler.WeaponXCharacterDataHandler
+	weaponXCharacterDataService    weaponxcharacterdata.ServiceWeaponXCharacterData
+	weaponXCharacterDataHandler    *handler.WeaponXCharacterDataHandler
 
-	armorRepository armor.ArmorRepository
-	armorService armor.ArmorService
-	armorHandler *handler.ArmorHandler
+	armorRepository               armor.ArmorRepository
+	armorService                  armor.ArmorService
+	armorHandler                  *handler.ArmorHandler
 	armorXCharacterDataRepository armorXCharacterData.RepositoryArmorXCharacterData
-	armorXCharacterDataService armorXCharacterData.ServiceArmorXCharacterData
+	armorXCharacterDataService    armorXCharacterData.ServiceArmorXCharacterData
 	// armorXCharacterDataHandler handler.ArmorXCharacterDataHandler     TO DO
 
 	characterXProficiencyRepository characterXproficiency.CharacterXProficiencyRepository
-	characterXProficiencyService characterXproficiency.CharacterXProficiencyService
-	characterXProficiencyHandler *handler.CharacterXProficiencyHandler
+	characterXProficiencyService    characterXproficiency.CharacterXProficiencyService
+	characterXProficiencyHandler    *handler.CharacterXProficiencyHandler
 
 	characterDataRepository characterdata.RepositoryCharacterData
-	characterDataService characterdata.ServiceCharacterData
-	characterDataHandler *handler.CharacterHandler
+	characterDataService    characterdata.ServiceCharacterData
+	characterDataHandler    *handler.CharacterHandler
 )
 
 type Router interface {
@@ -160,7 +160,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	userFirebaseRepository = user.NewUserFirebaseRepository(firebaseApp)
 	userFirebaseService = user.NewServiceUser(userFirebaseRepository)
 	userFirebaseHandler = handler.NewUserHandler(&userFirebaseService)
-	
+
 	itemRepository = item.NewItemRepository(db)
 	itemService = item.NewItemService(itemRepository)
 	itemHandler = handler.NewItemHandler(&itemService)
@@ -173,7 +173,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	weaponHandler = handler.NewWeaponHandler(&weaponService)
 	weaponXCharacterDataRepository = weaponxcharacterdata.NewWeaponXCharacterDataSqlRepository(db)
 	weaponXCharacterDataService = weaponxcharacterdata.NewWeaponXCharacterDataService(weaponXCharacterDataRepository, weaponRepository)
-	weaponXCharacterDataHandler =  handler.NewWeaponXCharacterDataHandler(&weaponXCharacterDataService)
+	weaponXCharacterDataHandler = handler.NewWeaponXCharacterDataHandler(&weaponXCharacterDataService)
 
 	armorRepository = armor.NewArmorRepository(db)
 	armorService = armor.NewArmorService(armorRepository)
@@ -203,14 +203,14 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	friendshipRepository = friendship.NewFriendshipRepository(db)
 	friendshipService = friendship.NewFriendshipService(friendshipRepository)
 	friendshipHandler = handler.NewFriendshipHandler(&friendshipService)
-	
+
 	featureRepository = feature.NewFeatureRepository(db)
 	featureService = feature.NewFeatureService(featureRepository)
 	featureHandler = handler.NewFeatureHandler(&featureService)
 	featureXCharacterDataRepository = character_feature.NewCharacterFeatureRepository(db)
 	featureXCharacterDataService = character_feature.NewCharacterFeatureService(featureXCharacterDataRepository)
 	featureXCharacterDataHandler = *handler.NewCharacterFeatureHandler(&featureXCharacterDataService)
-	
+
 	spellRepository = spell.NewSpellRepository(db)
 	spellService = spell.NewSpellService(spellRepository)
 	spellHandler = handler.NewSpellHandler(&spellService)
@@ -220,7 +220,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterXSpellRepository = characterXspell.NewCharacterXSpellRepository(db)
 	characterXSpellRepository = characterXspell.NewCharacterXSpellService(characterXSpellRepository)
 	characterXSpellHandler = handler.NewCharacterXSpellHandler(characterXSpellService)
-	
+
 	sessionRepository = session.NewSessionRepository(db)
 	sessionService = session.NewSessionService(sessionRepository)
 	sessionHandler = handler.NewSessionHandler(&sessionService)
@@ -246,7 +246,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	eventRepository = event.NewEventRepository(db)
 	eventService = event.NewEventService(eventRepository, characterDataService)
 	eventHandler = handler.NewEventHandler(&eventService)
-	
+
 	return &router{
 		engine:      engine,
 		db:          db,
@@ -276,7 +276,7 @@ func (r *router) MapRoutes() {
 	r.buildWeaponRoutes()
 	r.buildWeaponXCharacterDataRoutes()
 	r.buildCharacterXProficiencyRoutes()
-
+	r.buildSkillRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -357,6 +357,7 @@ func (r *router) buildProficiencyRoutes() {
 		proficiencyGroup.POST("", proficiencyHandler.HandlerCreate())
 		proficiencyGroup.GET("", proficiencyHandler.HandlerGetAll())
 		proficiencyGroup.GET("/:id", proficiencyHandler.HandlerGetById())
+		proficiencyGroup.GET("/character/:characterId", proficiencyHandler.HandlerGetByCharacterId())
 		proficiencyGroup.PUT("/:id", proficiencyHandler.HandlerUpdate())
 		proficiencyGroup.DELETE("/:id", proficiencyHandler.HandlerDelete())
 	}
@@ -396,7 +397,7 @@ func (r *router) buildFeatureRoutes() {
 	{
 		featureGroup.POST("", featureHandler.HandlerCreate())
 		featureGroup.GET("", featureHandler.HandlerGetAll())
-		featureGroup.GET("/character/:id", featureHandler.HandlerGetAllFeaturesByCharacterId())
+		featureGroup.GET("/character/:characterId", featureHandler.HandlerGetAllFeaturesByCharacterId())
 		featureGroup.GET("/:id", featureHandler.HandlerGetById())
 		featureGroup.PUT("/:id", featureHandler.HandlerUpdate())
 		featureGroup.DELETE("/:id", featureHandler.HandlerDelete())
@@ -409,6 +410,7 @@ func (r *router) buildSpellRoutes() {
 		spellGroup.POST("", spellHandler.HandlerCreate())
 		spellGroup.GET("", spellHandler.HandlergetAll())
 		spellGroup.GET("/:id", spellHandler.HandlerGetById())
+		spellGroup.GET("/character/:id", spellHandler.HandlerGetByCharacterId())
 		spellGroup.PUT("/:id", spellHandler.HandlerUpdate())
 		spellGroup.DELETE("/:id", spellHandler.HandlerDelete())
 	}
@@ -526,5 +528,17 @@ func (r *router) buildCharacterXProficiencyRoutes() {
 	{
 		characterXProficiencyGroup.POST("", characterXProficiencyHandler.HandlerCreate())
 		characterXProficiencyGroup.DELETE("/:id", characterXProficiencyHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildSkillRoutes() {
+	skillGroup := r.routerGroup.Group("/skill")
+	{
+		skillGroup.POST("", skillHandler.HandlerCreate())
+		skillGroup.GET("", skillHandler.HandlerGetAll())
+		skillGroup.GET("/:id", skillHandler.HandlerGetById())
+		skillGroup.GET("/character/:characterId", skillHandler.HandlerGetByCharacterId())
+		skillGroup.PUT("/:id", skillHandler.HandlerUpdate())
+		skillGroup.DELETE("/:id", skillHandler.HandlerDelete())
 	}
 }

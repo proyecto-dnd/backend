@@ -33,7 +33,7 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 
 	params := (&auth.UserToCreate{}).
 		Email(user.Email).
-		EmailVerified(false).
+		EmailVerified(true).
 		Password(user.Password).
 		DisplayName(user.Username).
 		Disabled(false)
