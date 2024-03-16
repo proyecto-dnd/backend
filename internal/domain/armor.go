@@ -13,5 +13,5 @@ type Armor struct {
 	Strength       int    `json:"strength"`
 	ArmorClass     int    `json:"armor_class"`
 	DexBonus       string `json:"dex_bonus"`
-	CampaignId     *int    `json:"campaign_id"`
+	CampaignId     *int   `json:"campaign_id"`
 }

@@ -11,7 +11,7 @@ var (
 	QueryGetById = ``
 	QueryGetByUserId = ``
 	QueryGetByUserIdAndCampaignId = ``
-	QueryGetByCampaignId = ``
-	QueryUpdate = ``
-	QueryDelete = ``
+	QueryGetByCampaignId          = ``
+	QueryUpdate                   = ``
+	QueryDelete                   = ``
 )

@@ -2,7 +2,7 @@ package armor
 
 var (
 	QueryCreateArmor = `
-		INSERT INTO armor (material, name, weight, price, category, protection_type, description, penalty, strength, armor_class, dex_bonus, basic)
+		INSERT INTO armor (material, name, weight, price, category, protection_type, description, penalty, strength, armor_class, dex_bonus, campaign_id)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`
 
@@ -16,7 +16,7 @@ var (
 
 	QueryUpdateArmor = `
 		UPDATE armor
-		SET material = ?, name = ?, weight = ?, price = ?, category = ?, protection_type = ?, description = ?, penalty = ?, strength = ?, armor_class = ?, dex_bonus = ?, basic = ?
+		SET material = ?, name = ?, weight = ?, price = ?, category = ?, protection_type = ?, description = ?, penalty = ?, strength = ?, armor_class = ?, dex_bonus = ?, campaign_id = ?
 		WHERE armor_id = ?;
 	`
 
