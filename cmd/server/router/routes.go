@@ -203,7 +203,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	userCampaignRepository = user_campaign.NewUserCampaignRepository(db)
 	userCampaignService = user_campaign.NewUserCampaignService(userCampaignRepository)
 	userCampaignHandler = handler.NewUserCampaignHandler(&userCampaignService)
-	friendshipRepository = friendship.NewFriendshipRepository(db)
+	friendshipRepository = friendship.NewFriendshipRepository(db, userFirebaseRepository, firebaseApp)
 	friendshipService = friendship.NewFriendshipService(friendshipRepository)
 	friendshipHandler = handler.NewFriendshipHandler(&friendshipService)
 
@@ -268,6 +268,7 @@ func (r *router) MapRoutes() {
 	r.buildProficiencyRoutes()
 	r.buildProficiencyXClassRoutes()
 	r.buildUserCampaignRoutes()
+	r.buildFriendshipRoutes()
 	// r.buildSpellRoutes()
 	// r.buildClassXSpellRoutes()
 	// r.buildRaceXProficiencyRoutes()
@@ -392,6 +393,7 @@ func (r *router) buildFriendshipRoutes() {
 	{
 		friendshipGroup.POST("", friendshipHandler.CreateHandler())
 		friendshipGroup.DELETE("", friendshipHandler.DeleteHandler())
+		friendshipGroup.GET("", friendshipHandler.SearchFollowersHandler())
 	}
 }
 

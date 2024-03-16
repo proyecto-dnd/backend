@@ -50,10 +50,10 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 
 	return userTemp, nil
 }
-func (r *repositoryFirebase) GetAll() ([]domain.User, error) {
+func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 
-	var user domain.User
-	var users []domain.User
+	var user domain.UserResponse
+	var users []domain.UserResponse
 	pager := iterator.NewPager(r.authClient.Users(ctx, ""), 100, "")
 	for {
 		var authUsers []*auth.ExportedUserRecord
@@ -64,7 +64,7 @@ func (r *repositoryFirebase) GetAll() ([]domain.User, error) {
 		for _, u := range authUsers {
 			user.Username = u.DisplayName
 			user.Email = u.Email
-			user.Password = u.PasswordHash
+			// user.Password = u.PasswordHash
 			user.Id = u.UID
 			users = append(users, user)
 		}
@@ -97,29 +97,8 @@ func (r *repositoryFirebase) GetByName(name string) ([]domain.User, error) {
 		}
 	}
 	return users, nil
-
-	/*
-		function debounce(func, delay) {
-		let timeoutId;
-		return function() {
-			const context = this;
-			const args = arguments;
-			clearTimeout(timeoutId);
-			timeoutId = setTimeout(() => {
-			func.apply(context, args);
-			}, delay);
-		};
-		}
-
-		// Usage example
-		const debouncedFunction = debounce(function() {
-		console.log("Function debounced!");
-		}, 300); // Debounce delay of 300 milliseconds
-
-		// Attach this debounced function to your input event listener
-		input.addEventListener("input", debouncedFunction);
-	*/
 }
+
 func (r *repositoryFirebase) GetById(id string) (domain.User, error) {
 
 	u, err := r.authClient.GetUser(ctx, id)
@@ -175,7 +154,5 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 		return "", err
 	}
 
-	// ctx.SetCookie("Session", cookie, 3600, "/", "localhost", false, false)
-	// log.Println("LISTO LA PETICION")
 	return cookie, nil
 }

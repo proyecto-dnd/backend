@@ -6,7 +6,7 @@ import (
 
 type RepositoryUsers interface {
 	Create(user domain.User) (domain.User, error)
-	GetAll() ([]domain.User, error)
+	GetAll() ([]domain.UserResponse, error)
 	GetById(id string) (domain.User, error)
 	Update(user domain.User, id string) (domain.User, error)
 	Delete(id string) error

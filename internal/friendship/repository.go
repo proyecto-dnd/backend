@@ -3,31 +3,71 @@ package friendship
 import (
 	"database/sql"
 	"errors"
+	"log"
+	"strings"
 
+	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/auth"
+	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/internal/user"
 )
 
 type repositoryFriendship struct {
-	db *sql.DB
+	db             *sql.DB
+	userRepository user.RepositoryUsers
+	firebaseApp    *firebase.App
+	authClient     *auth.Client
 }
 
 var (
 	ErrPrepareStatement = errors.New("error preparing statement")
+	ErrDuplicateName    = errors.New("name already exists")
+	ctx                 = &gin.Context{}
 )
 
-func NewFriendshipRepository(db *sql.DB) FriendshipRepository {
-	return &repositoryFriendship{db: db}
+func NewFriendshipRepository(db *sql.DB, userRepository user.RepositoryUsers, app *firebase.App) FriendshipRepository {
+	authClient, err := app.Auth(ctx)
+	if err != nil {
+		log.Printf("Error initializing Firebase Auth client: %v", err)
+	}
+	return &repositoryFriendship{db: db, userRepository: userRepository, authClient: authClient}
 }
 
-// func (r *repositoryFriendship) SearchFollowers(friendship domain.Friendship) error {
-// 	rows, err := r.db.Query(QuerySearchFollowers, friendship.User1Id, friendship.User2Id)
-// 	if err != nil {
-// 		return err
-// 	}
+func (r *repositoryFriendship) SearchFollowers(mutuals domain.Mutuals) ([]domain.UserResponse, error) {
+	usersList, err := r.userRepository.GetAll()
+	if err != nil {
+		return nil, err
+	}
 
-// }
+	var tempFriendList []domain.UserResponse
+	for _, user := range usersList {
+		if strings.HasPrefix(user.Username, mutuals.User2Name) {
+			tempFriendList = append(tempFriendList, user)
+		}
+	}
+
+	var result auth.GetUsersResult
+	for _, user := range tempFriendList {
+		getUserResult, err := r.authClient.GetUsers(ctx, []auth.UserIdentifier{auth.UIDIdentifier{UID: user.Id}})
+		if err != nil {
+			log.Fatalf("error retriving user: %v\n", err)
+		}
+
+		result.Users = append(result.Users, getUserResult.Users...)
+		result.NotFound = append(result.NotFound, getUserResult.NotFound...)
+
+	}
+	// fmt.Println(&result.Users)
+	for _, u := range result.Users {
+		log.Printf("%v", u.DisplayName)
+	}
+	
+	return tempFriendList, nil
+}
 
 func (r *repositoryFriendship) Create(friendship domain.Friendship) (domain.Friendship, error) {
+
 	statement, err := r.db.Prepare(QueryCreate)
 	if err != nil {
 		return domain.Friendship{}, ErrPrepareStatement
