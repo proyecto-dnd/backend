@@ -273,6 +273,7 @@ func (r *router) MapRoutes() {
 	r.buildWeaponXCharacterDataRoutes()
 	r.buildCharacterXProficiencyRoutes()
 	r.buildSkillRoutes()
+	r.buildRaceRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -536,5 +537,16 @@ func (r *router) buildSkillRoutes() {
 		skillGroup.GET("/character/:characterId", skillHandler.HandlerGetByCharacterId())
 		skillGroup.PUT("/:id", skillHandler.HandlerUpdate())
 		skillGroup.DELETE("/:id", skillHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildRaceRoutes() {
+	raceGroup := r.routerGroup.Group("/race")
+	{
+		raceGroup.POST("", raceHandler.HandlerCreate())
+		raceGroup.GET("", raceHandler.HandlerGetAll())
+		raceGroup.GET("/:id", raceHandler.HandlerGetById())
+		raceGroup.PUT("/:id", raceHandler.HandlerUpdate())
+		raceGroup.DELETE("/:id", raceHandler.HandlerDelete())
 	}
 }
