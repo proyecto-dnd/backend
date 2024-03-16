@@ -1,14 +1,26 @@
 package armorXCharacterData
 
-import "github.com/proyecto-dnd/backend/internal/domain"
+import (
+	"github.com/proyecto-dnd/backend/internal/armor"
+	"github.com/proyecto-dnd/backend/internal/domain"
+)
 
 type service struct {
 	armorXcharacterRepo RepositoryArmorXCharacterData
+	armorService armor.ArmorService
+}
+
+func NewServiceArmorXCharacterData(armorXcharacterRepo RepositoryArmorXCharacterData, armorService armor.ArmorService) ServiceArmorXCharacterData {
+	return &service{armorXcharacterRepo: armorXcharacterRepo, armorService: armorService}
 }
 
 // CreateArmorXCharacterData implements ServiceArmorXCharacterData.
 func (s *service) CreateArmorXCharacterData(data domain.ArmorXCharacterData) (domain.ArmorXCharacterData, error) {
 	newArmorRelationship, err := s.armorXcharacterRepo.CreateArmorXCharacterData(data)
+	if err != nil {
+		return domain.ArmorXCharacterData{}, err
+	}
+	newArmorRelationship.Armor_Id, err = s.armorService.GetArmorByID(data.Armor_Id.ArmorID)
 	if err != nil {
 		return domain.ArmorXCharacterData{}, err
 	}
@@ -62,13 +74,14 @@ func (s *service) GetByCharacterDataIdArmor(id int) ([]domain.ArmorXCharacterDat
 
 // UpdateArmorXCharacterData implements ServiceArmorXCharacterData.
 func (s *service) UpdateArmorXCharacterData(data domain.ArmorXCharacterData) (domain.ArmorXCharacterData, error) {
-	newArmorRelationship, err := s.armorXcharacterRepo.UpdateArmorXCharacterData(data)
+	updatedArmorRelationship, err := s.armorXcharacterRepo.UpdateArmorXCharacterData(data)
 	if err != nil {
 		return domain.ArmorXCharacterData{}, err
 	}
-	return newArmorRelationship, nil
+	updatedArmorRelationship.Armor_Id, err = s.armorService.GetArmorByID(data.Armor_Id.ArmorID)
+	if err != nil {
+		return domain.ArmorXCharacterData{}, err
+	}
+	return updatedArmorRelationship, nil
 }
 
-func NewServiceArmorXCharacterData(armorXcharacterRepo RepositoryArmorXCharacterData) ServiceArmorXCharacterData {
-	return &service{armorXcharacterRepo: armorXcharacterRepo}
-}

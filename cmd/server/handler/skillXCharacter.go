@@ -12,8 +12,8 @@ type SkillXCharacterHandler struct {
 	service skillxcharacterdata.ServiceSkillXCharacter
 }
 
-func NewSkillXCharacterHandler(service skillxcharacterdata.ServiceSkillXCharacter) *SkillXCharacterHandler {
-	return &SkillXCharacterHandler{service: service}
+func NewSkillXCharacterHandler(service *skillxcharacterdata.ServiceSkillXCharacter) *SkillXCharacterHandler {
+	return &SkillXCharacterHandler{service: *service}
 }
 
 func (h *SkillXCharacterHandler) HandlerCreate() gin.HandlerFunc {
