@@ -3,6 +3,7 @@ package characterdata
 import (
 	"database/sql"
 	"errors"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -11,6 +12,7 @@ var (
 	ErrGettingLastInsertId = errors.New("error getting last insert id")
 	ErrNotFound            = errors.New("characters not found")
 )
+
 type CharacterDataMySqlRepository struct {
 	db *sql.DB
 }
@@ -26,30 +28,30 @@ func (r *CharacterDataMySqlRepository) Create(character domain.CharacterData) (d
 		character.User_Id,
 		character.Campaign_Id,
 		character.Race.RaceID,
-		character.Class.ClassId, 
+		character.Class.ClassId,
 		character.Background.BackgroundID,
 		character.Name,
-        character.Story,
-        character.Alignment,
-        character.Age,
-        character.Hair,
+		character.Story,
+		character.Alignment,
+		character.Age,
+		character.Hair,
 		character.Eyes,
-        character.Skin,
-        character.Height,
-        character.Weight,
-        character.ImgUrl,
+		character.Skin,
+		character.Height,
+		character.Weight,
+		character.ImgUrl,
 		character.Str,
-        character.Dex,
-        character.Int,
-        character.Con,
-        character.Wiz,
+		character.Dex,
+		character.Int,
+		character.Con,
+		character.Wiz,
 		character.Cha,
-        character.Hitpoints,
-        character.HitDice,
-        character.Speed,
-        character.Armor_Class,
+		character.Hitpoints,
+		character.HitDice,
+		character.Speed,
+		character.Armor_Class,
 		character.Level,
-        character.Exp,
+		character.Exp,
 	)
 	if err != nil {
 		return domain.CharacterData{}, err
@@ -116,7 +118,6 @@ func (r *CharacterDataMySqlRepository) GetByCampaignId(campaignid int) ([]domain
 
 	var characters []domain.CharacterData
 
-
 	for rows.Next() {
 		var character domain.CharacterData
 		err := ScanCharacterData(rows, &character)
@@ -154,10 +155,9 @@ func (r *CharacterDataMySqlRepository) GetByUserId(userid string) ([]domain.Char
 
 	var characters []domain.CharacterData
 
-
 	for rows.Next() {
 		var character domain.CharacterData
-	
+
 		err := ScanCharacterData(rows, &character)
 		if err != nil {
 			return []domain.CharacterData{}, err
@@ -181,10 +181,9 @@ func (r *CharacterDataMySqlRepository) GetByUserIdAndCampaignId(userid string, c
 
 	var characters []domain.CharacterData
 
-
 	for rows.Next() {
 		var character domain.CharacterData
-	
+
 		err := ScanCharacterData(rows, &character)
 		if err != nil {
 			return []domain.CharacterData{}, err
@@ -209,30 +208,30 @@ func (r *CharacterDataMySqlRepository) Update(character domain.CharacterData) (d
 		character.User_Id,
 		character.Campaign_Id,
 		character.Race.RaceID,
-		character.Class.ClassId, 
+		character.Class.ClassId,
 		character.Background.BackgroundID,
 		character.Name,
-        character.Story,
-        character.Alignment,
-        character.Age,
-        character.Hair,
+		character.Story,
+		character.Alignment,
+		character.Age,
+		character.Hair,
 		character.Eyes,
-        character.Skin,
-        character.Height,
-        character.Weight,
-        character.ImgUrl,
+		character.Skin,
+		character.Height,
+		character.Weight,
+		character.ImgUrl,
 		character.Str,
-        character.Dex,
-        character.Int,
-        character.Con,
-        character.Wiz,
+		character.Dex,
+		character.Int,
+		character.Con,
+		character.Wiz,
 		character.Cha,
-        character.Hitpoints,
-        character.HitDice,
-        character.Speed,
-        character.Armor_Class,
+		character.Hitpoints,
+		character.HitDice,
+		character.Speed,
+		character.Armor_Class,
 		character.Level,
-        character.Exp,
+		character.Exp,
 		character.Character_Id,
 	)
 	if err != nil {
@@ -245,67 +244,67 @@ func NewCharacterDataRepository(db *sql.DB) RepositoryCharacterData {
 	return &CharacterDataMySqlRepository{db}
 }
 
-type scannable interface{
+type scannable interface {
 	Scan(dest ...any) error
 }
 
-func ScanCharacterData(rows scannable, characterData *domain.CharacterData ) error {
+func ScanCharacterData(rows scannable, characterData *domain.CharacterData) error {
 	err := rows.Scan(
 		&characterData.Character_Id,
 		&characterData.User_Id,
 		&characterData.Campaign_Id,
 		&characterData.Race.RaceID,
-		&characterData.Race.Name, 
+		&characterData.Race.Name,
 		&characterData.Race.Description,
-		&characterData.Race.Speed, 
-		&characterData.Race.Str, 
-		&characterData.Race.Dex, 
-		&characterData.Race.Int, 
+		&characterData.Race.Speed,
+		&characterData.Race.Str,
+		&characterData.Race.Dex,
+		&characterData.Race.Int,
 		&characterData.Race.Con,
-		&characterData.Race.Wiz, 
+		&characterData.Race.Wiz,
 		&characterData.Race.Cha,
 		&characterData.Class.ClassId,
 		&characterData.Class.Name,
 		&characterData.Class.Name,
-		&characterData.Class.Description, 
-		&characterData.Class.ProficiencyBonus, 
-		&characterData.Class.HitDice, 
-		&characterData.Class.ArmorProficiencies, 
+		&characterData.Class.Description,
+		&characterData.Class.ProficiencyBonus,
+		&characterData.Class.HitDice,
+		&characterData.Class.ArmorProficiencies,
 		&characterData.Class.WeaponProficiencies,
 		&characterData.Class.ToolProficiencies,
 		&characterData.Class.SpellcastingAbility,
 		&characterData.Background.BackgroundID,
-		&characterData.Background.BackgroundID, 
-		&characterData.Background.Name, 
+		&characterData.Background.BackgroundID,
+		&characterData.Background.Name,
 		&characterData.Background.Languages,
-		&characterData.Background.PersonalityTraits, 
+		&characterData.Background.PersonalityTraits,
 		&characterData.Background.Ideals,
 		&characterData.Background.Bond,
 		&characterData.Background.Flaws,
 		&characterData.Background.Trait,
 		&characterData.Background.ToolProficiencies,
 		&characterData.Name,
-        &characterData.Story,
-        &characterData.Alignment,
-        &characterData.Age,
-        &characterData.Hair,
+		&characterData.Story,
+		&characterData.Alignment,
+		&characterData.Age,
+		&characterData.Hair,
 		&characterData.Eyes,
-        &characterData.Skin,
-        &characterData.Height,
-        &characterData.Weight,
-        &characterData.ImgUrl,
+		&characterData.Skin,
+		&characterData.Height,
+		&characterData.Weight,
+		&characterData.ImgUrl,
 		&characterData.Str,
-        &characterData.Dex,
-        &characterData.Int,
-        &characterData.Con,
-        &characterData.Wiz,
+		&characterData.Dex,
+		&characterData.Int,
+		&characterData.Con,
+		&characterData.Wiz,
 		&characterData.Cha,
-        &characterData.Hitpoints,
-        &characterData.HitDice,
-        &characterData.Speed,
-        &characterData.Armor_Class,
+		&characterData.Hitpoints,
+		&characterData.HitDice,
+		&characterData.Speed,
+		&characterData.Armor_Class,
 		&characterData.Level,
-        &characterData.Exp,
-		)
+		&characterData.Exp,
+	)
 	return err
 }

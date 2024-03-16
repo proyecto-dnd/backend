@@ -40,27 +40,27 @@ import (
 
 var (
 	userFirebaseRepository user.RepositoryUsers
-	userFirebaseService user.ServiceUsers
-	userFirebaseHandler *handler.UserHandler
-	
+	userFirebaseService    user.ServiceUsers
+	userFirebaseHandler    *handler.UserHandler
+
 	campaignRepository campaign.CampaignRepository
-	campaignService campaign.CampaignService
-	campaignHandler *handler.CampaignHandler
+	campaignService    campaign.CampaignService
+	campaignHandler    *handler.CampaignHandler
 
 	sessionRepository session.SessionRepository
-	sessionService session.SessionService
-	sessionHandler *handler.SessionHandler
+	sessionService    session.SessionService
+	sessionHandler    *handler.SessionHandler
 
 	classRepository class.RepositoryCharacterClass
-	classService class.ClassService
-	classHandler *handler.ClassHandler
+	classService    class.ClassService
+	classHandler    *handler.ClassHandler
 
-	proficiencyRepository proficiency.RepositoryProficiency
-	proficiencyService proficiency.ProficiencyService
-	proficiencyHandler *handler.ProficiencyHandler
-	proficiencyXClassRepository proficiencyXclass.ProficiencyXClassRepository
-	proficiencyXClassService proficiencyXclass.ProficiencyXClassService
-	proficiencyXClassHandler *handler.ProficiencyXClassHandler
+	proficiencyRepository            proficiency.RepositoryProficiency
+	proficiencyService               proficiency.ProficiencyService
+	proficiencyHandler               *handler.ProficiencyHandler
+	proficiencyXClassRepository      proficiencyXclass.ProficiencyXClassRepository
+	proficiencyXClassService         proficiencyXclass.ProficiencyXClassService
+	proficiencyXClassHandler         *handler.ProficiencyXClassHandler
 	backgroundXProficiencyRepository backgroundXproficiency.BackgroundXProficiencyRepository
 	backgroundXProficiencyService    backgroundXproficiency.BackgroundXProficiencyService
 	backgroundXProficiencyHandler    *handler.BackgroundXProficiencyHandler
@@ -134,7 +134,7 @@ var (
 	armorHandler                  *handler.ArmorHandler
 	armorXCharacterDataRepository armorXCharacterData.RepositoryArmorXCharacterData
 	armorXCharacterDataService    armorXCharacterData.ServiceArmorXCharacterData
-	armorXCharacterDataHandler *handler.ArmorXCharacterDataHandler
+	armorXCharacterDataHandler    *handler.ArmorXCharacterDataHandler
 
 	characterXProficiencyRepository characterXproficiency.CharacterXProficiencyRepository
 	characterXProficiencyService    characterXproficiency.CharacterXProficiencyService
@@ -294,6 +294,7 @@ func (r *router) MapRoutes() {
 	r.buildFriendshipRoutes()
 	r.buildEventTypeRoutes()
 	r.buildCharacterFeatureRoutes()
+	r.buildArmorRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -471,7 +472,7 @@ func (r *router) buildEventTypeRoutes() {
 		eventTypeGroup.POST("", eventTypeHandler.HandlerCreate())
 		eventTypeGroup.GET("", eventTypeHandler.HandlerGetAll())
 		eventTypeGroup.GET("/:id", eventTypeHandler.HandlerGetById())
-		eventTypeGroup.GET("/:name", eventTypeHandler.HandlerGetByName())
+		eventTypeGroup.GET("/name/:name", eventTypeHandler.HandlerGetByName())
 		eventTypeGroup.PUT("/:id", eventTypeHandler.HandlerUpdate())
 		eventTypeGroup.DELETE("/:id", eventTypeHandler.HandlerDelete())
 	}
@@ -571,8 +572,7 @@ func (r *router) buildRaceRoutes() {
 	}
 }
 
-
-func (r *router) buildCharacterDataRoutes(){
+func (r *router) buildCharacterDataRoutes() {
 	characterDataGroup := r.routerGroup.Group("/character")
 	{
 		characterDataGroup.POST("", characterDataHandler.HandlerCreate())
@@ -581,5 +581,16 @@ func (r *router) buildCharacterDataRoutes(){
 		characterDataGroup.GET("/:id", characterDataHandler.HandlerGetById())
 		characterDataGroup.PUT("/:id", characterDataHandler.HandlerUpdate())
 		characterDataGroup.DELETE("/:id", characterDataHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildArmorRoutes() {
+	armorGroup := r.routerGroup.Group("/armor")
+	{
+		armorGroup.POST("", armorHandler.HandlerCreate())
+		armorGroup.GET("", armorHandler.HandlerGetAll())
+		armorGroup.GET("/:id", armorHandler.HandlerGetById())
+		armorGroup.PUT("/:id", armorHandler.HandlerUpdate())
+		armorGroup.DELETE("/:id", armorHandler.HandlerDelete())
 	}
 }

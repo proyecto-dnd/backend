@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -41,7 +42,7 @@ func (r *armorMySqlRepository) Create(armor domain.Armor) (domain.Armor, error) 
 		armor.Strength,
 		armor.ArmorClass,
 		armor.DexBonus,
-		armor.Basic,
+		armor.CampaignId,
 	)
 	if err != nil {
 		return domain.Armor{}, err
@@ -79,7 +80,7 @@ func (r *armorMySqlRepository) GetAllArmors() ([]domain.Armor, error) {
 			&armor.Strength,
 			&armor.ArmorClass,
 			&armor.DexBonus,
-			&armor.Basic,
+			&armor.CampaignId,
 		); err != nil {
 			return nil, err
 		}
@@ -103,7 +104,7 @@ func (r *armorMySqlRepository) GetArmorById(id int) (domain.Armor, error) {
 		&armor.Strength,
 		&armor.ArmorClass,
 		&armor.DexBonus,
-		&armor.Basic,
+		&armor.CampaignId,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -133,7 +134,7 @@ func (r *armorMySqlRepository) UpdateArmor(armor domain.Armor, id int) (domain.A
 		armor.Strength,
 		armor.ArmorClass,
 		armor.DexBonus,
-		armor.Basic,
+		armor.CampaignId,
 		id,
 	)
 	if err != nil {
