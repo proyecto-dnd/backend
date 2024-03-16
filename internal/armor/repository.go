@@ -41,7 +41,7 @@ func (r *armorMySqlRepository) Create(armor domain.Armor) (domain.Armor, error) 
 		armor.Strength,
 		armor.ArmorClass,
 		armor.DexBonus,
-		armor.Basic,
+		armor.CampaignId,
 	)
 	if err != nil {
 		return domain.Armor{}, err
@@ -51,7 +51,7 @@ func (r *armorMySqlRepository) Create(armor domain.Armor) (domain.Armor, error) 
 	if err != nil {
 		return domain.Armor{}, ErrGettingLastInsertId
 	}
-	armor.ArmorID = int(lastID)
+	armor.ArmorId = int(lastID)
 
 	return armor, nil
 }
@@ -67,7 +67,7 @@ func (r *armorMySqlRepository) GetAllArmors() ([]domain.Armor, error) {
 	for rows.Next() {
 		var armor domain.Armor
 		if err := rows.Scan(
-			&armor.ArmorID,
+			&armor.ArmorId,
 			&armor.Material,
 			&armor.Name,
 			&armor.Weight,
@@ -79,7 +79,7 @@ func (r *armorMySqlRepository) GetAllArmors() ([]domain.Armor, error) {
 			&armor.Strength,
 			&armor.ArmorClass,
 			&armor.DexBonus,
-			&armor.Basic,
+			&armor.CampaignId,
 		); err != nil {
 			return nil, err
 		}
@@ -91,7 +91,7 @@ func (r *armorMySqlRepository) GetAllArmors() ([]domain.Armor, error) {
 func (r *armorMySqlRepository) GetArmorById(id int) (domain.Armor, error) {
 	var armor domain.Armor
 	err := r.db.QueryRow(QueryGetArmorByID, id).Scan(
-		&armor.ArmorID,
+		&armor.ArmorId,
 		&armor.Material,
 		&armor.Name,
 		&armor.Weight,
@@ -103,7 +103,7 @@ func (r *armorMySqlRepository) GetArmorById(id int) (domain.Armor, error) {
 		&armor.Strength,
 		&armor.ArmorClass,
 		&armor.DexBonus,
-		&armor.Basic,
+		&armor.CampaignId,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -133,14 +133,14 @@ func (r *armorMySqlRepository) UpdateArmor(armor domain.Armor, id int) (domain.A
 		armor.Strength,
 		armor.ArmorClass,
 		armor.DexBonus,
-		armor.Basic,
+		armor.CampaignId,
 		id,
 	)
 	if err != nil {
 		return domain.Armor{}, err
 	}
 
-	armor.ArmorID = id
+	armor.ArmorId = id
 	return armor, nil
 }
 

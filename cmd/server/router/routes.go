@@ -470,7 +470,7 @@ func (r *router) buildEventTypeRoutes() {
 		eventTypeGroup.POST("", eventTypeHandler.HandlerCreate())
 		eventTypeGroup.GET("", eventTypeHandler.HandlerGetAll())
 		eventTypeGroup.GET("/:id", eventTypeHandler.HandlerGetById())
-		eventTypeGroup.GET("/:name", eventTypeHandler.HandlerGetByName())
+		eventTypeGroup.GET("/name/:name", eventTypeHandler.HandlerGetByName())
 		eventTypeGroup.PUT("/:id", eventTypeHandler.HandlerUpdate())
 		eventTypeGroup.DELETE("/:id", eventTypeHandler.HandlerDelete())
 	}

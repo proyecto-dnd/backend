@@ -85,7 +85,7 @@ func (r *CharacterDataMySqlRepository) Delete(id int) error {
 func (r *CharacterDataMySqlRepository) GetAll() ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetAll)
 	if err != nil {
-		return []domain.CharacterData{}, nil
+		return []domain.CharacterData{}, err
 	}
 	defer rows.Close()
 
@@ -110,7 +110,7 @@ func (r *CharacterDataMySqlRepository) GetAll() ([]domain.CharacterData, error) 
 func (r *CharacterDataMySqlRepository) GetByCampaignId(campaignid int) ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetByCampaignId, campaignid)
 	if err != nil {
-		return []domain.CharacterData{}, nil
+		return []domain.CharacterData{}, err
 	}
 	defer rows.Close()
 
@@ -148,7 +148,7 @@ func (r *CharacterDataMySqlRepository) GetById(id int) (domain.CharacterData, er
 func (r *CharacterDataMySqlRepository) GetByUserId(userid string) ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetByUserId, userid)
 	if err != nil {
-		return []domain.CharacterData{}, nil
+		return []domain.CharacterData{}, err
 	}
 	defer rows.Close()
 
@@ -175,7 +175,7 @@ func (r *CharacterDataMySqlRepository) GetByUserId(userid string) ([]domain.Char
 func (r *CharacterDataMySqlRepository) GetByUserIdAndCampaignId(userid string, campaignid int) ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetByUserIdAndCampaignId, userid, campaignid)
 	if err != nil {
-		return []domain.CharacterData{}, nil
+		return []domain.CharacterData{}, err
 	}
 	defer rows.Close()
 
@@ -266,7 +266,6 @@ func ScanCharacterData(rows scannable, characterData *domain.CharacterData ) err
 		&characterData.Race.Cha,
 		&characterData.Class.ClassId,
 		&characterData.Class.Name,
-		&characterData.Class.Name,
 		&characterData.Class.Description, 
 		&characterData.Class.ProficiencyBonus, 
 		&characterData.Class.HitDice, 
@@ -275,7 +274,6 @@ func ScanCharacterData(rows scannable, characterData *domain.CharacterData ) err
 		&characterData.Class.ToolProficiencies,
 		&characterData.Class.SpellcastingAbility,
 		&characterData.Background.BackgroundID,
-		&characterData.Background.BackgroundID, 
 		&characterData.Background.Name, 
 		&characterData.Background.Languages,
 		&characterData.Background.PersonalityTraits, 
