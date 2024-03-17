@@ -27,8 +27,7 @@ func (r *skillMySqlRepository) Create(skill domain.Skill) (domain.Skill, error) 
 
 	result, err := statement.Exec(
 		skill.Name,
-		skill.Description,
-		skill.CampaignId,
+		skill.Stat,
 	)
 
 	if err != nil {
@@ -40,7 +39,7 @@ func (r *skillMySqlRepository) Create(skill domain.Skill) (domain.Skill, error) 
 		return domain.Skill{}, ErrGettingLastInsertId
 	}
 
-	skill.SkillId = lastId
+	skill.SkillId = int(lastId)
 
 	return skill, nil
 }
@@ -76,8 +75,7 @@ func (r *skillMySqlRepository) GetAll() ([]domain.Skill, error) {
 		err := rows.Scan(
 			&skill.SkillId,
 			&skill.Name,
-			&skill.Description,
-			&skill.CampaignId,
+			&skill.Stat,
 		)
 		if err != nil {
 			return []domain.Skill{}, err
@@ -93,36 +91,6 @@ func (r *skillMySqlRepository) GetAll() ([]domain.Skill, error) {
 
 }
 
-// GetByCampaignId implements RepositorySkill.
-// func (r *skillMySqlRepository) GetByCampaignId(campaignId int) ([]domain.Skill, error) {
-// 	rows, err := r.db.Query(QueryGetByCampaignId, campaignId)
-// 	if err != nil {
-// 		return []domain.Skill{}, err
-// 	}
-
-// 	defer rows.Close()
-// 	skills := []domain.Skill{}
-// 	for rows.Next() {
-// 		var skill domain.Skill
-// 		err := rows.Scan(
-// 			&skill.SkillId,
-// 			&skill.Name,
-// 			&skill.Description,
-// 			&skill.CampaignId,
-// 		)
-// 		if err != nil {
-// 			return []domain.Skill{}, err
-// 		}
-// 		skills = append(skills, skill)
-// 	}
-
-// 	if err := rows.Err(); err != nil {
-// 		return []domain.Skill{}, err
-// 	}
-
-// 	return skills, nil
-// }
-
 // GetByClassId implements RepositorySkill.
 func (r *skillMySqlRepository) GetByClassId(classId int) ([]domain.Skill, error) {
 	rows, err := r.db.Query(QueryGetByClassId, classId)
@@ -137,8 +105,7 @@ func (r *skillMySqlRepository) GetByClassId(classId int) ([]domain.Skill, error)
 		err := rows.Scan(
 			&skill.SkillId,
 			&skill.Name,
-			&skill.Description,
-			&skill.CampaignId,
+			&skill.Stat,
 		)
 		if err != nil {
 			return []domain.Skill{}, err
@@ -161,8 +128,7 @@ func (r *skillMySqlRepository) GetById(id int) (domain.Skill, error) {
 	err := row.Scan(
 		&skill.SkillId,
 		&skill.Name,
-		&skill.Description,
-		&skill.CampaignId,
+		&skill.Stat,
 	)
 	if err != nil {
 		return domain.Skill{}, ErrNotFound
@@ -185,8 +151,7 @@ func (r *skillMySqlRepository) GetByCharacterId(characterId int) ([]domain.Skill
 		err := rows.Scan(
 			&skill.SkillId,
 			&skill.Name,
-			&skill.Description,
-			&skill.CampaignId,
+			&skill.Stat,
 		)
 		if err != nil {
 			return []domain.Skill{}, err
@@ -211,9 +176,8 @@ func (r *skillMySqlRepository) Update(skill domain.Skill) (domain.Skill, error) 
 
 	_, err = statement.Exec(
 		skill.Name,
-		skill.Description,
+		skill.Stat,
 		skill.SkillId,
-		skill.CampaignId,
 	)
 
 	if err != nil {
