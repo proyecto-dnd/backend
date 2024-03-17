@@ -1,7 +1,7 @@
 package dto
 
 type SpellDto struct {
-	Name            int    `json:"name"`
+	Name            string `json:"name"`
 	Description     string `json:"description"`
 	Range           int    `json:"range"`
 	Ritual          bool   `json:"ritual"`

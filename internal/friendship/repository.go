@@ -35,34 +35,59 @@ func NewFriendshipRepository(db *sql.DB, userRepository user.RepositoryUsers, ap
 }
 
 func (r *repositoryFriendship) SearchFollowers(mutuals domain.Mutuals) ([]domain.UserResponse, error) {
+	// mutuals is the user id and the friend's name
+
+	// usersList is a list of all users obtained from firebase
+	// the users format is: {id, username, email}
 	usersList, err := r.userRepository.GetAll()
 	if err != nil {
-		return nil, err
+		return []domain.UserResponse{}, err
 	}
 
-	var tempFriendList []domain.UserResponse
+	// userListByName is a list of users that start with the friend's name
+	var userListByName []domain.UserResponse
 	for _, user := range usersList {
 		if strings.HasPrefix(user.Username, mutuals.User2Name) {
-			tempFriendList = append(tempFriendList, user)
+			userListByName = append(userListByName, user)
 		}
 	}
 
-	var result auth.GetUsersResult
-	for _, user := range tempFriendList {
+	user1Friends, err := r.GetFriends(mutuals.User1Id)
+	if err != nil {
+		return []domain.UserResponse{}, err
+	}
+	// I need to filter the user1's friends by the user2's id
+
+	var tempFriendList []domain.UserResponse
+	for _, friend := range user1Friends {
+		for _, user := range userListByName {
+			if friend.User2Id == user.Id {
+				tempFriendList = append(tempFriendList, user)
+			}
+		}
+	}
+
+	// have to bring the friends from sql to cmpare the id of user2 for all users1
+	// result is a struct with a list of users and a list of not found users from firebase
+	var getUsersList auth.GetUsersResult
+	for _, user := range userListByName {
 		getUserResult, err := r.authClient.GetUsers(ctx, []auth.UserIdentifier{auth.UIDIdentifier{UID: user.Id}})
 		if err != nil {
 			log.Fatalf("error retriving user: %v\n", err)
 		}
+		// if getUserResult.Users[0].UID ==
 
-		result.Users = append(result.Users, getUserResult.Users...)
-		result.NotFound = append(result.NotFound, getUserResult.NotFound...)
-
+		getUsersList.Users = append(getUsersList.Users, getUserResult.Users...)
+		getUsersList.NotFound = append(getUsersList.NotFound, getUserResult.NotFound...)
 	}
-	// fmt.Println(&result.Users)
-	for _, u := range result.Users {
+	// I need to filter the user1's friends by the user2's id
+
+	// fmt.Println(&getUsersList.Users)
+	for _, u := range getUsersList.Users {
 		log.Printf("%v", u.DisplayName)
+		log.Printf("%v", u.UID)
 	}
-	
+
 	return tempFriendList, nil
 }
 
