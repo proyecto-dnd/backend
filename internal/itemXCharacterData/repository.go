@@ -88,7 +88,7 @@ func (r *itemXCharacterDataSqlRepository) GetAll() ([]domain.ItemXCharacterData,
 
 	defer rows.Close()
 
-	var itemXCharacterDataList []domain.ItemXCharacterData
+	itemXCharacterDataList := []domain.ItemXCharacterData{}
 
 	for rows.Next() {
 		var itemXCharacterData domain.ItemXCharacterData
@@ -146,7 +146,7 @@ func (r *itemXCharacterDataSqlRepository) GetByCharacterDataId(id int) ([]domain
 
 	defer rows.Close()
 
-	var itemXCharacterDataList []domain.ItemXCharacterData
+	itemXCharacterDataList := []domain.ItemXCharacterData{}
 
 	for rows.Next() {
 		var itemXCharacterData domain.ItemXCharacterData

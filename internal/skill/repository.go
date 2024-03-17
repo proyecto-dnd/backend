@@ -68,7 +68,7 @@ func (r *skillMySqlRepository) GetAll() ([]domain.Skill, error) {
 	}
 
 	defer rows.Close()
-	var skills []domain.Skill
+	skills := []domain.Skill{}
 	for rows.Next() {
 		var skill domain.Skill
 		err := rows.Scan(
@@ -99,7 +99,7 @@ func (r *skillMySqlRepository) GetByCampaignId(campaignId int) ([]domain.Skill, 
 	}
 
 	defer rows.Close()
-	var skills []domain.Skill
+	skills := []domain.Skill{}
 	for rows.Next() {
 		var skill domain.Skill
 		err := rows.Scan(
@@ -129,7 +129,7 @@ func (r *skillMySqlRepository) GetByClassId(classId int) ([]domain.Skill, error)
 	}
 
 	defer rows.Close()
-	var skills []domain.Skill
+	skills := []domain.Skill{}
 	for rows.Next() {
 		var skill domain.Skill
 		err := rows.Scan(
@@ -177,7 +177,7 @@ func (r *skillMySqlRepository) GetByCharacterId(characterId int) ([]domain.Skill
 	}
 
 	defer rows.Close()
-	var skills []domain.Skill
+	skills := []domain.Skill{}
 	for rows.Next() {
 		var skill domain.Skill
 		err := rows.Scan(

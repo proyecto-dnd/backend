@@ -88,7 +88,8 @@ func (r *weaponXCharacterDataSqlRepository) GetAll() ([]domain.WeaponXCharacterD
 
 	defer rows.Close()
 
-	var weaponXCharacterDataList []domain.WeaponXCharacterData
+	weaponXCharacterDataList := []domain.WeaponXCharacterData{}
+
 
 	for rows.Next() {
 		var weaponXCharacterData domain.WeaponXCharacterData
@@ -160,7 +161,7 @@ func (r *weaponXCharacterDataSqlRepository) GetByCharacterDataId(id int) ([]doma
 
 	defer rows.Close()
 
-	var weaponXCharacterDataList []domain.WeaponXCharacterData
+	weaponXCharacterDataList := []domain.WeaponXCharacterData{}
 
 	for rows.Next() {
 		var weaponXCharacterData domain.WeaponXCharacterData

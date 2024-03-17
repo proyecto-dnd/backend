@@ -44,7 +44,7 @@ func (h *CharacterHandler) HandlerDelete() gin.HandlerFunc {
 
 		err = h.service.Delete(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(404, err)
 			return
 		}
 
