@@ -33,6 +33,9 @@ func (r *repositorySqlProficiency) Create(proficiencyDto dto.ProficiencyDto) (do
 		proficiencyDto.Name,
 		proficiencyDto.Type,
 	)
+	if err != nil {
+		return domain.Proficiency{}, ErrGettingLastInsertId
+	}
 
 	lastId, err := result.LastInsertId()
 	if err != nil {
@@ -110,7 +113,7 @@ func (r *repositorySqlProficiency) Delete(id int) error {
 }
 
 func (r *repositorySqlProficiency) GetByCharacterDataId(characterId int) ([]domain.Proficiency, error) {
-	rows, err := r.db.Query(QueryGetByCharacterDataId)
+	rows, err := r.db.Query(QueryGetByCharacterDataId, characterId)
 	if err != nil {
 		return []domain.Proficiency{}, err
 	}
