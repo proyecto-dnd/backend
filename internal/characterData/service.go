@@ -2,7 +2,7 @@ package characterdata
 
 import (
 	"fmt"
-
+	"sync"
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -63,6 +63,7 @@ func (s *service) GetAll() ([]dto.FullCharacterData, error) {
 	for _, v := range characters {
 		fullCharacter, err := s.fetchAndConvertToFullCharacterData(&v)
 		if err != nil {
+			fmt.Println("algo")
 			return []dto.FullCharacterData{}, err
 		}
 		fullCharacters = append(fullCharacters, fullCharacter)
@@ -97,9 +98,9 @@ func (s *service) GetById(id int) (dto.FullCharacterData, error) {
 	}
 
 	fullCharacter, err := s.fetchAndConvertToFullCharacterData(&character)
-		if err != nil {
-			return dto.FullCharacterData{}, err
-		}
+	if err != nil {
+		return dto.FullCharacterData{}, err
+	}
 	return fullCharacter, nil
 }
 
@@ -196,49 +197,81 @@ func characterDataToFullCharacterData(character domain.CharacterData, items []do
 	}
 }
 
-func fullCharacterDataToCharacterData(character dto.FullCharacterData) domain.CharacterData {
-	return domain.CharacterData{
-		Character_Id: character.Character_Id,
-		User_Id:      character.User_Id,
-		Campaign_Id:  character.Campaign_Id,
-		Race:         character.Race,
-		Class:        character.Class,
-		Background:   character.Background,
-		Name:         character.Name,
-		Story:        character.Story,
-		Alignment:    character.Alignment,
-		Age:          character.Age,
-		Hair:         character.Hair,
-		Eyes:         character.Eyes,
-		Skin:         character.Skin,
-		Height:       character.Height,
-		Weight:       character.Weight,
-		ImgUrl:       character.ImgUrl,
-		Str:          character.Str,
-		Dex:          character.Dex,
-		Int:          character.Int,
-		Con:          character.Con,
-		Wiz:          character.Wiz,
-		Cha:          character.Cha,
-		Hitpoints:    character.Hitpoints,
-		HitDice:      character.HitDice,
-		Speed:        character.Speed,
-		Armor_Class:  character.Armor_Class,
-		Level:        character.Level,
-		Exp:          character.Exp,
-	}
-}
-
-// TO DO: Implement this function using Goroutines
+// TO DO: Finish Armor and skill implementation
 func (s *service) fetchAndConvertToFullCharacterData(character *domain.CharacterData) (dto.FullCharacterData, error) {
-	items, err := s.itemService.GetByCharacterDataId(character.Character_Id)
-	if err != nil {
+	errChan := make(chan error, 5)
+	itemChan := make(chan []domain.ItemXCharacterData, 1)
+	weaponChan := make(chan []domain.WeaponXCharacterData, 1)
+	featureChan := make(chan []domain.Feature, 1)
+	spellChan := make(chan []domain.Spell, 1)
+	proficiencyChan := make(chan []domain.Proficiency, 1)
+	var wg sync.WaitGroup
+	wg.Add(5) //TO DO change to 7 when armor and skills are working
+
+	go func() {
+		defer func() {
+			close(itemChan)
+			wg.Done()
+		}()
+		items, err := s.itemService.GetByCharacterDataId(character.Character_Id)
+
+		errChan <- err
+		itemChan <- items
+	}()
+
+	go func() {
+		defer func() {
+			close(weaponChan)
+			wg.Done()
+		}()
+		weapons, err := s.weaponService.GetByCharacterDataId(character.Character_Id)
+		errChan <- err
+		weaponChan <- weapons
+	}()
+
+	go func() {
+		defer func() {
+			close(featureChan)
+			wg.Done()
+		}()
+		featuresDto, err := s.featureService.GetAllFeaturesByCharacterId(character.Character_Id)
+		errChan <- err
+		featureChan <- featuresDto.Features
+	}()
+
+	go func() {
+		defer func() {
+			close(spellChan)
+			wg.Done()
+		}()
+		spells, err := s.spellService.GetByCharacterDataId(character.Character_Id)
+		errChan <- err
+		spellChan <- spells
+	}()
+
+	go func() {
+		defer func() {
+			close(proficiencyChan)
+			wg.Done()
+		}()
+		proficiencies, err := s.proficiencyService.GetByCharacterDataId(character.Character_Id)
+
+		errChan <- err
+		proficiencyChan <- proficiencies
+	}()
+
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan{
+		if err != nil {
+			fmt.Println(err)
 		return dto.FullCharacterData{}, err
+		}
 	}
-	weapons, err := s.weaponService.GetByCharacterDataId(character.Character_Id)
-	if err != nil {
-		return dto.FullCharacterData{}, err
-	}
+
 	// armor, err := s.armorService.GetByCharacterDataIdArmor(character.Character_Id)
 	// if err != nil {
 	// 	fmt.Println("murio armor"+err.Error())
@@ -250,21 +283,7 @@ func (s *service) fetchAndConvertToFullCharacterData(character *domain.Character
 	// 	fmt.Println("murio skils"+err.Error())
 	// 	return dto.FullCharacterData{}, err
 	// }
-	skills := 	[]domain.Skill{}
-	featuresDto, err := s.featureService.GetAllFeaturesByCharacterId(character.Character_Id)
-	if err != nil {
-		fmt.Println("murio features"+err.Error())
-		return dto.FullCharacterData{}, err
-	}
-	spells, err := s.spellService.GetByCharacterDataId(character.Character_Id)
-	if err != nil {
-		fmt.Println("murio spells"+err.Error())
-		return dto.FullCharacterData{}, err
-	}
-	proficiencies, err := s.proficiencyService.GetByCharacterDataId(character.Character_Id)
-	if err != nil {
-		fmt.Println("murio proficiencies"+err.Error())
-		return dto.FullCharacterData{}, err
-	}
-	return characterDataToFullCharacterData(*character, items, weapons, armor, skills, featuresDto.Features, spells, proficiencies), nil
+	skills := []domain.Skill{}
+
+	return characterDataToFullCharacterData(*character, <-itemChan, <-weaponChan, armor, skills, <-featureChan, <-spellChan, <-proficiencyChan), nil
 }
