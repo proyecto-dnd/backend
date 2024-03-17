@@ -3,6 +3,7 @@ package characterdata
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
@@ -139,6 +140,7 @@ func (r *CharacterDataMySqlRepository) GetById(id int) (domain.CharacterData, er
 	var character domain.CharacterData
 	err := ScanCharacterData(row, &character)
 	if err != nil {
+		fmt.Println(err)
 		return domain.CharacterData{}, ErrNotFound
 	}
 

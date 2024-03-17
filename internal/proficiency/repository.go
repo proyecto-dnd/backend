@@ -56,7 +56,7 @@ func (r *repositorySqlProficiency) GetAll() ([]domain.Proficiency, error) {
 	if err != nil {
 		return []domain.Proficiency{}, err
 	}
-	var proficiencyList []domain.Proficiency
+	proficiencyList := []domain.Proficiency{}
 	for rows.Next() {
 		var proficiency domain.Proficiency
 		if err := rows.Scan(&proficiency.ProficiencyId, &proficiency.Name, &proficiency.Type); err != nil {
@@ -117,7 +117,7 @@ func (r *repositorySqlProficiency) GetByCharacterDataId(characterId int) ([]doma
 	if err != nil {
 		return []domain.Proficiency{}, err
 	}
-	var proficiencyList []domain.Proficiency
+	proficiencyList := []domain.Proficiency{}
 	for rows.Next() {
 		var proficiency domain.Proficiency
 		if err := rows.Scan(&proficiency.ProficiencyId, &proficiency.Name, &proficiency.Type); err != nil {
@@ -126,5 +126,7 @@ func (r *repositorySqlProficiency) GetByCharacterDataId(characterId int) ([]doma
 		proficiencyList = append(proficiencyList, proficiency)
 	}
 	
+	
+
 	return proficiencyList, nil
 }
