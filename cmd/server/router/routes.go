@@ -295,6 +295,7 @@ func (r *router) MapRoutes() {
 	r.buildEventTypeRoutes()
 	r.buildCharacterFeatureRoutes()
 	r.buildArmorRoutes()
+	r.buildArmorXCharacterDataRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -592,5 +593,18 @@ func (r *router) buildArmorRoutes() {
 		armorGroup.GET("/:id", armorHandler.HandlerGetById())
 		armorGroup.PUT("/:id", armorHandler.HandlerUpdate())
 		armorGroup.DELETE("/:id", armorHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildArmorXCharacterDataRoutes() {
+	armorXCharacterDataGroup := r.routerGroup.Group("/armor_character")
+	{
+		armorXCharacterDataGroup.POST("", armorXCharacterDataHandler.HandlerCreate())
+		armorXCharacterDataGroup.DELETE("/:id", armorXCharacterDataHandler.HandlerDelete())
+		armorXCharacterDataGroup.DELETE("/character/:id", armorXCharacterDataHandler.HandlerDeleteByCharacterId())
+		armorXCharacterDataGroup.GET("", armorXCharacterDataHandler.HandlerGetAll())
+		armorXCharacterDataGroup.GET("/:id", armorXCharacterDataHandler.HandlerGetById())
+		armorXCharacterDataGroup.GET("/character/:id", armorXCharacterDataHandler.HandlerGetByCharacterDataId())
+		armorXCharacterDataGroup.PUT("/:id", armorXCharacterDataHandler.HandlerUpdate())
 	}
 }
