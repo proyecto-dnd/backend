@@ -68,7 +68,10 @@ func (h *FriendshipHandler) DeleteHandler() gin.HandlerFunc {
 
 func (h *FriendshipHandler) SearchFollowersHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		name := ctx.Param("name")
+
 		var tempFriendship domain.Mutuals
+		tempFriendship.User2Name = name
 		if err := ctx.BindJSON(&tempFriendship); err != nil {
 			ctx.JSON(500, err)
 			return

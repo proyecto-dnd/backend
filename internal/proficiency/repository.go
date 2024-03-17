@@ -125,6 +125,8 @@ func (r *repositorySqlProficiency) GetByCharacterDataId(characterId int) ([]doma
 		}
 		proficiencyList = append(proficiencyList, proficiency)
 	}
+	
+	
 
 	return proficiencyList, nil
 }

@@ -299,7 +299,6 @@ func (r *router) MapRoutes() {
 	r.buildSkillRoutes()
 	r.buildRaceRoutes()
 	r.buildCharacterDataRoutes()
-	r.buildFriendshipRoutes()
 	r.buildEventTypeRoutes()
 	r.buildCharacterFeatureRoutes()
 	r.buildArmorRoutes()
@@ -416,7 +415,7 @@ func (r *router) buildFriendshipRoutes() {
 	{
 		friendshipGroup.POST("", friendshipHandler.CreateHandler())
 		friendshipGroup.DELETE("", friendshipHandler.DeleteHandler())
-		friendshipGroup.GET("", friendshipHandler.SearchFollowersHandler())
+		friendshipGroup.GET("/search/:name", friendshipHandler.SearchFollowersHandler())
 	}
 }
 
