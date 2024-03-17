@@ -239,29 +239,31 @@ func (s *service) fetchAndConvertToFullCharacterData(character *domain.Character
 	if err != nil {
 		return dto.FullCharacterData{}, err
 	}
-	armor, err := s.armorService.GetByCharacterDataIdArmor(character.Character_Id)
-	if err != nil {
-		fmt.Println("murio armor"+err.Error())
-		return dto.FullCharacterData{}, err
-	}
-	skills, err := s.skillService.GetByCharacterId(character.Character_Id)
-	if err != nil {
-		fmt.Println("murio armor"+err.Error())
-		return dto.FullCharacterData{}, err
-	}
+	// armor, err := s.armorService.GetByCharacterDataIdArmor(character.Character_Id)
+	// if err != nil {
+	// 	fmt.Println("murio armor"+err.Error())
+	// 	return dto.FullCharacterData{}, err
+	// }
+	armor := []domain.ArmorXCharacterData{}
+	// skills, err := s.skillService.GetByCharacterId(character.Character_Id)
+	// if err != nil {
+	// 	fmt.Println("murio skils"+err.Error())
+	// 	return dto.FullCharacterData{}, err
+	// }
+	skills := 	[]domain.Skill{}
 	featuresDto, err := s.featureService.GetAllFeaturesByCharacterId(character.Character_Id)
 	if err != nil {
-		fmt.Println("murio armor"+err.Error())
+		fmt.Println("murio features"+err.Error())
 		return dto.FullCharacterData{}, err
 	}
 	spells, err := s.spellService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
-		fmt.Println("murio armor"+err.Error())
+		fmt.Println("murio spells"+err.Error())
 		return dto.FullCharacterData{}, err
 	}
 	proficiencies, err := s.proficiencyService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
-		fmt.Println("murio armor"+err.Error())
+		fmt.Println("murio proficiencies"+err.Error())
 		return dto.FullCharacterData{}, err
 	}
 	return characterDataToFullCharacterData(*character, items, weapons, armor, skills, featuresDto.Features, spells, proficiencies), nil
