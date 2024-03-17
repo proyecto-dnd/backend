@@ -3,6 +3,7 @@ package skill
 import (
 	"database/sql"
 	"errors"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -60,6 +61,7 @@ func (r *skillMySqlRepository) Delete(id int) error {
 
 	return nil
 }
+
 // GetAll implements RepositorySkill.
 func (r *skillMySqlRepository) GetAll() ([]domain.Skill, error) {
 	rows, err := r.db.Query(QueryGetAll)
@@ -92,34 +94,34 @@ func (r *skillMySqlRepository) GetAll() ([]domain.Skill, error) {
 }
 
 // GetByCampaignId implements RepositorySkill.
-func (r *skillMySqlRepository) GetByCampaignId(campaignId int) ([]domain.Skill, error) {
-	rows, err := r.db.Query(QueryGetByCampaignId, campaignId)
-	if err != nil {
-		return []domain.Skill{}, err
-	}
+// func (r *skillMySqlRepository) GetByCampaignId(campaignId int) ([]domain.Skill, error) {
+// 	rows, err := r.db.Query(QueryGetByCampaignId, campaignId)
+// 	if err != nil {
+// 		return []domain.Skill{}, err
+// 	}
 
-	defer rows.Close()
-	skills := []domain.Skill{}
-	for rows.Next() {
-		var skill domain.Skill
-		err := rows.Scan(
-			&skill.SkillId,
-			&skill.Name,
-			&skill.Description,
-			&skill.CampaignId,
-		)
-		if err != nil {
-			return []domain.Skill{}, err
-		}
-		skills = append(skills, skill)
-	}
+// 	defer rows.Close()
+// 	skills := []domain.Skill{}
+// 	for rows.Next() {
+// 		var skill domain.Skill
+// 		err := rows.Scan(
+// 			&skill.SkillId,
+// 			&skill.Name,
+// 			&skill.Description,
+// 			&skill.CampaignId,
+// 		)
+// 		if err != nil {
+// 			return []domain.Skill{}, err
+// 		}
+// 		skills = append(skills, skill)
+// 	}
 
-	if err := rows.Err(); err != nil {
-		return []domain.Skill{}, err
-	}
+// 	if err := rows.Err(); err != nil {
+// 		return []domain.Skill{}, err
+// 	}
 
-	return skills, nil
-}
+// 	return skills, nil
+// }
 
 // GetByClassId implements RepositorySkill.
 func (r *skillMySqlRepository) GetByClassId(classId int) ([]domain.Skill, error) {

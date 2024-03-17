@@ -50,10 +50,10 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 
 	return userTemp, nil
 }
-func (r *repositoryFirebase) GetAll() ([]domain.User, error) {
+func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 
-	var user domain.User
-	var users []domain.User
+	var user domain.UserResponse
+	var users []domain.UserResponse
 	pager := iterator.NewPager(r.authClient.Users(ctx, ""), 100, "")
 	for {
 		var authUsers []*auth.ExportedUserRecord
@@ -64,7 +64,7 @@ func (r *repositoryFirebase) GetAll() ([]domain.User, error) {
 		for _, u := range authUsers {
 			user.Username = u.DisplayName
 			user.Email = u.Email
-			user.Password = u.PasswordHash
+			// user.Password = u.PasswordHash
 			user.Id = u.UID
 			users = append(users, user)
 		}
@@ -75,6 +75,30 @@ func (r *repositoryFirebase) GetAll() ([]domain.User, error) {
 
 	return users, nil
 }
+func (r *repositoryFirebase) GetByName(name string) ([]domain.User, error) {
+	var user domain.User
+	var users []domain.User
+	pager := iterator.NewPager(r.authClient.Users(ctx, ""), 50, "")
+	for {
+		var authUsers []*auth.ExportedUserRecord
+		nextPageToken, err := pager.NextPage(&authUsers)
+		if err != nil {
+			log.Printf("paging error %v\n", err)
+		}
+		for _, u := range authUsers {
+			if u.DisplayName == name {
+				user.Username = u.DisplayName
+				user.Id = u.UID
+				users = append(users, user)
+			}
+		}
+		if nextPageToken == "" {
+			break
+		}
+	}
+	return users, nil
+}
+
 func (r *repositoryFirebase) GetById(id string) (domain.User, error) {
 
 	u, err := r.authClient.GetUser(ctx, id)
@@ -130,7 +154,5 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 		return "", err
 	}
 
-	// ctx.SetCookie("Session", cookie, 3600, "/", "localhost", false, false)
-	// log.Println("LISTO LA PETICION")
 	return cookie, nil
 }

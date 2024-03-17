@@ -47,6 +47,7 @@ func (r *itemMySqlRepository) GetAllGeneric() ([]domain.Item, error) {
 	if err := rows.Err(); err != nil {
 		return []domain.Item{}, err
 	}
+	
 	return items, nil
 }
 
