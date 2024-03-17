@@ -28,7 +28,7 @@ func (s *armorService) CreateArmor(armorDto dto.CreateArmorDto) (domain.Armor, e
 		Strength:       armorDto.Strength,
 		ArmorClass:     armorDto.ArmorClass,
 		DexBonus:       armorDto.DexBonus,
-		Basic:          armorDto.Basic,
+		CampaignId:     armorDto.CampaignId,
 	}
 
 	createdArmor, err := s.armorRepo.Create(armorDomain)
@@ -70,7 +70,7 @@ func (s *armorService) UpdateArmor(armorDto dto.CreateArmorDto, id int) (domain.
 		Strength:       armorDto.Strength,
 		ArmorClass:     armorDto.ArmorClass,
 		DexBonus:       armorDto.DexBonus,
-		Basic:          armorDto.Basic,
+		CampaignId:     armorDto.CampaignId,
 	}
 
 	updatedArmor, err := s.armorRepo.UpdateArmor(armorDomain, id)

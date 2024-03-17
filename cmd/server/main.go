@@ -115,7 +115,6 @@ func ConnectDB() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-
 	// Check the connection.
 	err = db.Ping()
 

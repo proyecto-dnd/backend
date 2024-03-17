@@ -1,9 +1,9 @@
 package domain
 
 type CharacterData struct {
-	Character_Id int  `json:"characterid"`
-	User_Id      *string `json:"userid"`
-	Campaign_Id  int    `json:"campaignid"`
+	Character_Id int  `json:"character_id"`
+	User_Id      *string `json:"user_id"`
+	Campaign_Id  int    `json:"campaign_id"`
 	Race        Race    `json:"race"`
 	Class       Class    `json:"class"`
 	Background  Background    `json:"background"`
@@ -24,9 +24,9 @@ type CharacterData struct {
 	Wiz         int    `json:"wiz"`
 	Cha         int    `json:"cha"`
 	Hitpoints   int    `json:"hitpoints"`
-	HitDice     string `json:"hitDice"`
+	HitDice     string `json:"hit_dice"`
 	Speed       int    `json:"speed"`
-	Armor_Class  int    `json:"armorclass"`
+	Armor_Class  int    `json:"armor_class"`
 	Level       int    `json:"level"`
 	Exp         int    `json:"exp"`
 }

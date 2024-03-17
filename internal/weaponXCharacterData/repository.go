@@ -3,8 +3,6 @@ package weaponxcharacterdata
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -184,7 +182,6 @@ func (r *weaponXCharacterDataSqlRepository) GetByCharacterDataId(id int) ([]doma
 			&weaponXCharacterData.Weapon.Campaign_Id,
 			&weaponXCharacterData.Equipped,
 		)
-		fmt.Println("weaponXCharacterData")
 		if err != nil {
 			return []domain.WeaponXCharacterData{}, err
 		}

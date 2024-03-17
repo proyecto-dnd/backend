@@ -46,18 +46,22 @@ import (
 )
 
 var (
-	userFirebaseRepository           user.RepositoryUsers
-	userFirebaseService              user.ServiceUsers
-	userFirebaseHandler              *handler.UserHandler
-	campaignRepository               campaign.CampaignRepository
-	campaignService                  campaign.CampaignService
-	campaignHandler                  *handler.CampaignHandler
-	sessionRepository                session.SessionRepository
-	sessionService                   session.SessionService
-	sessionHandler                   *handler.SessionHandler
-	classRepository                  class.RepositoryCharacterClass
-	classService                     class.ClassService
-	classHandler                     *handler.ClassHandler
+	userFirebaseRepository user.RepositoryUsers
+	userFirebaseService    user.ServiceUsers
+	userFirebaseHandler    *handler.UserHandler
+
+	campaignRepository campaign.CampaignRepository
+	campaignService    campaign.CampaignService
+	campaignHandler    *handler.CampaignHandler
+
+	sessionRepository session.SessionRepository
+	sessionService    session.SessionService
+	sessionHandler    *handler.SessionHandler
+
+	classRepository class.RepositoryCharacterClass
+	classService    class.ClassService
+	classHandler    *handler.ClassHandler
+
 	proficiencyRepository            proficiency.RepositoryProficiency
 	proficiencyService               proficiency.ProficiencyService
 	proficiencyHandler               *handler.ProficiencyHandler
@@ -104,7 +108,7 @@ var (
 	raceService                race.RaceService
 	raceHandler                *handler.RaceHandler
 	raceXProficiencyRepository raceXproficiency.RaceXProficiencyRepository
-	racexproficiencyService    raceXproficiency.RaceXProficiencyService
+	raceXProficiencyService    raceXproficiency.RaceXProficiencyService
 	raceXProficiencyHandler    *handler.RaceXProficiencyHandler
 
 	characterXSpellRepository characterXspell.CharacterXSpellRepository
@@ -137,7 +141,7 @@ var (
 	armorHandler                  *handler.ArmorHandler
 	armorXCharacterDataRepository armorXCharacterData.RepositoryArmorXCharacterData
 	armorXCharacterDataService    armorXCharacterData.ServiceArmorXCharacterData
-	// armorXCharacterDataHandler handler.ArmorXCharacterDataHandler     TO DO
+	armorXCharacterDataHandler    *handler.ArmorXCharacterDataHandler
 
 	characterXProficiencyRepository characterXproficiency.CharacterXProficiencyRepository
 	characterXProficiencyService    characterXproficiency.CharacterXProficiencyService
@@ -182,15 +186,20 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	armorService = armor.NewArmorService(armorRepository)
 	armorHandler = handler.NewArmorHandler(&armorService)
 	armorXCharacterDataRepository = armorXCharacterData.NewArmorXCharacterDataSqlRepository(db)
-	// armorXCharacterDataService = armorXCharacterData.NewServiceArmorXCharacterData(armorXCharacterDataRepository, armorService)
-	// armorXCharacterDataHandler = handler.NewArmorXCharacterDataHandler(armorXCharacterDataService) TO DO
+	armorXCharacterDataService = armorXCharacterData.NewServiceArmorXCharacterData(armorXCharacterDataRepository, armorService)
+	armorXCharacterDataHandler = handler.NewArmorXCharacterDataHandler(&armorXCharacterDataService) // TO DO Check if armorXCharacterDataHandler works correctly, it was done fast to compile the rest
 
 	classRepository = class.NewClassRepository(db)
 	classService = class.NewClassService(classRepository)
 	classHandler = handler.NewClassHandler(&classService)
+
 	raceRepository = race.NewRaceRepository(db)
 	raceService = race.NewRaceService(raceRepository)
 	raceHandler = handler.NewRaceHandler(raceService)
+	raceXProficiencyRepository = raceXproficiency.NewRaceXProficiencyRepository(db)
+	raceXProficiencyService = raceXproficiency.NewRaceXProficiencyService(raceXProficiencyRepository)
+	raceXProficiencyHandler = handler.NewRaceXProficiencyHandler(&raceXProficiencyService)
+
 	proficiencyRepository = proficiency.NewProficiencyRepository(db)
 	proficiencyService = proficiency.NewProficiencyService(proficiencyRepository)
 	proficiencyHandler = handler.NewProficiencyHandler(&proficiencyService)
@@ -206,6 +215,13 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	friendshipRepository = friendship.NewFriendshipRepository(db, userFirebaseRepository, firebaseApp)
 	friendshipService = friendship.NewFriendshipService(friendshipRepository)
 	friendshipHandler = handler.NewFriendshipHandler(&friendshipService)
+
+	skillRepository = skill.NewSkillRepository(db)
+	skillService = skill.NewServiceSkill(skillRepository)
+	skillHandler = *handler.NewSkillHandler(&skillService)
+	skillXCharacterDataRepository = skillxcharacterdata.NewSkillxCharacterDataRepository(db)
+	skillXCharacterDataService = skillxcharacterdata.NewSkillXCharacterService(skillXCharacterDataRepository)
+	skillXCharacterHandler = *handler.NewSkillXCharacterHandler(&skillXCharacterDataService)
 
 	featureRepository = feature.NewFeatureRepository(db)
 	featureService = feature.NewFeatureService(featureRepository)
@@ -281,6 +297,13 @@ func (r *router) MapRoutes() {
 	r.buildWeaponXCharacterDataRoutes()
 	r.buildCharacterXProficiencyRoutes()
 	r.buildSkillRoutes()
+	r.buildRaceRoutes()
+	r.buildCharacterDataRoutes()
+	r.buildFriendshipRoutes()
+	r.buildEventTypeRoutes()
+	r.buildCharacterFeatureRoutes()
+	r.buildArmorRoutes()
+	r.buildArmorXCharacterDataRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -459,7 +482,7 @@ func (r *router) buildEventTypeRoutes() {
 		eventTypeGroup.POST("", eventTypeHandler.HandlerCreate())
 		eventTypeGroup.GET("", eventTypeHandler.HandlerGetAll())
 		eventTypeGroup.GET("/:id", eventTypeHandler.HandlerGetById())
-		eventTypeGroup.GET("/:name", eventTypeHandler.HandlerGetByName())
+		eventTypeGroup.GET("/name/:name", eventTypeHandler.HandlerGetByName())
 		eventTypeGroup.PUT("/:id", eventTypeHandler.HandlerUpdate())
 		eventTypeGroup.DELETE("/:id", eventTypeHandler.HandlerDelete())
 	}
@@ -545,5 +568,52 @@ func (r *router) buildSkillRoutes() {
 		skillGroup.GET("/character/:characterId", skillHandler.HandlerGetByCharacterId())
 		skillGroup.PUT("/:id", skillHandler.HandlerUpdate())
 		skillGroup.DELETE("/:id", skillHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildRaceRoutes() {
+	raceGroup := r.routerGroup.Group("/race")
+	{
+		raceGroup.POST("", raceHandler.HandlerCreate())
+		raceGroup.GET("", raceHandler.HandlerGetAll())
+		raceGroup.GET("/:id", raceHandler.HandlerGetById())
+		raceGroup.PUT("/:id", raceHandler.HandlerUpdate())
+		raceGroup.DELETE("/:id", raceHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildCharacterDataRoutes() {
+	characterDataGroup := r.routerGroup.Group("/character")
+	{
+		characterDataGroup.POST("", characterDataHandler.HandlerCreate())
+		characterDataGroup.GET("", characterDataHandler.HandlerGetAll())
+		characterDataGroup.GET("/filter", characterDataHandler.HandlerGetByCampaignIdAndUserId())
+		characterDataGroup.GET("/:id", characterDataHandler.HandlerGetById())
+		characterDataGroup.PUT("/:id", characterDataHandler.HandlerUpdate())
+		characterDataGroup.DELETE("/:id", characterDataHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildArmorRoutes() {
+	armorGroup := r.routerGroup.Group("/armor")
+	{
+		armorGroup.POST("", armorHandler.HandlerCreate())
+		armorGroup.GET("", armorHandler.HandlerGetAll())
+		armorGroup.GET("/:id", armorHandler.HandlerGetById())
+		armorGroup.PUT("/:id", armorHandler.HandlerUpdate())
+		armorGroup.DELETE("/:id", armorHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildArmorXCharacterDataRoutes() {
+	armorXCharacterDataGroup := r.routerGroup.Group("/armor_character")
+	{
+		armorXCharacterDataGroup.POST("", armorXCharacterDataHandler.HandlerCreate())
+		armorXCharacterDataGroup.DELETE("/:id", armorXCharacterDataHandler.HandlerDelete())
+		armorXCharacterDataGroup.DELETE("/character/:id", armorXCharacterDataHandler.HandlerDeleteByCharacterId())
+		armorXCharacterDataGroup.GET("", armorXCharacterDataHandler.HandlerGetAll())
+		armorXCharacterDataGroup.GET("/:id", armorXCharacterDataHandler.HandlerGetById())
+		armorXCharacterDataGroup.GET("/character/:id", armorXCharacterDataHandler.HandlerGetByCharacterDataId())
+		armorXCharacterDataGroup.PUT("/:id", armorXCharacterDataHandler.HandlerUpdate())
 	}
 }

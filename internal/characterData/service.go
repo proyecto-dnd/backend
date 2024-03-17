@@ -1,6 +1,8 @@
 package characterdata
 
 import (
+	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -35,7 +37,11 @@ func (s *service) Create(character domain.CharacterData) (dto.FullCharacterData,
 	if err != nil {
 		return dto.FullCharacterData{}, err
 	}
-	return characterDataToFullCharacterData(newCharacter, []domain.ItemXCharacterData{}, []domain.WeaponXCharacterData{}, []domain.ArmorXCharacterData{}, []domain.Skill{}, []domain.Feature{}, []domain.Spell{}, []domain.Proficiency{}), nil
+	newCharacterDto, err := s.GetById(newCharacter.Character_Id)
+	if err != nil {
+		return dto.FullCharacterData{}, err
+	}
+	return newCharacterDto, nil
 }
 
 // Delete implements ServiceCharacterData.
@@ -143,7 +149,7 @@ func (s *service) Update(character domain.CharacterData) (dto.FullCharacterData,
 		return dto.FullCharacterData{}, err
 	}
 
-	updatedFullCharacter, err := s.fetchAndConvertToFullCharacterData(&updatedCharacter)
+	updatedFullCharacter, err := s.GetById(updatedCharacter.Character_Id)
 	if err != nil {
 		return dto.FullCharacterData{}, err
 	}
@@ -235,22 +241,27 @@ func (s *service) fetchAndConvertToFullCharacterData(character *domain.Character
 	}
 	armor, err := s.armorService.GetByCharacterDataIdArmor(character.Character_Id)
 	if err != nil {
+		fmt.Println("murio armor"+err.Error())
 		return dto.FullCharacterData{}, err
 	}
 	skills, err := s.skillService.GetByCharacterId(character.Character_Id)
 	if err != nil {
+		fmt.Println("murio armor"+err.Error())
 		return dto.FullCharacterData{}, err
 	}
 	featuresDto, err := s.featureService.GetAllFeaturesByCharacterId(character.Character_Id)
 	if err != nil {
+		fmt.Println("murio armor"+err.Error())
 		return dto.FullCharacterData{}, err
 	}
 	spells, err := s.spellService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
+		fmt.Println("murio armor"+err.Error())
 		return dto.FullCharacterData{}, err
 	}
 	proficiencies, err := s.proficiencyService.GetByCharacterDataId(character.Character_Id)
 	if err != nil {
+		fmt.Println("murio armor"+err.Error())
 		return dto.FullCharacterData{}, err
 	}
 	return characterDataToFullCharacterData(*character, items, weapons, armor, skills, featuresDto.Features, spells, proficiencies), nil
