@@ -41,7 +41,7 @@ func (s *service) GetAll() ([]domain.UserResponse, error) {
 	var usersResponse []domain.UserResponse
 
 	for _, u := range users {
-		usersResponse = append(usersResponse, userToUserResponse(u))
+		usersResponse = append(usersResponse, u)
 	}
 
 	return usersResponse, nil

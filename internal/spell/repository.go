@@ -153,6 +153,7 @@ func (r *spellMySqlRepository) Delete(id int) error {
 
 func (r *spellMySqlRepository) GetByCharacterDataId(characterId int) ([]domain.Spell, error) {
 	rows, err := r.db.Query(QueryGetByCharacterDataId, characterId)
+	
 	if err != nil {
 		return []domain.Spell{}, err
 	}
@@ -177,6 +178,6 @@ func (r *spellMySqlRepository) GetByCharacterDataId(characterId int) ([]domain.S
 		}
 		spells = append(spells, spell)
 	}
-
+	
 	return spells, nil
 }
