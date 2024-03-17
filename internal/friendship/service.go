@@ -24,3 +24,7 @@ func (s *service) Create(friendship domain.Friendship) (domain.Friendship, error
 func (s *service) Delete(friendship domain.Friendship) error {
 	return s.repository.Delete(friendship)
 }
+
+func (s *service) SearchFollowers(friendship domain.Mutuals) ([]domain.UserResponse, error) {
+	return s.repository.SearchFollowers(friendship)
+}

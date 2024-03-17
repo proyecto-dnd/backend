@@ -13,9 +13,16 @@ import (
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
+	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
+
+	// "github.com/proyecto-dnd/backend/internal/ws"
+
+	// characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
+	// characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	"github.com/proyecto-dnd/backend/internal/character_feature"
 	"github.com/proyecto-dnd/backend/internal/class"
-	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
+
+	// classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
 	"github.com/proyecto-dnd/backend/internal/event"
 	"github.com/proyecto-dnd/backend/internal/event_type"
 	"github.com/proyecto-dnd/backend/internal/feature"
@@ -205,7 +212,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	userCampaignRepository = user_campaign.NewUserCampaignRepository(db)
 	userCampaignService = user_campaign.NewUserCampaignService(userCampaignRepository)
 	userCampaignHandler = handler.NewUserCampaignHandler(&userCampaignService)
-	friendshipRepository = friendship.NewFriendshipRepository(db)
+	friendshipRepository = friendship.NewFriendshipRepository(db, userFirebaseRepository, firebaseApp)
 	friendshipService = friendship.NewFriendshipService(friendshipRepository)
 	friendshipHandler = handler.NewFriendshipHandler(&friendshipService)
 
@@ -277,11 +284,12 @@ func (r *router) MapRoutes() {
 	r.buildProficiencyRoutes()
 	r.buildProficiencyXClassRoutes()
 	r.buildUserCampaignRoutes()
-	r.buildSpellRoutes()
-	r.buildClassXSpellRoutes()
-	r.buildRaceXProficiencyRoutes()
-	r.buildBackgroundXProficiencyRoutes()
-	r.buildCharacterXSpellRoutes()
+	r.buildFriendshipRoutes()
+	// r.buildSpellRoutes()
+	// r.buildClassXSpellRoutes()
+	// r.buildRaceXProficiencyRoutes()
+	// r.buildBackgroundXProficiencyRoutes()
+	// r.buildCharacterXSpellRoutes()
 	r.buildFeatureRoutes()
 	r.buildItemRoutes()
 	r.buildItemXCharacterDataRoutes()
@@ -291,7 +299,6 @@ func (r *router) MapRoutes() {
 	r.buildSkillRoutes()
 	r.buildRaceRoutes()
 	r.buildCharacterDataRoutes()
-	r.buildFriendshipRoutes()
 	r.buildEventTypeRoutes()
 	r.buildCharacterFeatureRoutes()
 	r.buildArmorRoutes()
@@ -408,6 +415,7 @@ func (r *router) buildFriendshipRoutes() {
 	{
 		friendshipGroup.POST("", friendshipHandler.CreateHandler())
 		friendshipGroup.DELETE("", friendshipHandler.DeleteHandler())
+		friendshipGroup.GET("/search/:name", friendshipHandler.SearchFollowersHandler())
 	}
 }
 
