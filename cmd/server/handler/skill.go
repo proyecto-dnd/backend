@@ -47,7 +47,7 @@ func (h *SkillHandler) HandlerDelete() gin.HandlerFunc {
 			ctx.JSON(404, err)
 			return
 		}
-		ctx.JSON(204, nil)
+		ctx.JSON(200, "Deleted skill with id: "+id)
 	}
 }
 
@@ -61,27 +61,6 @@ func (h *SkillHandler) HandlerGetAll() gin.HandlerFunc {
 		ctx.JSON(200, skills)
 	}
 }
-
-func (h *SkillHandler) HandlerGetByCampaignId() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		
-
-		intId, err := strconv.Atoi(id)
-		if err != nil {
-			ctx.JSON(400, err)
-			return
-		}
-
-		skills, err := h.service.GetByCampaignId(intId)
-		if err != nil {
-			ctx.JSON(500, err)
-			return
-		}
-		ctx.JSON(200, skills)
-	}
-}
-
 func (h *SkillHandler) HandlerGetByCharacterId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -145,7 +124,7 @@ func (h *SkillHandler) HandlerUpdate() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
-		tempSkill.SkillId = int64(id)
+		tempSkill.SkillId = id
 		updatedSkill, err := h.service.Update(tempSkill)
 		if err != nil {
 			ctx.JSON(500, err)
