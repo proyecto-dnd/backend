@@ -75,7 +75,7 @@ func (r *spellMySqlRepository) GetAll() ([]domain.Spell, error) {
 	if err != nil {
 		return []domain.Spell{}, err
 	}
-	var spells []domain.Spell
+	spells := []domain.Spell{}
 	for rows.Next() {
 		var spell domain.Spell
 		if err := rows.Scan(&spell.Name, &spell.Description, &spell.Range, &spell.Ritual, &spell.Duration, &spell.Concentration, &spell.CastingTime, &spell.Level, &spell.DamageType, &spell.Level, &spell.DamageType, &spell.DifficultyClass, &spell.Aoe, &spell.School); err != nil {
@@ -149,4 +149,35 @@ func (r *spellMySqlRepository) Delete(id int) error {
 	}
 
 	return nil
+}
+
+func (r *spellMySqlRepository) GetByCharacterDataId(characterId int) ([]domain.Spell, error) {
+	rows, err := r.db.Query(QueryGetByCharacterDataId, characterId)
+	
+	if err != nil {
+		return []domain.Spell{}, err
+	}
+	spells := []domain.Spell{}
+	for rows.Next() {
+		var spell domain.Spell
+		if err := rows.Scan(
+			&spell.SpellId,
+			&spell.Name,
+			&spell.Description,
+			&spell.Range,
+			&spell.Ritual,
+			&spell.Duration,
+			&spell.Concentration,
+			&spell.CastingTime,
+			&spell.Level,
+			&spell.DamageType,
+			&spell.DifficultyClass,
+			&spell.Aoe,
+			&spell.School); err != nil {
+			return nil, err
+		}
+		spells = append(spells, spell)
+	}
+	
+	return spells, nil
 }

@@ -7,7 +7,6 @@ type RepositorySkill interface {
 	GetAll() ([]domain.Skill, error)
 	GetById(id int) (domain.Skill, error)
 	GetByCharacterId(characterId int) ([]domain.Skill, error)
-	GetByCampaignId(campaignId int) ([]domain.Skill, error)
 	GetByClassId(classId int) ([]domain.Skill, error)
 	Update(skill domain.Skill) (domain.Skill, error)
 	Delete(id int) error
@@ -18,7 +17,6 @@ type ServiceSkill interface {
 	GetAll() ([]domain.Skill, error)
 	GetById(id int) (domain.Skill, error)
 	GetByCharacterId(characterId int) ([]domain.Skill, error)
-	GetByCampaignId(campaignId int) ([]domain.Skill, error)
 	GetByClassId(classId int) ([]domain.Skill, error)
 	Update(skill domain.Skill) (domain.Skill, error)
 	Delete(id int) error

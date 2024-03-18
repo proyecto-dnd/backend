@@ -12,8 +12,8 @@ type RaceXProficiencyHandler struct {
 	service raceXproficiency.RaceXProficiencyService
 }
 
-func NewRaceXProficiencyHandler(service raceXproficiency.RaceXProficiencyService) *RaceXProficiencyHandler {
-	return &RaceXProficiencyHandler{service: service}
+func NewRaceXProficiencyHandler(service *raceXproficiency.RaceXProficiencyService) *RaceXProficiencyHandler {
+	return &RaceXProficiencyHandler{service: *service}
 }
 
 func (h *RaceXProficiencyHandler) HandlerCreate() gin.HandlerFunc {

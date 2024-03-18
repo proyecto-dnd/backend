@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,7 @@ func (h *CharacterHandler) HandlerCreate() gin.HandlerFunc {
 		}
 		createdCharacterData, err := h.service.Create(tempCharacterData)
 		if err != nil {
+			fmt.Println(err)
 			ctx.JSON(500, err)
 			return
 		}
@@ -42,7 +44,7 @@ func (h *CharacterHandler) HandlerDelete() gin.HandlerFunc {
 
 		err = h.service.Delete(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(404, err)
 			return
 		}
 
@@ -54,6 +56,7 @@ func (h *CharacterHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		characters, err := h.service.GetAll()
 		if err != nil {
+			fmt.Println(err)
 			ctx.JSON(500, err)
 			return
 		}

@@ -3,6 +3,8 @@ package characterdata
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -26,31 +28,31 @@ func (r *CharacterDataMySqlRepository) Create(character domain.CharacterData) (d
 	result, err := statement.Exec(
 		character.User_Id,
 		character.Campaign_Id,
-		character.Race, // TODO: After changing type to struct, must be changed to Race.RaceId
-		character.Class, // TODO: After changing type to struct, must be changed to Class.ClassId
-		character.Background, // TODO: After changing type to struct, must be changed to Background.BackgroundId
+		character.Race.RaceID,
+		character.Class.ClassId,
+		character.Background.BackgroundID,
 		character.Name,
-        character.Story,
-        character.Alignment,
-        character.Age,
-        character.Hair,
+		character.Story,
+		character.Alignment,
+		character.Age,
+		character.Hair,
 		character.Eyes,
-        character.Skin,
-        character.Height,
-        character.Weight,
-        character.ImgUrl,
+		character.Skin,
+		character.Height,
+		character.Weight,
+		character.ImgUrl,
 		character.Str,
-        character.Dex,
-        character.Int,
-        character.Con,
-        character.Wiz,
+		character.Dex,
+		character.Int,
+		character.Con,
+		character.Wiz,
 		character.Cha,
-        character.Hitpoints,
-        character.HitDice,
-        character.Speed,
-        character.Armor_Class,
+		character.Hitpoints,
+		character.HitDice,
+		character.Speed,
+		character.Armor_Class,
 		character.Level,
-        character.Exp,
+		character.Exp,
 	)
 	if err != nil {
 		return domain.CharacterData{}, err
@@ -86,46 +88,15 @@ func (r *CharacterDataMySqlRepository) Delete(id int) error {
 func (r *CharacterDataMySqlRepository) GetAll() ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetAll)
 	if err != nil {
-		return []domain.CharacterData{}, nil
+		return []domain.CharacterData{}, err
 	}
 	defer rows.Close()
 
 	var characters []domain.CharacterData
 
-
 	for rows.Next() {
 		var character domain.CharacterData
-	
-		err := rows.Scan(
-		&character.Character_Id,
-		&character.User_Id,
-		&character.Campaign_Id,
-		&character.Race, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Class, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Background, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Name,
-        &character.Story,
-        &character.Alignment,
-        &character.Age,
-        &character.Hair,
-		&character.Eyes,
-        &character.Skin,
-        &character.Height,
-        &character.Weight,
-        &character.ImgUrl,
-		&character.Str,
-        &character.Dex,
-        &character.Int,
-        &character.Con,
-        &character.Wiz,
-		&character.Cha,
-        &character.Hitpoints,
-        &character.HitDice,
-        &character.Speed,
-        &character.Armor_Class,
-		&character.Level,
-        &character.Exp,
-		)
+		err := ScanCharacterData(rows, &character)
 		if err != nil {
 			return []domain.CharacterData{}, err
 		}
@@ -142,46 +113,15 @@ func (r *CharacterDataMySqlRepository) GetAll() ([]domain.CharacterData, error) 
 func (r *CharacterDataMySqlRepository) GetByCampaignId(campaignid int) ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetByCampaignId, campaignid)
 	if err != nil {
-		return []domain.CharacterData{}, nil
+		return []domain.CharacterData{}, err
 	}
 	defer rows.Close()
 
 	var characters []domain.CharacterData
 
-
 	for rows.Next() {
 		var character domain.CharacterData
-	
-		err := rows.Scan(
-		&character.Character_Id,
-		&character.User_Id,
-		&character.Campaign_Id,
-		&character.Race, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Class, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Background, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Name,
-        &character.Story,
-        &character.Alignment,
-        &character.Age,
-        &character.Hair,
-		&character.Eyes,
-        &character.Skin,
-        &character.Height,
-        &character.Weight,
-        &character.ImgUrl,
-		&character.Str,
-        &character.Dex,
-        &character.Int,
-        &character.Con,
-        &character.Wiz,
-		&character.Cha,
-        &character.Hitpoints,
-        &character.HitDice,
-        &character.Speed,
-        &character.Armor_Class,
-		&character.Level,
-        &character.Exp,
-		)
+		err := ScanCharacterData(rows, &character)
 		if err != nil {
 			return []domain.CharacterData{}, err
 		}
@@ -198,28 +138,9 @@ func (r *CharacterDataMySqlRepository) GetByCampaignId(campaignid int) ([]domain
 func (r *CharacterDataMySqlRepository) GetById(id int) (domain.CharacterData, error) {
 	row := r.db.QueryRow(QueryGetById, id)
 	var character domain.CharacterData
-
-	err := row.Scan(
-		&character.Character_Id,
-		&character.User_Id,
-		&character.Name,
-		&character.Class,
-		&character.Race,
-		&character.Background,
-		&character.Hitpoints,
-		&character.Speed,
-		&character.Armor_Class,
-		&character.Level,
-		&character.Exp,
-		&character.Campaign_Id,
-		&character.Str,
-		&character.Dex,
-		&character.Int,
-		&character.Wiz,
-		&character.Con,
-		&character.Cha,
-	)
+	err := ScanCharacterData(row, &character)
 	if err != nil {
+		fmt.Println(err)
 		return domain.CharacterData{}, ErrNotFound
 	}
 
@@ -230,46 +151,16 @@ func (r *CharacterDataMySqlRepository) GetById(id int) (domain.CharacterData, er
 func (r *CharacterDataMySqlRepository) GetByUserId(userid string) ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetByUserId, userid)
 	if err != nil {
-		return []domain.CharacterData{}, nil
+		return []domain.CharacterData{}, err
 	}
 	defer rows.Close()
 
 	var characters []domain.CharacterData
 
-
 	for rows.Next() {
 		var character domain.CharacterData
-	
-		err := rows.Scan(
-		&character.Character_Id,
-		&character.User_Id,
-		&character.Campaign_Id,
-		&character.Race, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Class, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Background, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Name,
-        &character.Story,
-        &character.Alignment,
-        &character.Age,
-        &character.Hair,
-		&character.Eyes,
-        &character.Skin,
-        &character.Height,
-        &character.Weight,
-        &character.ImgUrl,
-		&character.Str,
-        &character.Dex,
-        &character.Int,
-        &character.Con,
-        &character.Wiz,
-		&character.Cha,
-        &character.Hitpoints,
-        &character.HitDice,
-        &character.Speed,
-        &character.Armor_Class,
-		&character.Level,
-        &character.Exp,
-		)
+
+		err := ScanCharacterData(rows, &character)
 		if err != nil {
 			return []domain.CharacterData{}, err
 		}
@@ -286,46 +177,16 @@ func (r *CharacterDataMySqlRepository) GetByUserId(userid string) ([]domain.Char
 func (r *CharacterDataMySqlRepository) GetByUserIdAndCampaignId(userid string, campaignid int) ([]domain.CharacterData, error) {
 	rows, err := r.db.Query(QueryGetByUserIdAndCampaignId, userid, campaignid)
 	if err != nil {
-		return []domain.CharacterData{}, nil
+		return []domain.CharacterData{}, err
 	}
 	defer rows.Close()
 
 	var characters []domain.CharacterData
 
-
 	for rows.Next() {
 		var character domain.CharacterData
-	
-		err := rows.Scan(
-		&character.Character_Id,
-		&character.User_Id,
-		&character.Campaign_Id,
-		&character.Race, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Class, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Background, // TODO: After changing type to struct, must be changed to Fetch each value from the relationship
-		&character.Name,
-        &character.Story,
-        &character.Alignment,
-        &character.Age,
-        &character.Hair,
-		&character.Eyes,
-        &character.Skin,
-        &character.Height,
-        &character.Weight,
-        &character.ImgUrl,
-		&character.Str,
-        &character.Dex,
-        &character.Int,
-        &character.Con,
-        &character.Wiz,
-		&character.Cha,
-        &character.Hitpoints,
-        &character.HitDice,
-        &character.Speed,
-        &character.Armor_Class,
-		&character.Level,
-        &character.Exp,
-		)
+
+		err := ScanCharacterData(rows, &character)
 		if err != nil {
 			return []domain.CharacterData{}, err
 		}
@@ -348,31 +209,31 @@ func (r *CharacterDataMySqlRepository) Update(character domain.CharacterData) (d
 	_, err = statement.Exec(
 		character.User_Id,
 		character.Campaign_Id,
-		character.Race, // TODO: After changing type to struct, must be changed to Race.RaceId
-		character.Class, // TODO: After changing type to struct, must be changed to Class.ClassId
-		character.Background, // TODO: After changing type to struct, must be changed to Background.BackgroundId
+		character.Race.RaceID,
+		character.Class.ClassId,
+		character.Background.BackgroundID,
 		character.Name,
-        character.Story,
-        character.Alignment,
-        character.Age,
-        character.Hair,
+		character.Story,
+		character.Alignment,
+		character.Age,
+		character.Hair,
 		character.Eyes,
-        character.Skin,
-        character.Height,
-        character.Weight,
-        character.ImgUrl,
+		character.Skin,
+		character.Height,
+		character.Weight,
+		character.ImgUrl,
 		character.Str,
-        character.Dex,
-        character.Int,
-        character.Con,
-        character.Wiz,
+		character.Dex,
+		character.Int,
+		character.Con,
+		character.Wiz,
 		character.Cha,
-        character.Hitpoints,
-        character.HitDice,
-        character.Speed,
-        character.Armor_Class,
+		character.Hitpoints,
+		character.HitDice,
+		character.Speed,
+		character.Armor_Class,
 		character.Level,
-        character.Exp,
+		character.Exp,
 		character.Character_Id,
 	)
 	if err != nil {
@@ -383,4 +244,67 @@ func (r *CharacterDataMySqlRepository) Update(character domain.CharacterData) (d
 
 func NewCharacterDataRepository(db *sql.DB) RepositoryCharacterData {
 	return &CharacterDataMySqlRepository{db}
+}
+
+type scannable interface {
+	Scan(dest ...any) error
+}
+
+func ScanCharacterData(rows scannable, characterData *domain.CharacterData) error {
+	err := rows.Scan(
+		&characterData.Character_Id,
+		&characterData.User_Id,
+		&characterData.Campaign_Id,
+		&characterData.Race.RaceID,
+		&characterData.Race.Name,
+		&characterData.Race.Description,
+		&characterData.Race.Speed,
+		&characterData.Race.Str,
+		&characterData.Race.Dex,
+		&characterData.Race.Int,
+		&characterData.Race.Con,
+		&characterData.Race.Wiz,
+		&characterData.Race.Cha,
+		&characterData.Class.ClassId,
+		&characterData.Class.Name,
+		&characterData.Class.Description, 
+		&characterData.Class.ProficiencyBonus, 
+		&characterData.Class.HitDice, 
+		&characterData.Class.ArmorProficiencies, 
+		&characterData.Class.WeaponProficiencies,
+		&characterData.Class.ToolProficiencies,
+		&characterData.Class.SpellcastingAbility,
+		&characterData.Background.BackgroundID,
+		&characterData.Background.Name, 
+		&characterData.Background.Languages,
+		&characterData.Background.PersonalityTraits,
+		&characterData.Background.Ideals,
+		&characterData.Background.Bond,
+		&characterData.Background.Flaws,
+		&characterData.Background.Trait,
+		&characterData.Background.ToolProficiencies,
+		&characterData.Name,
+		&characterData.Story,
+		&characterData.Alignment,
+		&characterData.Age,
+		&characterData.Hair,
+		&characterData.Eyes,
+		&characterData.Skin,
+		&characterData.Height,
+		&characterData.Weight,
+		&characterData.ImgUrl,
+		&characterData.Str,
+		&characterData.Dex,
+		&characterData.Int,
+		&characterData.Con,
+		&characterData.Wiz,
+		&characterData.Cha,
+		&characterData.Hitpoints,
+		&characterData.HitDice,
+		&characterData.Speed,
+		&characterData.Armor_Class,
+		&characterData.Level,
+		&characterData.Exp,
+	)
+	return err
 }

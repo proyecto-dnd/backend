@@ -3,6 +3,7 @@ package skill
 import (
 	"database/sql"
 	"errors"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -26,8 +27,7 @@ func (r *skillMySqlRepository) Create(skill domain.Skill) (domain.Skill, error) 
 
 	result, err := statement.Exec(
 		skill.Name,
-		skill.Description,
-		skill.CampaignId,
+		skill.Stat,
 	)
 
 	if err != nil {
@@ -39,7 +39,7 @@ func (r *skillMySqlRepository) Create(skill domain.Skill) (domain.Skill, error) 
 		return domain.Skill{}, ErrGettingLastInsertId
 	}
 
-	skill.SkillId = lastId
+	skill.SkillId = int(lastId)
 
 	return skill, nil
 }
@@ -60,6 +60,7 @@ func (r *skillMySqlRepository) Delete(id int) error {
 
 	return nil
 }
+
 // GetAll implements RepositorySkill.
 func (r *skillMySqlRepository) GetAll() ([]domain.Skill, error) {
 	rows, err := r.db.Query(QueryGetAll)
@@ -68,14 +69,13 @@ func (r *skillMySqlRepository) GetAll() ([]domain.Skill, error) {
 	}
 
 	defer rows.Close()
-	var skills []domain.Skill
+	skills := []domain.Skill{}
 	for rows.Next() {
 		var skill domain.Skill
 		err := rows.Scan(
 			&skill.SkillId,
 			&skill.Name,
-			&skill.Description,
-			&skill.CampaignId,
+			&skill.Stat,
 		)
 		if err != nil {
 			return []domain.Skill{}, err
@@ -89,36 +89,6 @@ func (r *skillMySqlRepository) GetAll() ([]domain.Skill, error) {
 
 	return skills, nil
 
-}
-
-// GetByCampaignId implements RepositorySkill.
-func (r *skillMySqlRepository) GetByCampaignId(campaignId int) ([]domain.Skill, error) {
-	rows, err := r.db.Query(QueryGetByCampaignId, campaignId)
-	if err != nil {
-		return []domain.Skill{}, err
-	}
-
-	defer rows.Close()
-	var skills []domain.Skill
-	for rows.Next() {
-		var skill domain.Skill
-		err := rows.Scan(
-			&skill.SkillId,
-			&skill.Name,
-			&skill.Description,
-			&skill.CampaignId,
-		)
-		if err != nil {
-			return []domain.Skill{}, err
-		}
-		skills = append(skills, skill)
-	}
-
-	if err := rows.Err(); err != nil {
-		return []domain.Skill{}, err
-	}
-
-	return skills, nil
 }
 
 // GetByClassId implements RepositorySkill.
@@ -129,14 +99,13 @@ func (r *skillMySqlRepository) GetByClassId(classId int) ([]domain.Skill, error)
 	}
 
 	defer rows.Close()
-	var skills []domain.Skill
+	skills := []domain.Skill{}
 	for rows.Next() {
 		var skill domain.Skill
 		err := rows.Scan(
 			&skill.SkillId,
 			&skill.Name,
-			&skill.Description,
-			&skill.CampaignId,
+			&skill.Stat,
 		)
 		if err != nil {
 			return []domain.Skill{}, err
@@ -159,8 +128,7 @@ func (r *skillMySqlRepository) GetById(id int) (domain.Skill, error) {
 	err := row.Scan(
 		&skill.SkillId,
 		&skill.Name,
-		&skill.Description,
-		&skill.CampaignId,
+		&skill.Stat,
 	)
 	if err != nil {
 		return domain.Skill{}, ErrNotFound
@@ -177,14 +145,13 @@ func (r *skillMySqlRepository) GetByCharacterId(characterId int) ([]domain.Skill
 	}
 
 	defer rows.Close()
-	var skills []domain.Skill
+	skills := []domain.Skill{}
 	for rows.Next() {
 		var skill domain.Skill
 		err := rows.Scan(
 			&skill.SkillId,
 			&skill.Name,
-			&skill.Description,
-			&skill.CampaignId,
+			&skill.Stat,
 		)
 		if err != nil {
 			return []domain.Skill{}, err
@@ -209,9 +176,8 @@ func (r *skillMySqlRepository) Update(skill domain.Skill) (domain.Skill, error) 
 
 	_, err = statement.Exec(
 		skill.Name,
-		skill.Description,
+		skill.Stat,
 		skill.SkillId,
-		skill.CampaignId,
 	)
 
 	if err != nil {

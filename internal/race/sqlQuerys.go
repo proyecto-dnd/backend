@@ -1,10 +1,7 @@
 package race
 
 var (
-	QueryCreateRace = `
-		INSERT INTO race (name, description, speed, str, dex, inte, con, wiz, cha)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-	`
+	QueryCreateRace = "INSERT INTO race (name, description, speed, str, dex, `int`, con, wiz, cha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);	"
 
 	QueryGetAllRaces = `
 		SELECT * FROM race;
@@ -14,13 +11,7 @@ var (
 		SELECT * FROM race WHERE race_id = ?;
 	`
 
-	QueryUpdateRace = `
-		UPDATE race
-		SET name = ?, description = ?, speed = ?, str = ?, dex = ?, inte = ?, con = ?, wiz = ?, cha = ?
-		WHERE race_id = ?;
-	`
+	QueryUpdateRace = "UPDATE race SET name = ?, description = ?, speed = ?, str = ?, dex = ?, `int` = ?, con = ?, wiz = ?, cha = ? WHERE race_id = ?;"
 
-	QueryDeleteRace = `
-		DELETE FROM race WHERE race_id = ?;
-	`
+	QueryDeleteRace = `DELETE FROM race WHERE race_id = ?;`
 )

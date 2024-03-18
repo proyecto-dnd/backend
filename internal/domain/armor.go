@@ -1,7 +1,7 @@
 package domain
 
 type Armor struct {
-	ArmorID        int    `json:"armor_id"`
+	ArmorId        int    `json:"armor_id"`
 	Material       string `json:"material"`
 	Name           string `json:"name"`
 	Weight         int    `json:"weight"`
@@ -13,5 +13,5 @@ type Armor struct {
 	Strength       int    `json:"strength"`
 	ArmorClass     int    `json:"armor_class"`
 	DexBonus       string `json:"dex_bonus"`
-	Basic          bool   `json:"basic"`
+	CampaignId     *int   `json:"campaign_id"`
 }

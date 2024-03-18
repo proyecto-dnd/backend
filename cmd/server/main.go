@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/proyecto-dnd/backend/cmd/server/router"
+	"github.com/proyecto-dnd/backend/internal/ws"
 	"github.com/proyecto-dnd/backend/pkg/firebaseConnection"
 
 	_ "github.com/proyecto-dnd/backend/docs"
@@ -51,6 +52,9 @@ func main() {
 	db := ConnectDB()
 	firebaseApp := firebaseConnection.InitializeFirebaseApp()
 
+	hub := ws.NewHub()
+	go hub.Run()
+
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.Use(cors.Default())
@@ -59,7 +63,7 @@ func main() {
 	router.MapRoutes()
 
 	//PARA DOCKERIZAR CAMBIAR localhost por 0.0.0.0
-	if err := engine.Run("localhost:8080"); err != nil {
+	if err := engine.Run("0.0.0.0:8080"); err != nil {
 		panic(err)
 	}
 	defer db.Close()
@@ -115,7 +119,6 @@ func ConnectDB() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-
 	// Check the connection.
 	err = db.Ping()
 

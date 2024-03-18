@@ -9,5 +9,5 @@ type Class struct {
 	ArmorProficiencies  string `json:"armor_proficiencies"`
 	WeaponProficiencies string `json:"weapon_proficiencies"`
 	ToolProficiencies   string `json:"tool_proficiencies"`
-	SpellcastingAbility int    `json:"spellcasting_ability"`
+	SpellcastingAbility []byte    `json:"spellcasting_ability"`
 }

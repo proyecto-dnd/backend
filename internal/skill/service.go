@@ -37,14 +37,6 @@ func (s *service) GetAll() ([]domain.Skill, error) {
 	return skills, nil
 }
 
-// GetByCampaignId implements ServiceSkill.
-func (s *service) GetByCampaignId(campaignId int) ([]domain.Skill, error) {
-	skills, err := s.repo.GetByCampaignId(campaignId)
-	if err != nil {
-		return []domain.Skill{}, err
-	}
-	return skills, nil
-}
 
 // GetByCharacterId implements ServiceSkill.
 func (s *service) GetByCharacterId(characterId int) ([]domain.Skill, error) {
@@ -67,9 +59,9 @@ func (s *service) GetByClassId(classId int) ([]domain.Skill, error) {
 // GetById implements ServiceSkill.
 func (s *service) GetById(id int) (domain.Skill, error) {
 	skill, err := s.repo.GetById(id)
-	if err!= nil {
-        return domain.Skill{}, err
-    }
+	if err != nil {
+		return domain.Skill{}, err
+	}
 	return skill, nil
 }
 
@@ -81,4 +73,3 @@ func (s *service) Update(skill domain.Skill) (domain.Skill, error) {
 	}
 	return skill, nil
 }
-

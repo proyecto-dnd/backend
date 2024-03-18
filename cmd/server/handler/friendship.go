@@ -10,8 +10,8 @@ type FriendshipHandler struct {
 	service friendship.FriendshipService
 }
 
-func NewFriendshipHandler(service friendship.FriendshipService) *FriendshipHandler {
-	return &FriendshipHandler{service: service}
+func NewFriendshipHandler(service *friendship.FriendshipService) *FriendshipHandler {
+	return &FriendshipHandler{service: *service}
 }
 
 // friendship godoc
@@ -63,5 +63,24 @@ func (h *FriendshipHandler) DeleteHandler() gin.HandlerFunc {
 		}
 
 		ctx.JSON(200, "Deleted succesfully friendship with user1_id: "+tempFriendship.User1Id+" and user2_id: "+tempFriendship.User2Id)
+	}
+}
+
+func (h *FriendshipHandler) SearchFollowersHandler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		name := ctx.Param("name")
+
+		var tempFriendship domain.Mutuals
+		tempFriendship.User2Name = name
+		if err := ctx.BindJSON(&tempFriendship); err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		followers, err := h.service.SearchFollowers(tempFriendship)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, followers)
 	}
 }

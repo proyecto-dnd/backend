@@ -33,6 +33,9 @@ func (r *repositorySqlProficiency) Create(proficiencyDto dto.ProficiencyDto) (do
 		proficiencyDto.Name,
 		proficiencyDto.Type,
 	)
+	if err != nil {
+		return domain.Proficiency{}, ErrGettingLastInsertId
+	}
 
 	lastId, err := result.LastInsertId()
 	if err != nil {
@@ -53,7 +56,7 @@ func (r *repositorySqlProficiency) GetAll() ([]domain.Proficiency, error) {
 	if err != nil {
 		return []domain.Proficiency{}, err
 	}
-	var proficiencyList []domain.Proficiency
+	proficiencyList := []domain.Proficiency{}
 	for rows.Next() {
 		var proficiency domain.Proficiency
 		if err := rows.Scan(&proficiency.ProficiencyId, &proficiency.Name, &proficiency.Type); err != nil {
@@ -107,4 +110,23 @@ func (r *repositorySqlProficiency) Delete(id int) error {
 	}
 
 	return nil
+}
+
+func (r *repositorySqlProficiency) GetByCharacterDataId(characterId int) ([]domain.Proficiency, error) {
+	rows, err := r.db.Query(QueryGetByCharacterDataId, characterId)
+	if err != nil {
+		return []domain.Proficiency{}, err
+	}
+	proficiencyList := []domain.Proficiency{}
+	for rows.Next() {
+		var proficiency domain.Proficiency
+		if err := rows.Scan(&proficiency.ProficiencyId, &proficiency.Name, &proficiency.Type); err != nil {
+			return []domain.Proficiency{}, err
+		}
+		proficiencyList = append(proficiencyList, proficiency)
+	}
+	
+	
+
+	return proficiencyList, nil
 }

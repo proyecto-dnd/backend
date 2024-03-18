@@ -2,7 +2,7 @@ package domain
 
 type Spell struct {
 	SpellId         int    `json:"spell_id"`
-	Name            int    `json:"name"`
+	Name            string    `json:"name"`
 	Description     string `json:"description"`
 	Range           int    `json:"range"`
 	Ritual          bool   `json:"ritual"`

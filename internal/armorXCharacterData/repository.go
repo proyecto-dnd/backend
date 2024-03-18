@@ -3,6 +3,8 @@ package armorXCharacterData
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -25,7 +27,7 @@ func (r *armorXCharacterDataSqlRepository) CreateArmorXCharacterData(data domain
 
 	result, err := statement.Exec(
 		data.CharacterData_Id,
-		data.Armor_Id,
+		data.Armor.ArmorId,
 		data.Equipped,
 	)
 
@@ -61,7 +63,7 @@ func (r *armorXCharacterDataSqlRepository) DeleteArmorXCharacterData(id int) err
 }
 
 func (r *armorXCharacterDataSqlRepository) DeleteByCharacterDataIdArmor(id int) error {
-	result, err := r.db.Exec(QueryDeleteByCharacterIdCharacterArmor, id)
+	result, err := r.db.Exec(QueryDeleteByCharacterId, id)
 	if err != nil {
 		return err
 	}
@@ -77,7 +79,7 @@ func (r *armorXCharacterDataSqlRepository) DeleteByCharacterDataIdArmor(id int) 
 }
 
 func (r *armorXCharacterDataSqlRepository) GetAllArmorXCharacterData() ([]domain.ArmorXCharacterData, error) {
-	rows, err := r.db.Query(QueryGetByIdCharacterArmor)
+	rows, err := r.db.Query(QueryGetAllCharacterArmor)
 
 	if err != nil {
 		return []domain.ArmorXCharacterData{}, err
@@ -92,7 +94,19 @@ func (r *armorXCharacterDataSqlRepository) GetAllArmorXCharacterData() ([]domain
 		err := rows.Scan(
 			&data.ArmorXCharacterData_Id,
 			&data.CharacterData_Id,
-			&data.Armor_Id,
+			&data.Armor.ArmorId,
+			&data.Armor.Material,
+			&data.Armor.Name,
+			&data.Armor.Weight,
+			&data.Armor.Price,
+			&data.Armor.Category,
+			&data.Armor.ProtectionType,
+			&data.Armor.Description,
+			&data.Armor.Penalty,
+			&data.Armor.Strength,
+			&data.Armor.ArmorClass,
+			&data.Armor.DexBonus,
+			&data.Armor.CampaignId,
 			&data.Equipped,
 		)
 		if err != nil {
@@ -107,12 +121,24 @@ func (r *armorXCharacterDataSqlRepository) GetAllArmorXCharacterData() ([]domain
 }
 
 func (r *armorXCharacterDataSqlRepository) GetByIdArmorXCharacterData(id int) (domain.ArmorXCharacterData, error) {
-	row := r.db.QueryRow(QueryGetByCharacterIdCharacterArmor, id)
+	row := r.db.QueryRow(QueryGetByCharacterId, id)
 	var data domain.ArmorXCharacterData
 	err := row.Scan(
 		&data.ArmorXCharacterData_Id,
 		&data.CharacterData_Id,
-		&data.Armor_Id,
+		&data.Armor.ArmorId,
+		&data.Armor.Material,
+		&data.Armor.Name,
+		&data.Armor.Weight,
+		&data.Armor.Price,
+		&data.Armor.Category,
+		&data.Armor.ProtectionType,
+		&data.Armor.Description,
+		&data.Armor.Penalty,
+		&data.Armor.Strength,
+		&data.Armor.ArmorClass,
+		&data.Armor.DexBonus,
+		&data.Armor.CampaignId,
 		&data.Equipped,
 	)
 	if err != nil {
@@ -123,9 +149,9 @@ func (r *armorXCharacterDataSqlRepository) GetByIdArmorXCharacterData(id int) (d
 }
 
 func (r *armorXCharacterDataSqlRepository) GetByCharacterDataIdArmor(id int) ([]domain.ArmorXCharacterData, error) {
-	rows, err := r.db.Query(QueryGetByCharacterIdCharacterArmor, id)
-
+	rows, err := r.db.Query(QueryGetByCharacterId, id)
 	if err != nil {
+
 		return []domain.ArmorXCharacterData{}, err
 	}
 
@@ -138,15 +164,29 @@ func (r *armorXCharacterDataSqlRepository) GetByCharacterDataIdArmor(id int) ([]
 		err := rows.Scan(
 			&data.ArmorXCharacterData_Id,
 			&data.CharacterData_Id,
-			&data.Armor_Id,
+			&data.Armor.ArmorId,
+			&data.Armor.Material,
+			&data.Armor.Name,
+			&data.Armor.Weight,
+			&data.Armor.Price,
+			&data.Armor.Category,
+			&data.Armor.ProtectionType,
+			&data.Armor.Description,
+			&data.Armor.Penalty,
+			&data.Armor.Strength,
+			&data.Armor.ArmorClass,
+			&data.Armor.DexBonus,
+			&data.Armor.CampaignId,
 			&data.Equipped,
 		)
 		if err != nil {
+			fmt.Println("death2 ", err.Error())
 			return []domain.ArmorXCharacterData{}, err
 		}
 		armorXCharacterDataList = append(armorXCharacterDataList, data)
 	}
 	if err := rows.Err(); err != nil {
+		fmt.Println("death3 ", err.Error())
 		return []domain.ArmorXCharacterData{}, err
 	}
 	return armorXCharacterDataList, nil
@@ -161,7 +201,7 @@ func (r *armorXCharacterDataSqlRepository) UpdateArmorXCharacterData(data domain
 
 	_, err = statement.Exec(
 		data.CharacterData_Id,
-		data.Armor_Id,
+		data.Armor.ArmorId,
 		data.Equipped,
 		data.ArmorXCharacterData_Id,
 	)

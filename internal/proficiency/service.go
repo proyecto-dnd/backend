@@ -52,3 +52,11 @@ func (s *service) Update(proficiencyDto dto.ProficiencyDto, id int) (domain.Prof
 func (s *service) Delete(id int) error {
 	return s.repository.Delete(id)
 }
+
+func (s *service) GetByCharacterDataId(characterId int) ([]domain.Proficiency, error) {
+	proficiencyList, err := s.repository.GetByCharacterDataId(characterId)
+	if err != nil {
+		return []domain.Proficiency{}, err
+	}
+	return proficiencyList, nil
+}

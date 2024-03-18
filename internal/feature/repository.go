@@ -50,7 +50,7 @@ func (r *featureMySqlRepository) GetAll() ([]domain.Feature, error) {
 	}
 	defer rows.Close()
 	
-	var features []domain.Feature
+	features := []domain.Feature{}
 	for rows.Next() {
 		var feature domain.Feature
 		err := rows.Scan(
@@ -74,7 +74,7 @@ func (r *featureMySqlRepository) GetAllByCharacterId(id int) ([]domain.Feature, 
 	}
 	defer rows.Close()
 	
-	var features []domain.Feature
+	features := []domain.Feature{}
 	for rows.Next() {
 		var feature domain.Feature
 		err := rows.Scan(
