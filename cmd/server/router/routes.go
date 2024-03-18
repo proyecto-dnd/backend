@@ -40,7 +40,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
 	"github.com/proyecto-dnd/backend/internal/weapon"
 	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
-	characterXSpellEvent "github.com/proyecto-dnd/backend/internal/characterXSpellEvent"
+	characterXAttackEvent "github.com/proyecto-dnd/backend/internal/characterXAttackEvent"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -148,9 +148,9 @@ var (
 	characterDataService    characterdata.ServiceCharacterData
 	characterDataHandler    *handler.CharacterHandler
 
-	characterXspellEventRepository characterXSpellEvent.CharacterXSpellEventRepository
-	characterXspellEventService    characterXSpellEvent.CharacterXSpellEventService
-	characterXspellEventHandler    *handler.CharacterXSpellEventHandler
+	characterXAttackEventRepository characterXAttackEvent.CharacterXAttackEventRepository
+	characterXAttackEventService    characterXAttackEvent.CharacterXAttackEventService
+	characterXAttackEventHandler    *handler.CharacterXAttackEventHandler
 )
 
 type Router interface {
@@ -265,9 +265,9 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	eventService = event.NewEventService(eventRepository, characterDataService)
 	eventHandler = handler.NewEventHandler(&eventService)
 
-	characterXspellEventRepository = characterXSpellEvent.NewCharacterXSpellEventRepository(db)
-	characterXspellEventService = characterXSpellEvent.NewCharacterXSpellEventService(characterXspellEventRepository)
-	characterXspellEventHandler = handler.NewCharacterXSpellEventHandler(characterXspellEventService)
+	characterXAttackEventRepository = characterXAttackEvent.NewCharacterXAttackEventRepository(db)
+	characterXAttackEventService = characterXAttackEvent.NewCharacterXAttackEventService(characterXAttackEventRepository)
+	characterXAttackEventHandler = handler.NewCharacterXAttackEventHandler(characterXAttackEventService)
 
 	return &router{
 		engine:      engine,
@@ -305,7 +305,7 @@ func (r *router) MapRoutes() {
 	r.buildCharacterFeatureRoutes()
 	r.buildArmorRoutes()
 	r.buildArmorXCharacterDataRoutes()
-	r.buildCharacterXSpellEventRoutes()
+	r.buildCharacterXAttackEventRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -608,14 +608,14 @@ func (r *router) buildArmorXCharacterDataRoutes() {
 	}
 }
 
-func (r *router) buildCharacterXSpellEventRoutes() {
-	characterXSpellEventGroup := r.routerGroup.Group("/characterXspellevent")
+func (r *router) buildCharacterXAttackEventRoutes() {
+	characterXAttackEventGroup := r.routerGroup.Group("/characterXattackevent")
 	{
-		characterXSpellEventGroup.POST("", characterXspellEventHandler.HandlerCreate())
-		characterXSpellEventGroup.GET("", characterXspellEventHandler.HandlerGetAll())
-		characterXSpellEventGroup.GET("/:id", characterXspellEventHandler.HandlerGetById())
-		characterXSpellEventGroup.GET("/character/:id", characterXspellEventHandler.HandlerGetByCharacterId())
-		characterXSpellEventGroup.GET("/spellevent/:id", characterXspellEventHandler.HandlerGetBySpellEventId())
-		characterXSpellEventGroup.DELETE("/:id", characterXspellEventHandler.HandlerDelete())
+		characterXAttackEventGroup.POST("", characterXAttackEventHandler.HandlerCreate())
+		characterXAttackEventGroup.GET("", characterXAttackEventHandler.HandlerGetAll())
+		characterXAttackEventGroup.GET("/:id", characterXAttackEventHandler.HandlerGetById())
+		characterXAttackEventGroup.GET("/character/:id", characterXAttackEventHandler.HandlerGetByCharacterId())
+		characterXAttackEventGroup.GET("/spellevent/:id", characterXAttackEventHandler.HandlerGetBySpellEventId())
+		characterXAttackEventGroup.DELETE("/:id", characterXAttackEventHandler.HandlerDelete())
 	}
 }

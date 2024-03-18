@@ -1,4 +1,4 @@
-package characterxspellevent
+package characterxattackevent
 
 import (
 	"database/sql"
@@ -12,15 +12,15 @@ var (
 	ErrNotFound            = errors.New("characters not found")
 )
 
-type characterXSpellEventRepository struct {
+type characterXAttackEventRepository struct {
 	db *sql.DB
 }
 
-func NewCharacterXSpellEventRepository(db *sql.DB) CharacterXSpellEventRepository {
-	return &characterXSpellEventRepository{db: db}
+func NewCharacterXAttackEventRepository(db *sql.DB) CharacterXAttackEventRepository {
+	return &characterXAttackEventRepository{db: db}
 }
 
-func (r *characterXSpellEventRepository) GetAll() ([]domain.CharacterXSpellEvent, error) {
+func (r *characterXAttackEventRepository) GetAll() ([]domain.CharacterXAttackEvent, error) {
 	statement, err := r.db.Prepare(QueryGetAll)
 	if err != nil {
 		return nil, ErrPrepareStatement
@@ -32,9 +32,9 @@ func (r *characterXSpellEventRepository) GetAll() ([]domain.CharacterXSpellEvent
 		return nil, err
 	}
 
-	var characterXSpellEvents []domain.CharacterXSpellEvent
+	var characterXSpellEvents []domain.CharacterXAttackEvent
 	for rows.Next() {
-		var characterXSpellEvent domain.CharacterXSpellEvent
+		var characterXSpellEvent domain.CharacterXAttackEvent
 		err := rows.Scan(&characterXSpellEvent.CharacterId, &characterXSpellEvent.SpellEventId)
 		if err != nil {
 			return nil, err
@@ -44,22 +44,22 @@ func (r *characterXSpellEventRepository) GetAll() ([]domain.CharacterXSpellEvent
 	return characterXSpellEvents, nil
 }
 
-func (r *characterXSpellEventRepository) GetById(id int) (domain.CharacterXSpellEvent, error) {
+func (r *characterXAttackEventRepository) GetById(id int) (domain.CharacterXAttackEvent, error) {
 	statement, err := r.db.Prepare(QueryGetById)
 	if err != nil {
-		return domain.CharacterXSpellEvent{}, ErrPrepareStatement
+		return domain.CharacterXAttackEvent{}, ErrPrepareStatement
 	}
 	defer statement.Close()
 
-	var characterXSpellEvent domain.CharacterXSpellEvent
+	var characterXSpellEvent domain.CharacterXAttackEvent
 	err = statement.QueryRow(id).Scan(&characterXSpellEvent.CharacterId, &characterXSpellEvent.SpellEventId)
 	if err != nil {
-		return domain.CharacterXSpellEvent{}, err
+		return domain.CharacterXAttackEvent{}, err
 	}
 	return characterXSpellEvent, nil
 }
 
-func (r *characterXSpellEventRepository) GetByCharacterId(characterId int) ([]domain.CharacterXSpellEvent, error) {
+func (r *characterXAttackEventRepository) GetByCharacterId(characterId int) ([]domain.CharacterXAttackEvent, error) {
 	statement, err := r.db.Prepare(QueryGetByCharacterId)
 	if err != nil {
 		return nil, ErrPrepareStatement
@@ -71,9 +71,9 @@ func (r *characterXSpellEventRepository) GetByCharacterId(characterId int) ([]do
 		return nil, err
 	}
 
-	var characterXSpellEvents []domain.CharacterXSpellEvent
+	var characterXSpellEvents []domain.CharacterXAttackEvent
 	for rows.Next() {
-		var characterXSpellEvent domain.CharacterXSpellEvent
+		var characterXSpellEvent domain.CharacterXAttackEvent
 		err := rows.Scan(&characterXSpellEvent.CharacterId, &characterXSpellEvent.SpellEventId)
 		if err != nil {
 			return nil, err
@@ -83,7 +83,7 @@ func (r *characterXSpellEventRepository) GetByCharacterId(characterId int) ([]do
 	return characterXSpellEvents, nil
 }
 
-func (r *characterXSpellEventRepository) GetBySpellEventId(spellEventId int) ([]domain.CharacterXSpellEvent, error) {
+func (r *characterXAttackEventRepository) GetBySpellEventId(spellEventId int) ([]domain.CharacterXAttackEvent, error) {
 	statement, err := r.db.Prepare(QueryGetBySpellEventId)
 	if err != nil {
 		return nil, ErrPrepareStatement
@@ -95,9 +95,9 @@ func (r *characterXSpellEventRepository) GetBySpellEventId(spellEventId int) ([]
 		return nil, err
 	}
 
-	var characterXSpellEvents []domain.CharacterXSpellEvent
+	var characterXSpellEvents []domain.CharacterXAttackEvent
 	for rows.Next() {
-		var characterXSpellEvent domain.CharacterXSpellEvent
+		var characterXSpellEvent domain.CharacterXAttackEvent
 		err := rows.Scan(&characterXSpellEvent.CharacterId, &characterXSpellEvent.SpellEventId)
 		if err != nil {
 			return nil, err
@@ -107,10 +107,10 @@ func (r *characterXSpellEventRepository) GetBySpellEventId(spellEventId int) ([]
 	return characterXSpellEvents, nil
 }
 
-func (r *characterXSpellEventRepository) Create(characterXSpellEvent domain.CharacterXSpellEvent) (domain.CharacterXSpellEvent, error) {
+func (r *characterXAttackEventRepository) Create(characterXSpellEvent domain.CharacterXAttackEvent) (domain.CharacterXAttackEvent, error) {
 	statement, err := r.db.Prepare(QueryInsert)
 	if err != nil {
-		return domain.CharacterXSpellEvent{}, ErrPrepareStatement
+		return domain.CharacterXAttackEvent{}, ErrPrepareStatement
 	}
 	defer statement.Close()
 
@@ -119,13 +119,13 @@ func (r *characterXSpellEventRepository) Create(characterXSpellEvent domain.Char
 		characterXSpellEvent.SpellEventId,
 	)
 	if err != nil {
-		return domain.CharacterXSpellEvent{}, err
+		return domain.CharacterXAttackEvent{}, err
 	}
 
 	return characterXSpellEvent, nil
 }
 
-func (r *characterXSpellEventRepository) Delete(id int) error {
+func (r *characterXAttackEventRepository) Delete(id int) error {
 	result, err := r.db.Exec(QueryDelete, id)
 	if err != nil {
 		return err
