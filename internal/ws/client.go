@@ -16,11 +16,6 @@ const (
 	maxMessageSize = 512
 )
 
-var (
-	newLine = []byte("\n")
-	space = []byte(" ")
-)
-
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 	ReadBufferSize: 1024,
@@ -40,9 +35,18 @@ type Message struct {
 	SessionID int `json:"session_id"`
 }
 
-func (c *Client) pongHandler(pongMsg string) error {
-	return c.conn.SetReadDeadline(time.Now().Add(pongWait))
+func NewClient(hub *Hub, conn *websocket.Conn, sessionId int) *Client {
+	return &Client{
+		hub: hub,
+		conn: conn,
+		send: make(chan *Message),
+		sessionId: sessionId,
+	}
 }
+
+// func (c *Client) pongHandler(pongMsg string) error {
+// 	return c.conn.SetReadDeadline(time.Now().Add(pongWait))
+// }
 
 func (c *Client) readPump()  {
 	defer func() {
@@ -51,11 +55,11 @@ func (c *Client) readPump()  {
 	}()
 
 	c.conn.SetReadLimit(maxMessageSize)
-	if err := c.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
-		log.Println(err)
-		return
-	}
-	c.conn.SetPongHandler(c.pongHandler)
+	// if err := c.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
+	// c.conn.SetPongHandler(c.pongHandler)
 
 	for {
 		_, message, err := c.conn.ReadMessage()
@@ -80,16 +84,14 @@ func (c *Client) readPump()  {
 }
 
 func (c *Client) writePump() {
-	ticker := time.NewTicker(pingPeriod)
 	defer func() {
-		ticker.Stop()
 		c.conn.Close()
 	}()
 
 	for {
 		select {
 		case message, ok := <- c.send:
-			// c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 
 			if !ok {
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
@@ -107,9 +109,8 @@ func (c *Client) writePump() {
 			}
 
 			w.Write([]byte(jsonMessage))
-		case <- ticker.C:
-			// c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+
+			if err := w.Close(); err != nil {
 				return
 			}
 		}

@@ -59,7 +59,7 @@ func main() {
 	engine.Use(gin.Recovery())
 	engine.Use(cors.Default())
 
-	router := router.NewRouter(engine, db, firebaseApp)
+	router := router.NewRouter(engine, db, firebaseApp, hub)
 	router.MapRoutes()
 
 	//PARA DOCKERIZAR CAMBIAR localhost por 0.0.0.0

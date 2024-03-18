@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+	"log"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
@@ -166,6 +167,7 @@ type router struct {
 }
 
 func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App, hub *ws.Hub) Router {
+	log.Println("hub", hub, &hub)
 	userFirebaseRepository = user.NewUserFirebaseRepository(firebaseApp)
 	userFirebaseService = user.NewServiceUser(userFirebaseRepository)
 	userFirebaseHandler = handler.NewUserHandler(&userFirebaseService)
@@ -272,6 +274,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App, hub *w
 		engine:      engine,
 		db:          db,
 		firebaseApp: firebaseApp,
+		hub: hub,
 	}
 }
 

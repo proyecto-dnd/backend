@@ -54,14 +54,14 @@ func (h *Hub) ServeWs(ctx *gin.Context) {
 		log.Println(err)
 		return
 	}
-
+	
 	sessionId, err := strconv.Atoi(ctx.Param("session_id"))
 	if err != nil {
 		log.Println(err)
 		return
 	}
-
-	client := &Client{hub: h, conn: conn, send: make(chan *Message), sessionId: sessionId}
+	
+	client := NewClient(h, conn, sessionId)
 	h.register <- client
 
 	log.Println("Nuevo cliente conectado: ", client.sessionId)
