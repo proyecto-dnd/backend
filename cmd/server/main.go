@@ -51,7 +51,7 @@ func main() {
 
 	db := ConnectDB()
 	firebaseApp := firebaseConnection.InitializeFirebaseApp()
-	s3.InitializeS3()
+	go s3.InitializeS3()
 
 	engine := gin.New()
 	engine.Use(gin.Recovery())
