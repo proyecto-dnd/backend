@@ -62,25 +62,25 @@ func (h *SkillHandler) HandlerGetAll() gin.HandlerFunc {
 	}
 }
 
-func (h *SkillHandler) HandlerGetByCampaignId() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
+// func (h *SkillHandler) HandlerGetByCampaignId() gin.HandlerFunc {
+// 	return func(ctx *gin.Context) {
+// 		id := ctx.Param("id")
 		
 
-		intId, err := strconv.Atoi(id)
-		if err != nil {
-			ctx.JSON(400, err)
-			return
-		}
+// 		intId, err := strconv.Atoi(id)
+// 		if err != nil {
+// 			ctx.JSON(400, err)
+// 			return
+// 		}
 
-		skills, err := h.service.GetByCampaignId(intId)
-		if err != nil {
-			ctx.JSON(500, err)
-			return
-		}
-		ctx.JSON(200, skills)
-	}
-}
+// 		skills, err := h.service.GetByCampaignId(intId)
+// 		if err != nil {
+// 			ctx.JSON(500, err)
+// 			return
+// 		}
+// 		ctx.JSON(200, skills)
+// 	}
+// }
 
 func (h *SkillHandler) HandlerGetByCharacterId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

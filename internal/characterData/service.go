@@ -59,16 +59,33 @@ func (s *service) GetAll() ([]dto.FullCharacterData, error) {
 	if err != nil {
 		return []dto.FullCharacterData{}, err
 	}
-	var fullCharacters []dto.FullCharacterData
-	for _, v := range characters {
-		fullCharacter, err := s.fetchAndConvertToFullCharacterData(&v)
+	errChan := make(chan error, 5)
+	wg := sync.WaitGroup{}
+	maxWorkers := make(chan bool, 2)
+	wg.Add(len(characters))
+	fullCharacters := make([]dto.FullCharacterData, len(characters))
+	for i := range characters {
+		go func (i int) {
+			maxWorkers <- true
+			defer func ()  {
+				wg.Done()
+				<- maxWorkers
+			}()
+			fullCharacters[i], err = s.fetchAndConvertToFullCharacterData(&characters[i])
+			errChan <- err
+		}(i)
+	}
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan {
 		if err != nil {
-			fmt.Println("algo")
 			return []dto.FullCharacterData{}, err
 		}
-		fullCharacters = append(fullCharacters, fullCharacter)
-
 	}
+
 	return fullCharacters, nil
 }
 
