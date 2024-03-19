@@ -15,6 +15,7 @@ import (
 	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
+	"github.com/proyecto-dnd/backend/internal/dice_event"
 
 	// "github.com/proyecto-dnd/backend/internal/ws"
 
@@ -151,6 +152,10 @@ var (
 	characterXAttackEventRepository characterXAttackEvent.CharacterXAttackEventRepository
 	characterXAttackEventService    characterXAttackEvent.CharacterXAttackEventService
 	characterXAttackEventHandler    *handler.CharacterXAttackEventHandler
+
+	diceEventRepository dice_event.DiceEventRepository
+	diceEventService    dice_event.DiceEventService
+	diceEventHandler    *handler.DiceEventHandler
 )
 
 type Router interface {
@@ -269,6 +274,10 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterXAttackEventService = characterXAttackEvent.NewCharacterXAttackEventService(characterXAttackEventRepository)
 	characterXAttackEventHandler = handler.NewCharacterXAttackEventHandler(characterXAttackEventService)
 
+	diceEventRepository = dice_event.NewDiceEventRepository(db)
+	diceEventService = dice_event.NewDiceEventService(diceEventRepository)
+	diceEventHandler = handler.NewDiceEventHandler(diceEventService)
+
 	return &router{
 		engine:      engine,
 		db:          db,
@@ -306,6 +315,7 @@ func (r *router) MapRoutes() {
 	r.buildArmorRoutes()
 	r.buildArmorXCharacterDataRoutes()
 	r.buildCharacterXAttackEventRoutes()
+	r.buildDiceEventRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -619,5 +629,16 @@ func (r *router) buildCharacterXAttackEventRoutes() {
 		characterXAttackEventGroup.GET("/character/:id", characterXAttackEventHandler.HandlerGetByCharacterId())
 		characterXAttackEventGroup.GET("/attackevent/:id", characterXAttackEventHandler.HandlerGetByEventId())
 		characterXAttackEventGroup.DELETE("/:id", characterXAttackEventHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildDiceEventRoutes() {
+	diceEventGroup := r.routerGroup.Group("/diceevent")
+	{
+		diceEventGroup.POST("", diceEventHandler.HandlerCreate())
+		diceEventGroup.GET("", diceEventHandler.HandlerGetAll())
+		diceEventGroup.GET("/:id", diceEventHandler.HandlerGetById())
+		diceEventGroup.PUT("/:id", diceEventHandler.HandlerUpdate())
+		diceEventGroup.DELETE("/:id", diceEventHandler.HandlerDelete())
 	}
 }
