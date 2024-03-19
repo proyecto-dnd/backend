@@ -1,6 +1,8 @@
 package attackEvent
 
 import (
+	"time"
+
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -16,6 +18,9 @@ func NewAttackEventService(repo AttackEventRepository, characterService characte
 }
 
 func (s *service) CreateEvent(eventDto dto.CreateAttackEventDto) (domain.AttackEvent, error) {
+
+	timestamp := time.Now()
+
 	eventDomain := domain.AttackEvent{
 		Type:               eventDto.Type,
 		Weapon:             eventDto.Weapon,
@@ -26,7 +31,7 @@ func (s *service) CreateEvent(eventDto dto.CreateAttackEventDto) (domain.AttackE
 		EventResolution:    eventDto.EventResolution,
 		DmgType:            eventDto.DmgType,
 		Description:        eventDto.Description,
-		TimeStamp:          eventDto.TimeStamp,
+		TimeStamp:          &timestamp,
 	}
 
 	createdEvent, err := s.repo.Create(eventDomain)
