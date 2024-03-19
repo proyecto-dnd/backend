@@ -1,7 +1,7 @@
 package skill
 
 var (
-	QueryCreateSkill      = `INSERT INTO skill (name, description, campaign_id) VALUES(?,?,?);`
+	QueryCreateSkill      = `INSERT INTO skill (name, stat) VALUES(?,?);`
 	QueryGetAll           = `SELECT * FROM skill;`
 	QueryGetById          = `SELECT * FROM skill WHERE skill_id = ?;`
 	QueryGetByCharacterId = `SELECT * FROM skill INNER JOIN character_skill ON character_skill.skill_id = skill.skill_id WHERE character_skill.character_id = ?;`
