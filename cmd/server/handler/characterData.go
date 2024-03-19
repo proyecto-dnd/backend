@@ -120,6 +120,22 @@ func (h *CharacterHandler) HandlerGetById() gin.HandlerFunc {
 	}
 }
 
+func (h *CharacterHandler) HandlerGetByAttackEventId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		eventid, err := strconv.Atoi(ctx.Param("eventid"))
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+		characters, err := h.service.GetByAttackEventId(eventid)
+		if err != nil {
+			ctx.JSON(404, err)
+			return
+		}
+		ctx.JSON(200, characters)
+	}
+}
+
 func (h *CharacterHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
