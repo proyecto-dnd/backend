@@ -278,6 +278,9 @@ func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedi
 }
 
 func (s *service) UpdateEvent(eventDto dto.CreateAttackEventDto, id int) (domain.AttackEvent, error) {
+
+	timestamp := time.Now()
+
 	eventDomain := domain.AttackEvent{
 		Type:               eventDto.Type,
 		Weapon:             eventDto.Weapon,
@@ -288,7 +291,7 @@ func (s *service) UpdateEvent(eventDto dto.CreateAttackEventDto, id int) (domain
 		EventResolution:    eventDto.EventResolution,
 		DmgType:            eventDto.DmgType,
 		Description:        eventDto.Description,
-		TimeStamp:          eventDto.TimeStamp,
+		TimeStamp:          &timestamp,
 	}
 
 	updatedEvent, err := s.repo.Update(eventDomain, id)
