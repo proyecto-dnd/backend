@@ -15,7 +15,6 @@ type CreateAttackEventDto struct {
 	Spell              *int       `json:"spell"`
 	DmgType            *string    `json:"dmg_type"`
 	Description        *string    `json:"description"`
-	TimeStamp          *time.Time `json:"time_stamp"`
 }
 
 type RepositoryResponseAttackEvent struct {
