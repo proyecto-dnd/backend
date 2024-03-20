@@ -160,6 +160,26 @@ func (s *service) GetByUserIdAndCampaignId(userid string, campaignid int) ([]dto
 	return fullCharacters, nil
 }
 
+// GetByAttackEventId implements ServiceCharacterData.
+func (s *service) GetByAttackEventId(attackeventid int) ([]dto.FullCharacterData, error) {
+	characters, err := s.characterRepo.GetByAttackEventId(attackeventid)
+	if err != nil {
+		return []dto.FullCharacterData{}, err
+	}
+
+	var fullCharacters []dto.FullCharacterData
+	for _, v := range characters {
+		fullCharacter, err := s.fetchAndConvertToFullCharacterData(&v)
+		if err != nil {
+			return []dto.FullCharacterData{}, err
+		}
+		fullCharacters = append(fullCharacters, fullCharacter)
+
+	}
+
+	return fullCharacters, nil
+}
+
 // Update implements ServiceCharacterData.
 func (s *service) Update(character domain.CharacterData) (dto.FullCharacterData, error) {
 	updatedCharacter, err := s.characterRepo.Update(character)

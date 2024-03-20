@@ -67,7 +67,7 @@ func (h *CharacterXAttackEventHandler) HandlerGetByCharacterId() gin.HandlerFunc
 	}
 }
 
-func (h *CharacterXAttackEventHandler) HandlerGetBySpellEventId() gin.HandlerFunc {
+func (h *CharacterXAttackEventHandler) HandlerGetByEventId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		spellEventId := ctx.Param("spellEventId")
 
@@ -77,7 +77,7 @@ func (h *CharacterXAttackEventHandler) HandlerGetBySpellEventId() gin.HandlerFun
 			return
 		}
 
-		characterXSpellEvents, err := h.service.GetBySpellEventId(spellEventIdInt)
+		characterXSpellEvents, err := h.service.GetByEventId(spellEventIdInt)
 		if err != nil {
 			ctx.JSON(500, err)
 			return

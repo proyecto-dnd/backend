@@ -14,53 +14,58 @@ func NewCharacterXAttackEventService(characterXAttackEventRepository CharacterXA
 }
 
 func (s *service) GetAll() ([]domain.CharacterXAttackEvent, error) {
-	characterXSpellEvents, err := s.characterXAttackEventRepository.GetAll()
+	characterXAttackEvents, err := s.characterXAttackEventRepository.GetAll()
 	if err != nil {
 		return nil, err
 	}
 
-	return characterXSpellEvents, nil
+	return characterXAttackEvents, nil
 }
 
 func (s *service) GetById(id int) (domain.CharacterXAttackEvent, error) {
-	characterXSpellEvent, err := s.characterXAttackEventRepository.GetById(id)
+	characterXAttackEvent, err := s.characterXAttackEventRepository.GetById(id)
 	if err != nil {
 		return domain.CharacterXAttackEvent{}, err
 	}
 
-	return characterXSpellEvent, nil
+	return characterXAttackEvent, nil
 }
 
 func (s *service) GetByCharacterId(characterId int) ([]domain.CharacterXAttackEvent, error) {
-	characterXSpellEvents, err := s.characterXAttackEventRepository.GetByCharacterId(characterId)
+	characterXAttackEvents, err := s.characterXAttackEventRepository.GetByCharacterId(characterId)
 	if err != nil {
 		return nil, err
 	}
 
-	return characterXSpellEvents, nil
+	return characterXAttackEvents, nil
 }
 
-func (s *service) GetBySpellEventId(spellEventId int) ([]domain.CharacterXAttackEvent, error) {
-	characterXSpellEvents, err := s.characterXAttackEventRepository.GetBySpellEventId(spellEventId)
+func (s *service) GetByEventId(attackEventId int) ([]domain.CharacterXAttackEvent, error) {
+	characterXAttackEvents, err := s.characterXAttackEventRepository.GetByEventId(attackEventId)
 	if err != nil {
 		return nil, err
 	}
 
-	return characterXSpellEvents, nil
+	return characterXAttackEvents, nil
 }
 
-func (s *service) Create(characterXSpellEvent dto.CharacterXAttackEventDto) (domain.CharacterXAttackEvent, error) {
-	newCharacterXSpellEvent := domain.CharacterXAttackEvent{
-		CharacterId: characterXSpellEvent.CharacterId,
-		SpellEventId: characterXSpellEvent.SpellEventId,
+func (s *service) Create(characterXAttackEvent dto.CharacterXAttackEventDto) (domain.CharacterXAttackEvent, error) {
+	newCharacterXAttackEvent := domain.CharacterXAttackEvent{
+		CharacterId: characterXAttackEvent.CharacterId,
+		EventId: characterXAttackEvent.EventId,
+		Dmg: characterXAttackEvent.Dmg,
+		DmgRoll: characterXAttackEvent.DmgRoll,
+		AttackResult: characterXAttackEvent.AttackResult,
+		AttackRoll: characterXAttackEvent.AttackRoll,
+		ArmorClass: characterXAttackEvent.ArmorClass,
 	}
 
-	createdCharacterXSpellEvent, err := s.characterXAttackEventRepository.Create(newCharacterXSpellEvent)
+	createdCharacterXAttackEvent, err := s.characterXAttackEventRepository.Create(newCharacterXAttackEvent)
 	if err != nil {
 		return domain.CharacterXAttackEvent{}, err
 	}
 
-	return createdCharacterXSpellEvent, nil
+	return createdCharacterXAttackEvent, nil
 }
 
 func (s *service) Delete(id int) error {
