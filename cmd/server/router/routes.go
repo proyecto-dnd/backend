@@ -116,9 +116,9 @@ var (
 	characterXSpellService    characterXspell.CharacterXSpellService
 	characterXSpellHandler    *handler.CharacterXSpellHandler
 
-	attackEventRepository     attackEvent.AttackEventRepository
-	attackEventService        attackEvent.AttackEventService
-	attackEventHandler        *handler.AttackEventHandler
+	attackEventRepository attackEvent.AttackEventRepository
+	attackEventService    attackEvent.AttackEventService
+	attackEventHandler    *handler.AttackEventHandler
 
 	itemRepository               item.RepositoryItem
 	itemService                  item.ServiceItem
@@ -335,6 +335,7 @@ func (r *router) buildUserRoutes() {
 		userGroup.POST("/login", userFirebaseHandler.HandlerLogin())
 		userGroup.GET("", userFirebaseHandler.HandlerGetAll())
 		userGroup.GET("/:id", userFirebaseHandler.HandlerGetById())
+		userGroup.GET("/jwt", userFirebaseHandler.HandlerGetJwtInfo())
 		userGroup.PUT("/:id", userFirebaseHandler.HandlerUpdate())
 		userGroup.PATCH("/:id", userFirebaseHandler.HandlerPatch())
 		userGroup.DELETE("/:id", userFirebaseHandler.HandlerDelete())
@@ -427,9 +428,10 @@ func (r *router) buildUserCampaignRoutes() {
 func (r *router) buildFriendshipRoutes() {
 	friendshipGroup := r.routerGroup.Group("/friendship")
 	{
-		friendshipGroup.POST("", friendshipHandler.CreateHandler())
-		friendshipGroup.DELETE("", friendshipHandler.DeleteHandler())
-		friendshipGroup.GET("/search/:name", friendshipHandler.SearchFollowersHandler())
+		friendshipGroup.POST("", friendshipHandler.HandlerCreate())
+		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends())
+		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerSearchFollowers())
+		friendshipGroup.DELETE("", friendshipHandler.HandlerDelete())
 	}
 }
 
