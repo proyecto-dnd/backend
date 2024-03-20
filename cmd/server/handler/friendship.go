@@ -23,7 +23,7 @@ func NewFriendshipHandler(service *friendship.FriendshipService) *FriendshipHand
 // @Success 201 {object} domain.Friendship
 // @Failure 500 {object} error
 // @Router /friendship [post]
-func (h *FriendshipHandler) CreateHandler() gin.HandlerFunc {
+func (h *FriendshipHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempFriendship domain.Friendship
 		if err := ctx.BindJSON(&tempFriendship); err != nil {
@@ -49,7 +49,7 @@ func (h *FriendshipHandler) CreateHandler() gin.HandlerFunc {
 // @Success 200 {object} string
 // @Failure 500 {object} error
 // @Router /friendship [delete]
-func (h *FriendshipHandler) DeleteHandler() gin.HandlerFunc {
+func (h *FriendshipHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempFriendship domain.Friendship
 		if err := ctx.BindJSON(&tempFriendship); err != nil {
@@ -66,7 +66,7 @@ func (h *FriendshipHandler) DeleteHandler() gin.HandlerFunc {
 	}
 }
 
-func (h *FriendshipHandler) SearchFollowersHandler() gin.HandlerFunc {
+func (h *FriendshipHandler) HandlerSearchFollowers() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		name := ctx.Param("name")
 
@@ -82,5 +82,23 @@ func (h *FriendshipHandler) SearchFollowersHandler() gin.HandlerFunc {
 			return
 		}
 		ctx.JSON(200, followers)
+	}
+}
+
+func (h *FriendshipHandler) HandlerGetAllFriends() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var userId string
+
+		if err := ctx.BindJSON(&userId); err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+
+		friends, err := h.service.GetAllFriends(userId)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, friends)
 	}
 }

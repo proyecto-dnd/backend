@@ -88,10 +88,13 @@ func (s *service) Login(userInfo domain.UserLoginInfo) (string, error) {
 
 	cookie, err := s.repositoryFirebase.Login(userInfo)
 	if err != nil {
-		log.Println("ACAAAAAAAAAA")
 		log.Printf(err.Error())
 		return "", err
 	}
 
 	return cookie, nil
+}
+
+func (s *service) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
+	return s.repositoryFirebase.GetJwtInfo(cookieToken)
 }

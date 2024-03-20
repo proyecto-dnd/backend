@@ -211,3 +211,21 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 		ctx.JSON(200, "Setted Cookie")
 	}
 }
+
+func (h *UserHandler) HandlerGetJwtInfo() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+		// log.Println(cookie.Value)
+		jwtClaimsInfo, err := h.service.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+		// TEMP SUCCESS RESPONSE
+		ctx.JSON(200, jwtClaimsInfo)
+	}
+}

@@ -50,7 +50,7 @@ func (r *repositoryFriendship) SearchFollowers(mutuals domain.Mutuals) ([]domain
 	}()
 
 	go func() {
-		user1Friends, err := r.GetFriends(mutuals.User1Id)
+		user1Friends, err := r.GetAllFriends(mutuals.User1Id)
 		if err != nil {
 			user1FriendsChan <- []domain.Friendship{}
 			return
@@ -165,7 +165,7 @@ func (r *repositoryFriendship) IsFriends(userId1 string, userId2 string) (bool, 
 	return count > 0, nil
 }
 
-func (r *repositoryFriendship) GetFriends(userId string) ([]domain.Friendship, error) {
+func (r *repositoryFriendship) GetAllFriends(userId string) ([]domain.Friendship, error) {
 	statement, err := r.db.Prepare(QueryGetFriends)
 	if err != nil {
 		return nil, ErrPrepareStatement
