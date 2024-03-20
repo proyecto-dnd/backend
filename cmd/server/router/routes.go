@@ -96,7 +96,7 @@ var (
 	skillHandler                  handler.SkillHandler
 	skillXCharacterDataRepository skillxcharacterdata.RepositorySkillXCharacter
 	skillXCharacterDataService    skillxcharacterdata.ServiceSkillXCharacter
-	skillXCharacterHandler        handler.SkillXCharacterHandler
+	skillXCharacterDataHandler    handler.SkillXCharacterHandler
 
 	spellRepository       spell.RepositorySpell
 	spellService          spell.ServiceSpell
@@ -227,7 +227,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	skillHandler = *handler.NewSkillHandler(&skillService)
 	skillXCharacterDataRepository = skillxcharacterdata.NewSkillxCharacterDataRepository(db)
 	skillXCharacterDataService = skillxcharacterdata.NewSkillXCharacterService(skillXCharacterDataRepository)
-	skillXCharacterHandler = *handler.NewSkillXCharacterHandler(&skillXCharacterDataService)
+	skillXCharacterDataHandler = *handler.NewSkillXCharacterHandler(&skillXCharacterDataService)
 
 	featureRepository = feature.NewFeatureRepository(db)
 	featureService = feature.NewFeatureService(featureRepository)
@@ -316,6 +316,7 @@ func (r *router) MapRoutes() {
 	r.buildArmorXCharacterDataRoutes()
 	r.buildCharacterXAttackEventRoutes()
 	r.buildDiceEventRoutes()
+	r.buildSkillXCharacterDataRoutes()
 
 	// TODO Add other builders here	and write their functions
 }
@@ -641,5 +642,14 @@ func (r *router) buildDiceEventRoutes() {
 		diceEventGroup.GET("/:id", diceEventHandler.HandlerGetById())
 		diceEventGroup.PUT("/:id", diceEventHandler.HandlerUpdate())
 		diceEventGroup.DELETE("/:id", diceEventHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildSkillXCharacterDataRoutes() {
+	skillXCharacterDataGroup := r.routerGroup.Group("/skill_character")
+	{
+		skillXCharacterDataGroup.POST("", skillXCharacterDataHandler.HandlerCreate())
+		skillXCharacterDataGroup.DELETE("/:id", skillXCharacterDataHandler.HandlerDelete())
+
 	}
 }
