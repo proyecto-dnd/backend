@@ -7,7 +7,7 @@ type CharacterTrade struct {
 	Item *int `json:"item"` 
 	Armor *int `json:"armor"`
 	ItemOwner int `json:"item_owner"`
-	ItemReciever int `json:"item_reciever"`
+	ItemReciever int `json:"item_receiver"`
 	Quantity *int `json:"quantity"`
 	ItemName string `json:"item_name"`
 	ItemType string `json:"item_type"`

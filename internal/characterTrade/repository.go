@@ -3,6 +3,7 @@ package charactertrade
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
@@ -11,21 +12,22 @@ var (
 	ErrNotFound = errors.New("characters not found")
 )
 
-type CharacterTradeMySqlRepository struct {
+type characterTradeMySqlRepository struct {
 	db *sql.DB
 }
 
 func NewCharacterTradeMySqlRepository(db *sql.DB) RepositoryCharacterTrade {
-	return &CharacterTradeMySqlRepository{db}
+	return &characterTradeMySqlRepository{db}
 }
 
 // CreateCharacterTrade implements CharacterTradeRepository.
-func (c *CharacterTradeMySqlRepository) BulkCreateCharacterTrade(characterTradeList []domain.CharacterTrade) error {
+func (c *characterTradeMySqlRepository) BulkCreateCharacterTrade(characterTradeList []domain.CharacterTrade) error {
 	values := []interface{}{}
 	sqlQuery := QueryBulkInsert
 	for _, characterTrade := range characterTradeList {
 		sqlQuery += "(?, ?, ?, ?, ?, ?, ?, ?, ?),"
-		values = append(values, characterTrade.TradeEvent_Id,
+		values = append(values, 
+			characterTrade.TradeEvent_Id,
 			characterTrade.Weapon,
 			characterTrade.Item,
 			characterTrade.Armor,
@@ -35,8 +37,11 @@ func (c *CharacterTradeMySqlRepository) BulkCreateCharacterTrade(characterTradeL
 			characterTrade.ItemName,
 			characterTrade.ItemType)
 	}
+
 	sqlQuery = sqlQuery[:len(sqlQuery)-1]
 	statement, err := c.db.Prepare(sqlQuery)
+	fmt.Println(values...)
+	fmt.Println(statement)
 	if err != nil {
 		return err
 	}
@@ -49,7 +54,7 @@ func (c *CharacterTradeMySqlRepository) BulkCreateCharacterTrade(characterTradeL
 }
 
 // DeleteByTradeEventId implements CharacterTradeRepository.
-func (c *CharacterTradeMySqlRepository) DeleteByTradeEventId(tradeEventId int) error {
+func (c *characterTradeMySqlRepository) DeleteByTradeEventId(tradeEventId int) error {
 	result, err := c.db.Exec(QueryDeleteByTradeEventId, tradeEventId)
 	if err != nil {
 		return err
@@ -65,7 +70,7 @@ func (c *CharacterTradeMySqlRepository) DeleteByTradeEventId(tradeEventId int) e
 }
 
 // GetByTradeEventId implements CharacterTradeRepository.
-func (c *CharacterTradeMySqlRepository) GetByTradeEventId(tradeEventId int) ([]domain.CharacterTrade, error) {
+func (c *characterTradeMySqlRepository) GetByTradeEventId(tradeEventId int) ([]domain.CharacterTrade, error) {
 	rows, err := c.db.Query(QueryGetByTradeEventId, tradeEventId)
 	if err != nil {
 		return []domain.CharacterTrade{}, err

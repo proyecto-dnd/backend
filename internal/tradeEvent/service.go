@@ -16,6 +16,10 @@ func (s *serviceTradeEvent) Create(tradeEvent domain.TradeEvent) (domain.TradeEv
 	if err != nil {
 		return domain.TradeEvent{}, err
 	}
+
+	for i := range tradeEvent.TradingItems{
+		tradeEvent.TradingItems[i].TradeEvent_Id = newTradeEvent.TradeEvent_Id
+	}
 	err = s.characterTradeService.BulkCreateCharacterTrade(tradeEvent.TradingItems)
 	if err != nil {
 		return domain.TradeEvent{}, err
@@ -97,6 +101,6 @@ func (s *serviceTradeEvent) GetBySessionId(sessionId int) ([]domain.TradeEvent, 
 	return tradeEvents, nil
 }
 
-func NewServiceTradeEvent(tradeEventRepo RepositoryTradeEvent, characterTradeService charactertrade.ServiceCharacterTrade) ServiceTradeEvent {
+func NewTradeEventService(tradeEventRepo RepositoryTradeEvent, characterTradeService charactertrade.ServiceCharacterTrade) ServiceTradeEvent {
 	return &serviceTradeEvent{tradeEventRepo, characterTradeService}
 }
