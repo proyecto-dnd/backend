@@ -116,9 +116,9 @@ var (
 	characterXSpellService    characterXspell.CharacterXSpellService
 	characterXSpellHandler    *handler.CharacterXSpellHandler
 
-	attackEventRepository     attackEvent.AttackEventRepository
-	attackEventService        attackEvent.AttackEventService
-	attackEventHandler        *handler.AttackEventHandler
+	attackEventRepository attackEvent.AttackEventRepository
+	attackEventService    attackEvent.AttackEventService
+	attackEventHandler    *handler.AttackEventHandler
 
 	itemRepository               item.RepositoryItem
 	itemService                  item.ServiceItem
@@ -316,6 +316,7 @@ func (r *router) MapRoutes() {
 	r.buildArmorXCharacterDataRoutes()
 	r.buildCharacterXAttackEventRoutes()
 	r.buildDiceEventRoutes()
+
 	// TODO Add other builders here	and write their functions
 }
 
