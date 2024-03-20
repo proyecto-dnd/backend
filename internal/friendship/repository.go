@@ -83,22 +83,6 @@ func (r *repositoryFriendship) SearchFollowers(mutuals domain.Mutuals) ([]domain
 	}
 
 	return tempFriendList, nil
-	// usersList, err := r.userRepository.GetAll()
-	// if err != nil {
-	// 	return []domain.UserResponse{}, err
-	// }
-
-	// user1Friends, err := r.GetFriends(mutuals.User1Id)
-	// if err != nil {
-	// 	return []domain.UserResponse{}, err
-	// }
-
-	// var userListByName []domain.UserResponse
-	// for _, user := range usersList {
-	// 	if strings.HasPrefix(user.Username, mutuals.User2Name) {
-	// 		userListByName = append(userListByName, user)
-	// 	}
-	// }
 
 	// var tempFriendList []domain.UserResponse
 	// for _, friend := range user1Friends {
@@ -194,4 +178,20 @@ func (r *repositoryFriendship) GetAllFriends(userId string) ([]domain.Friendship
 	}
 
 	return friendships, nil
+}
+
+func (r *repositoryFriendship) GetBySimilarName(input string) ([]domain.UserResponse, error) {
+	usersList, err := r.userRepository.GetAll()
+	if err != nil {
+		return []domain.UserResponse{}, err
+	}
+
+	usersListByName := make([]domain.UserResponse, 0)
+	for _, user := range usersList {
+		if strings.HasPrefix(strings.ToLower(user.Username), strings.ToLower(input)) {
+			usersListByName = append(usersListByName, user)
+		}
+	}
+
+	return usersListByName, nil
 }

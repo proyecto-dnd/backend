@@ -102,3 +102,15 @@ func (h *FriendshipHandler) HandlerGetAllFriends() gin.HandlerFunc {
 		ctx.JSON(200, friends)
 	}
 }
+
+func (h *FriendshipHandler) HandlerGetBySimilarName() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		name := ctx.Param("name")
+		users, err := h.service.GetBySimilarName(name)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, users)
+	}
+}

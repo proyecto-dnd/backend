@@ -430,7 +430,8 @@ func (r *router) buildFriendshipRoutes() {
 	{
 		friendshipGroup.POST("", friendshipHandler.HandlerCreate())
 		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends())
-		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerSearchFollowers())
+		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerGetBySimilarName())
+		friendshipGroup.GET("/friends/:name", friendshipHandler.HandlerSearchFollowers())
 		friendshipGroup.DELETE("", friendshipHandler.HandlerDelete())
 	}
 }

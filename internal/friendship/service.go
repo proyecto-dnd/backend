@@ -29,6 +29,10 @@ func (s *service) SearchFollowers(friendship domain.Mutuals) ([]domain.UserRespo
 	return s.repository.SearchFollowers(friendship)
 }
 
-func(s *service) GetAllFriends(userId string) ([]domain.Friendship, error) {
+func (s *service) GetAllFriends(userId string) ([]domain.Friendship, error) {
 	return s.repository.GetAllFriends(userId)
+}
+
+func (s *service) GetBySimilarName(input string) ([]domain.UserResponse, error) {
+	return s.repository.GetBySimilarName(input)
 }
