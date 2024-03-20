@@ -8,6 +8,7 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"google.golang.org/api/iterator"
 )
@@ -41,6 +42,17 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 	newUser, err := r.authClient.CreateUser(ctx, params)
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
+	}
+	client, err := r.app.Auth(ctx)
+	if err != nil {
+		fmt.Println("Error initializing Firebase Auth client.")
+		return domain.User{}, err
+	}
+	claims := map[string]interface{}{"displayName": user.DisplayName}
+	err = client.SetCustomUserClaims(ctx, newUser.UID, claims)
+	if err != nil {
+		fmt.Println("Error setting custom user claims.")
+		return domain.User{}, err
 	}
 
 	var userTemp domain.User
@@ -155,4 +167,28 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 	}
 
 	return cookie, nil
+}
+
+func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
+
+	token, _, err := new(jwt.Parser).ParseUnverified(cookieToken, jwt.MapClaims{})
+	if err != nil {
+		return domain.UserTokenClaims{}, err
+	}
+
+	var tokenClaims domain.UserTokenClaims
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+
+		uid := claims["user_id"].(string)
+		username := claims["name"].(string)
+		email := claims["email"].(string)
+		displayName := claims["displayName"].(string)
+
+		tokenClaims.Id = uid
+		tokenClaims.Username = username
+		tokenClaims.Email = email
+		tokenClaims.DisplayName = displayName
+	}
+
+	return tokenClaims, nil
 }

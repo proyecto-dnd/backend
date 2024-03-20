@@ -199,6 +199,32 @@ func (r *CharacterDataMySqlRepository) GetByUserIdAndCampaignId(userid string, c
 	return characters, nil
 }
 
+// GetByAttackEventId implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) GetByAttackEventId(attackeventid int) ([]domain.CharacterData, error) {
+	rows, err := r.db.Query(QueryGetByAttackEventId, attackeventid)
+	if err != nil {
+		return []domain.CharacterData{}, err
+	}
+	defer rows.Close()
+
+	var characters []domain.CharacterData
+
+	for rows.Next() {
+		var character domain.CharacterData
+
+		err := ScanCharacterData(rows, &character)
+		if err != nil {
+			return []domain.CharacterData{}, err
+		}
+		characters = append(characters, character)
+	}
+	if err := rows.Err(); err != nil {
+		return []domain.CharacterData{}, err
+	}
+
+	return characters, nil
+}
+
 // Update implements RepositoryCharacterData.
 func (r *CharacterDataMySqlRepository) Update(character domain.CharacterData) (domain.CharacterData, error) {
 	statement, err := r.db.Prepare(QueryUpdate)

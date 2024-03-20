@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +13,7 @@ type WeaponXCharacterDataHandler struct {
 }
 
 func NewWeaponXCharacterDataHandler(service *weaponxcharacterdata.ServiceWeaponXCharacterData) *WeaponXCharacterDataHandler {
-    return &WeaponXCharacterDataHandler{service: *service}
+	return &WeaponXCharacterDataHandler{service: *service}
 }
 
 // weaponXCharacterData godoc
@@ -27,12 +26,12 @@ func NewWeaponXCharacterDataHandler(service *weaponxcharacterdata.ServiceWeaponX
 // @Failure 400 {object} error
 // @Failure 500 {object} error
 // @Router /weapon_character [post]
-func (h * WeaponXCharacterDataHandler) HandlerCreate() gin.HandlerFunc {
+func (h *WeaponXCharacterDataHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempWeaponXCharacterData domain.WeaponXCharacterData
 		if err := ctx.BindJSON(&tempWeaponXCharacterData); err != nil {
 			ctx.AbortWithError(400, err)
-            return
+			return
 		}
 		createdWeaponXCharacterData, err := h.service.Create(tempWeaponXCharacterData)
 		if err != nil {
@@ -53,16 +52,17 @@ func (h * WeaponXCharacterDataHandler) HandlerCreate() gin.HandlerFunc {
 // @Failure 400 {object} error
 // @Failure 404 {object} error
 // @Router /weapon_character/{id} [delete]
-func (h *WeaponXCharacterDataHandler) HandlerDelete() gin.HandlerFunc{
+func (h *WeaponXCharacterDataHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
-		if err != nil{
+		if err != nil {
 			ctx.AbortWithError(400, err)
-            return
+			return
 		}
 		err = h.service.Delete(id)
-		if err != nil{
+		if err != nil {
 			ctx.AbortWithError(404, err)
+			return
 		}
 		ctx.JSON(204, nil)
 	}
@@ -77,16 +77,17 @@ func (h *WeaponXCharacterDataHandler) HandlerDelete() gin.HandlerFunc{
 // @Failure 400 {object} error
 // @Failure 404 {object} error
 // @Router /weapon_character/character/{id} [delete]
-func (h *WeaponXCharacterDataHandler) HandlerDeleteByCharacterDataId() gin.HandlerFunc{
+func (h *WeaponXCharacterDataHandler) HandlerDeleteByCharacterDataId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
-		if err != nil{
+		if err != nil {
 			ctx.AbortWithError(400, err)
-            return
+			return
 		}
 		err = h.service.Delete(id)
-		if err != nil{
+		if err != nil {
 			ctx.AbortWithError(404, err)
+			return
 		}
 		ctx.JSON(204, nil)
 	}
@@ -99,11 +100,12 @@ func (h *WeaponXCharacterDataHandler) HandlerDeleteByCharacterDataId() gin.Handl
 // @Success 200 {array} domain.WeaponXCharacterData
 // @Failure 500 {object} error
 // @Router /weapon_character [get]
-func (h *WeaponXCharacterDataHandler) HandlerGetAll() gin.HandlerFunc{
+func (h *WeaponXCharacterDataHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		weaponXCharacterDataList, err := h.service.GetAll()
 		if err != nil {
-			ctx.AbortWithError(500, err)
+			ctx.AbortWithError(400, err)
+			return
 		}
 		ctx.JSON(200, weaponXCharacterDataList)
 	}
@@ -118,16 +120,16 @@ func (h *WeaponXCharacterDataHandler) HandlerGetAll() gin.HandlerFunc{
 // @Failure 400 {object} error
 // @Failure 500 {object} error
 // @Router /weapon_character/character/{id} [get]
-func (h *WeaponXCharacterDataHandler) HandlerGetByCharacterDataId() gin.HandlerFunc{
+func (h *WeaponXCharacterDataHandler) HandlerGetByCharacterDataId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
-		if err!= nil{
-            ctx.AbortWithError(400, err)
-            return
-        }
+		if err != nil {
+			ctx.AbortWithError(400, err)
+			return
+		}
 		weaponXCharacterDataList, err := h.service.GetByCharacterDataId(id)
 		if err != nil {
-			ctx.AbortWithError(500, err)
+			ctx.AbortWithError(404, err)
 			return
 		}
 		ctx.JSON(200, weaponXCharacterDataList)
@@ -143,17 +145,18 @@ func (h *WeaponXCharacterDataHandler) HandlerGetByCharacterDataId() gin.HandlerF
 // @Failure 400 {object} error
 // @Failure 500 {object} error
 // @Router /weapon_character/{id} [get]
-func (h *WeaponXCharacterDataHandler) HandlerGetById() gin.HandlerFunc{
+func (h *WeaponXCharacterDataHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
-		if err!= nil{
-            ctx.AbortWithError(400, err)
-            return
-        }
+		if err != nil {
+			ctx.AbortWithError(400, err)
+			return
+		}
 		weaponXCharacterData, err := h.service.GetById(id)
 		if err != nil {
-			fmt.Println(err)
-			ctx.AbortWithError(500, err)
+			// fmt.Println(err)
+			ctx.AbortWithError(404, err)
+			return
 		}
 		ctx.JSON(200, weaponXCharacterData)
 	}
@@ -170,12 +173,12 @@ func (h *WeaponXCharacterDataHandler) HandlerGetById() gin.HandlerFunc{
 // @Failure 400 {object} error
 // @Failure 500 {object} error
 // @Router /weapon_character/{id} [put]
-func (h * WeaponXCharacterDataHandler) HandlerUpdate() gin.HandlerFunc {
+func (h *WeaponXCharacterDataHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempWeaponXCharacterData domain.WeaponXCharacterData
 		if err := ctx.BindJSON(&tempWeaponXCharacterData); err != nil {
 			ctx.AbortWithError(400, err)
-            return
+			return
 		}
 
 		id, err := strconv.Atoi(ctx.Param("id"))

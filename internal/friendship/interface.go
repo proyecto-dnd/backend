@@ -6,10 +6,14 @@ type FriendshipRepository interface {
 	Create(friendship domain.Friendship) (domain.Friendship, error)
 	Delete(friendship domain.Friendship) error
 	SearchFollowers(friendship domain.Mutuals) ([]domain.UserResponse, error)
+	GetAllFriends(userId string) ([]domain.Friendship, error)
+	GetBySimilarName(input string) ([]domain.UserResponse, error)
 }
 
 type FriendshipService interface {
 	Create(friendship domain.Friendship) (domain.Friendship, error)
 	Delete(friendship domain.Friendship) error
 	SearchFollowers(friendship domain.Mutuals) ([]domain.UserResponse, error)
+	GetAllFriends(userId string) ([]domain.Friendship, error)
+	GetBySimilarName(input string) ([]domain.UserResponse, error)
 }
