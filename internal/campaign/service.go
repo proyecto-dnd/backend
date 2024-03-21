@@ -1,9 +1,9 @@
 package campaign
 
 import (
-	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
+	"github.com/proyecto-dnd/backend/internal/session"
 )
 
 type service struct {
@@ -21,6 +21,8 @@ func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto) (domain.Camp
 		Name:          campaignDto.Name,
 		Description:   campaignDto.Description,
 		Image:         campaignDto.Image,
+		Notes:         campaignDto.Notes,
+		Status:        campaignDto.Status,
 	}
 	
 	createdCampaign, err := s.campaignRepository.Create(campaignDomain)
@@ -49,6 +51,8 @@ func (s *service) GetAllCampaigns() ([]dto.ResponseCampaignDto, error) {
 			Name:          campaign.Name,
 			Description:   campaign.Description,
 			Image:         campaign.Image,
+			Notes:         campaign.Notes,
+			Status:        campaign.Status,
 			Sessions:      sessions,
 		}
 
@@ -75,6 +79,8 @@ func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
 		Name:          campaign.Name,
 		Description:   campaign.Description,
 		Image:         campaign.Image,
+		Notes:         campaign.Notes,
+		Status:        campaign.Status,
 		Sessions:      sessions,
 	}
 
@@ -99,6 +105,8 @@ func (s *service) GetCampaignsByUserId(id string) ([]dto.ResponseCampaignDto, er
 			Name:          campaign.Name,
 			Description:   campaign.Description,
 			Image:         campaign.Image,
+			Notes:         campaign.Notes,
+			Status:        campaign.Status,
 			Sessions:      sessions,
 		}
 
@@ -115,6 +123,8 @@ func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto
 		Name:          campaignDto.Name,
 		Description:   campaignDto.Description,
 		Image:         campaignDto.Image,
+		Notes:         campaignDto.Notes,
+		Status:        campaignDto.Status,
 	}
 
 	updatedCampaign, err := s.campaignRepository.Update(campaignDomain, id)
@@ -132,6 +142,8 @@ func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto
 		Name:          updatedCampaign.Name,
 		Description:   updatedCampaign.Description,
 		Image:         updatedCampaign.Image,
+		Notes:         updatedCampaign.Notes,
+		Status:        updatedCampaign.Status,
 		Sessions:      sessions,
 	}
 

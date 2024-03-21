@@ -6,4 +6,6 @@ type Campaign struct {
 	Name          string `json:"name"`
 	Description   string `json:"description"`
 	Image         string `json:"image"`
+	Notes         *string `json:"notes"`
+	Status        *string `json:"status"`
 }

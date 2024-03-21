@@ -20,6 +20,7 @@ func (s *service) CreateSession(sessionDto dto.CreateSessionDto) (domain.Session
 		End:         sessionDto.End,
 		Description: sessionDto.Description,
 		CampaignId:  sessionDto.CampaignId,
+		CurrentEnviroment: sessionDto.CurrentEnviroment,
 	}
 
 	createdSession, err := s.sessionRepo.Create(sessionDomain)
@@ -65,6 +66,7 @@ func (s *service) UpdateSession(sessionDto dto.CreateSessionDto, id int) (domain
 		End:         sessionDto.End,
 		Description: sessionDto.Description,
 		CampaignId:  sessionDto.CampaignId,
+		CurrentEnviroment: sessionDto.CurrentEnviroment,
 	}
 
 	updatedSession, err := s.sessionRepo.Update(sessionDomain, id)
