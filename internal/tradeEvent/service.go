@@ -2,8 +2,6 @@ package tradeevent
 
 import (
 	"errors"
-	"fmt"
-
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
 	charactertrade "github.com/proyecto-dnd/backend/internal/characterTrade"
 	"github.com/proyecto-dnd/backend/internal/domain"
@@ -57,13 +55,12 @@ func (s *serviceTradeEvent) Create(tradeEvent domain.TradeEvent) (domain.TradeEv
 				return domain.TradeEvent{}, ErrCannotBeNegative
 			}
 			if itemXCharacterToUpdate.Quantity == *tradingItems.Quantity {
-				fmt.Println(tradeEvent.Receiver)
-				err = s.itemXCharacterService.UpdateOwnership(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.Item, CharacterData_Id: tradeEvent.Receiver, Item: domain.Item{}, Quantity: itemXCharacterToUpdate.Quantity})
+				err = s.itemXCharacterService.UpdateOwnership(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.Item, CharacterData_Id: tradeEvent.Receiver, Item: domain.Item{Item_Id: itemXCharacterToUpdate.Item.Item_Id}, Quantity: itemXCharacterToUpdate.Quantity})
 				if err != nil {
 					return domain.TradeEvent{}, err
 				}
 			} else {
-				err = s.itemXCharacterService.UpdateOwnership(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.Item, CharacterData_Id: tradeEvent.Sender, Item: domain.Item{}, Quantity: itemXCharacterToUpdate.Quantity - *tradingItems.Quantity})
+				_,err = s.itemXCharacterService.Update(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.Item, CharacterData_Id: tradeEvent.Sender, Item: domain.Item{Item_Id: itemXCharacterToUpdate.Item.Item_Id}, Quantity: itemXCharacterToUpdate.Quantity - *tradingItems.Quantity})
 				if err != nil {
 					return domain.TradeEvent{}, err
 				}

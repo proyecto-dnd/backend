@@ -1,6 +1,7 @@
 package itemxcharacterdata
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"github.com/proyecto-dnd/backend/internal/domain"
@@ -18,29 +19,63 @@ type itemXCharacterDataSqlRepository struct {
 
 // Create implements RepositoryItemXTableCharacter.
 func (r *itemXCharacterDataSqlRepository) Create(itemXCharacterData domain.ItemXCharacterData) (domain.ItemXCharacterData, error) {
-	statement, err := r.db.Prepare(QueryCreateItemXCharacterData)
-	if err != nil {
-		return domain.ItemXCharacterData{}, ErrPrepareStatement
-	}
-	defer statement.Close()
-
-	result, err := statement.Exec(
-		itemXCharacterData.CharacterData_Id,
-		itemXCharacterData.Item.Item_Id,
-		itemXCharacterData.Quantity,
-	)
-
+	tempContext := context.Background()
+	tx, err := r.db.BeginTx(tempContext, nil)
 	if err != nil {
 		return domain.ItemXCharacterData{}, err
 	}
-
-	lastId, err := result.LastInsertId()
+	defer tx.Rollback()
+	row := tx.QueryRowContext(tempContext, QueryGetByCharacterDataIdAndItemId, itemXCharacterData.CharacterData_Id, itemXCharacterData.Item.Item_Id)
+	var tempItemXCharacterData domain.ItemXCharacterData
+	err = row.Scan(
+		&tempItemXCharacterData.Character_Item_Id,
+		&tempItemXCharacterData.CharacterData_Id,
+		&tempItemXCharacterData.Item.Item_Id,
+		&tempItemXCharacterData.Quantity,
+	)
 	if err != nil {
-		return domain.ItemXCharacterData{}, ErrGettingLastInsertId
+		statement, err := tx.PrepareContext(tempContext, QueryCreateItemXCharacterData)
+		if err != nil {
+			return domain.ItemXCharacterData{}, ErrPrepareStatement
+		}
+		result, err := statement.ExecContext(
+			tempContext,
+			itemXCharacterData.CharacterData_Id,
+			itemXCharacterData.Item.Item_Id,
+			itemXCharacterData.Quantity,
+		)
+		if err != nil {
+			return domain.ItemXCharacterData{}, err
+		}
+		lastId, err := result.LastInsertId()
+		if err != nil {
+			return domain.ItemXCharacterData{}, ErrGettingLastInsertId
+		}
+		itemXCharacterData.Character_Item_Id = int(lastId)
+		statement.Close()
+
+	} else {
+		statement, err := tx.PrepareContext(tempContext, QueryUpdate)
+		if err != nil {
+			return domain.ItemXCharacterData{}, ErrPrepareStatement
+		}
+
+		_, err = statement.ExecContext(
+			tempContext,
+			itemXCharacterData.CharacterData_Id,
+			tempItemXCharacterData.Item.Item_Id,
+			itemXCharacterData.Quantity+tempItemXCharacterData.Quantity,
+			tempItemXCharacterData.Character_Item_Id,
+		)
+		itemXCharacterData.Quantity = itemXCharacterData.Quantity + tempItemXCharacterData.Quantity
+		if err != nil {
+			return domain.ItemXCharacterData{}, err
+		}
 	}
 
-	itemXCharacterData.Character_Item_Id = int(lastId)
-
+	if err = tx.Commit(); err != nil {
+		return domain.ItemXCharacterData{}, err
+	}
 	return itemXCharacterData, nil
 }
 
@@ -130,7 +165,7 @@ func (r *itemXCharacterDataSqlRepository) GetById(id int) (domain.ItemXCharacter
 		&itemXCharacterData.Quantity,
 	)
 	if err != nil {
-		return domain.ItemXCharacterData{}, err
+		return domain.ItemXCharacterData{}, ErrNotFound
 	}
 
 	return itemXCharacterData, nil
@@ -195,19 +230,67 @@ func (r *itemXCharacterDataSqlRepository) Update(itemXCharacterData domain.ItemX
 }
 
 func (r *itemXCharacterDataSqlRepository) UpdateOwnership(itemXCharacterData domain.ItemXCharacterData) error {
-	statement, err := r.db.Prepare(QueryUpdateOwnership)
+	tempContext := context.Background()
+	tx, err := r.db.BeginTx(tempContext, nil)
 	if err != nil {
-		return ErrPrepareStatement
+		return err
 	}
-	defer statement.Close()
-
-	_, err = statement.Exec(
-		itemXCharacterData.CharacterData_Id,
-		itemXCharacterData.Quantity,
-		itemXCharacterData.Character_Item_Id,
+	defer tx.Rollback()
+	row := tx.QueryRowContext(tempContext, QueryGetByCharacterDataIdAndItemId, itemXCharacterData.CharacterData_Id, itemXCharacterData.Item.Item_Id)
+	var tempItemXCharacterData domain.ItemXCharacterData
+	err = row.Scan(
+		&tempItemXCharacterData.Character_Item_Id,
+		&tempItemXCharacterData.CharacterData_Id,
+		&tempItemXCharacterData.Item.Item_Id,
+		&tempItemXCharacterData.Quantity,
 	)
-
 	if err != nil {
+		statement, err := tx.PrepareContext(tempContext, QueryUpdateOwnership)
+		if err != nil {
+			return ErrPrepareStatement
+		}
+		_, err = statement.ExecContext(
+			tempContext,
+			itemXCharacterData.CharacterData_Id,
+			itemXCharacterData.Quantity,
+			itemXCharacterData.Character_Item_Id,
+		)
+		if err != nil {
+			return err
+		}
+		statement.Close()
+	} else {
+		statement, err := tx.PrepareContext(tempContext, QueryUpdateOwnership)
+		if err != nil {
+			return ErrPrepareStatement
+		}
+		_, err = statement.ExecContext(
+			tempContext,
+			itemXCharacterData.CharacterData_Id,
+			itemXCharacterData.Quantity+tempItemXCharacterData.Quantity,
+			tempItemXCharacterData.Character_Item_Id,
+		)
+		if err != nil {
+			return err
+		}
+
+		result, err := tx.ExecContext(tempContext, QueryDelete, itemXCharacterData.Character_Item_Id)
+		if err != nil {
+			return err
+		}
+
+		rowsAffected, err := result.RowsAffected()
+		if err != nil {
+			return err
+		}
+		if rowsAffected < 1 {
+			return ErrNotFound
+		}
+
+		statement.Close()
+	}
+
+	if err = tx.Commit(); err != nil {
 		return err
 	}
 	return nil
