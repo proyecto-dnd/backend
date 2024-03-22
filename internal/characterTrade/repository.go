@@ -3,8 +3,6 @@ package charactertrade
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -40,8 +38,6 @@ func (c *characterTradeMySqlRepository) BulkCreateCharacterTrade(characterTradeL
 
 	sqlQuery = sqlQuery[:len(sqlQuery)-1]
 	statement, err := c.db.Prepare(sqlQuery)
-	fmt.Println(values...)
-	fmt.Println(statement)
 	if err != nil {
 		return err
 	}

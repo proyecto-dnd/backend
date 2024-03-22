@@ -213,6 +213,26 @@ func (r *armorXCharacterDataSqlRepository) UpdateArmorXCharacterData(data domain
 	return data, nil
 }
 
+func (r *armorXCharacterDataSqlRepository) UpdateOwnership(data domain.ArmorXCharacterData) (error) {
+	statement, err := r.db.Prepare(QueryUpdateOwnership)
+	if err != nil {
+		return ErrPrepareStatementArmor
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(
+		data.CharacterData_Id,
+		data.Equipped,
+		data.ArmorXCharacterData_Id,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func NewArmorXCharacterDataSqlRepository(db *sql.DB) RepositoryArmorXCharacterData {
 	return &armorXCharacterDataSqlRepository{db}
 }

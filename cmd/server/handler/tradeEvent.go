@@ -25,6 +25,11 @@ func (h *TradeEventHandler) HandlerCreate() gin.HandlerFunc {
 			return
 		}
 		createdTradeEvent, err := h.service.Create(tempTradeEvent)
+		if err == tradeevent.ErrCannotBeNegative {
+			fmt.Println(err)
+			ctx.JSON(400, err)
+			return
+		}
 		if err != nil {
 			fmt.Println(err)
 			ctx.JSON(500, err)

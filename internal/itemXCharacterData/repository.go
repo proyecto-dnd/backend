@@ -194,6 +194,25 @@ func (r *itemXCharacterDataSqlRepository) Update(itemXCharacterData domain.ItemX
 	return itemXCharacterData, nil
 }
 
+func (r *itemXCharacterDataSqlRepository) UpdateOwnership(itemXCharacterData domain.ItemXCharacterData) error {
+	statement, err := r.db.Prepare(QueryUpdateOwnership)
+	if err != nil {
+		return ErrPrepareStatement
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(
+		itemXCharacterData.CharacterData_Id,
+		itemXCharacterData.Quantity,
+		itemXCharacterData.Character_Item_Id,
+	)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func NewItemXCharacterDataSqlRepository(db *sql.DB) RepositoryItemXCharacterData {
 	return &itemXCharacterDataSqlRepository{db}
 }

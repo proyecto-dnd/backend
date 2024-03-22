@@ -8,6 +8,7 @@ type RepositoryItemXCharacterData interface {
 	GetById(id int) (domain.ItemXCharacterData, error)
 	GetByCharacterDataId(id int) ([]domain.ItemXCharacterData, error)
 	Update(itemXCharacterData domain.ItemXCharacterData) (domain.ItemXCharacterData, error)
+	UpdateOwnership(itemXCharacterData domain.ItemXCharacterData) (error)
 	Delete(id int) error
 	DeleteByCharacterDataId(id int) error
 }
@@ -18,6 +19,7 @@ type ServiceItemXCharacterData interface {
 	GetById(id int) (domain.ItemXCharacterData, error)
 	GetByCharacterDataId(id int) ([]domain.ItemXCharacterData, error)
 	Update(itemXCharacterData domain.ItemXCharacterData) (domain.ItemXCharacterData, error)
+	UpdateOwnership(itemXCharacterData domain.ItemXCharacterData) (error)
 	Delete(id int) error
 	DeleteByCharacterDataId(id int) error
 }
