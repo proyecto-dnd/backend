@@ -85,12 +85,8 @@ func (s *serviceTradeEvent) Create(tradeEvent domain.TradeEvent) (domain.TradeEv
 
 // Delete implements ServiceTradeEvent.
 func (s *serviceTradeEvent) Delete(id int) error {
-	err := s.characterTradeService.DeleteByTradeEventId(id)
-	if err != nil {
-		return err
-	}
-	err = s.tradeEventRepo.Delete(id)
-	return err
+	s.characterTradeService.DeleteByTradeEventId(id)
+	return s.tradeEventRepo.Delete(id)
 }
 
 // GetByReceiver implements ServiceTradeEvent.

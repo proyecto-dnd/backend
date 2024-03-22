@@ -4,12 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"time"
-
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
 var (
-	ErrNotFound = errors.New("characters not found")
+	ErrNotFound = errors.New("event not found")
 )
 
 type tradeEventMysqlRepository struct {
