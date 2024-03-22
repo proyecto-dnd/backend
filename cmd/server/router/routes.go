@@ -281,7 +281,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterTradeRepository = charactertrade.NewCharacterTradeMySqlRepository(db)
 	characterTradeService = charactertrade.NewCharacterTradeService(characterTradeRepository)
 	tradeEventRepository = tradeevent.NewTradeEventMySqlRepository(db)
-	tradeEventService = tradeevent.NewTradeEventService(tradeEventRepository, characterTradeService)
+	tradeEventService = tradeevent.NewTradeEventService(tradeEventRepository, characterTradeService,weaponXCharacterDataService, armorXCharacterDataService,itemXCharacterDataService)
 	tradeEventHandler = handler.NewTradeEventHandler(&tradeEventService)
 
 	characterXAttackEventRepository = characterXAttackEvent.NewCharacterXAttackEventRepository(db)

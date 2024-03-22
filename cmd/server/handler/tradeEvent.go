@@ -1,9 +1,7 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	tradeevent "github.com/proyecto-dnd/backend/internal/tradeEvent"
@@ -25,8 +23,11 @@ func (h *TradeEventHandler) HandlerCreate() gin.HandlerFunc {
 			return
 		}
 		createdTradeEvent, err := h.service.Create(tempTradeEvent)
+		if err == tradeevent.ErrCannotBeNegative {
+			ctx.JSON(400, err)
+			return
+		}
 		if err != nil {
-			fmt.Println(err)
 			ctx.JSON(500, err)
 			return
 		}

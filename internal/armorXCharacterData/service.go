@@ -85,3 +85,10 @@ func (s *service) UpdateArmorXCharacterData(data domain.ArmorXCharacterData) (do
 	return updatedArmorRelationship, nil
 }
 
+func (s *service) UpdateOwnership(data domain.ArmorXCharacterData) (error) {
+	err := s.armorXcharacterRepo.UpdateOwnership(data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
