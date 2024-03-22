@@ -33,6 +33,8 @@ func (r *campaignMySqlRepository) Create(campaign domain.Campaign) (domain.Campa
 		campaign.Name,
 		campaign.Description,
 		campaign.Image,
+		campaign.Notes,
+		campaign.Status,
 	)
 	if err != nil {
 		return domain.Campaign{}, err
@@ -58,7 +60,7 @@ func (r *campaignMySqlRepository) GetAll() ([]domain.Campaign, error) {
 	var campaigns []domain.Campaign
 	for rows.Next() {
 		var campaign domain.Campaign
-		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image); err != nil {
+		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image, &campaign.Notes, &campaign.Status); err != nil {
 			return nil, err
 		}
 		campaigns = append(campaigns, campaign)
@@ -68,7 +70,7 @@ func (r *campaignMySqlRepository) GetAll() ([]domain.Campaign, error) {
 
 func (r *campaignMySqlRepository) GetById(id int) (domain.Campaign, error) {
 	var campaign domain.Campaign
-	err := r.db.QueryRow(QueryGetById, id).Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image)
+	err := r.db.QueryRow(QueryGetById, id).Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image, &campaign.Notes, &campaign.Status)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return domain.Campaign{}, errors.New("campaign not found")
@@ -89,7 +91,7 @@ func (r *campaignMySqlRepository) GetCampaignsByUserId(id string) ([]domain.Camp
 	var campaigns []domain.Campaign
 	for rows.Next() {
 		var campaign domain.Campaign
-		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image); err != nil {
+		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image, &campaign.Notes, &campaign.Status); err != nil {
 			return nil, err
 		}
 		campaigns = append(campaigns, campaign)
@@ -104,7 +106,7 @@ func (r *campaignMySqlRepository) Update(campaign domain.Campaign, id int) (doma
 	}
 	defer statement.Close()
 
-	_, err = statement.Exec(campaign.DungeonMaster, campaign.Name, campaign.Description, campaign.Image, id)
+	_, err = statement.Exec(campaign.DungeonMaster, campaign.Name, campaign.Description, campaign.Image, &campaign.Notes, &campaign.Status, id)
 	if err != nil {
 		return domain.Campaign{}, err
 	}
