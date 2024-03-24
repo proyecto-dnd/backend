@@ -216,6 +216,26 @@ func (r *weaponXCharacterDataSqlRepository) Update(weaponXCharacterData domain.W
 	return weaponXCharacterData, nil
 }
 
+func (r *weaponXCharacterDataSqlRepository) UpdateOwnership(weaponXCharacterData domain.WeaponXCharacterData) (error) {
+	statement, err := r.db.Prepare(QueryUpdateOwnership)
+	if err != nil {
+		return ErrPrepareStatement
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(
+		weaponXCharacterData.CharacterData_Id,
+		weaponXCharacterData.Equipped,
+		weaponXCharacterData.Character_Weapon_Id,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func NewWeaponXCharacterDataSqlRepository(db *sql.DB) RepositoryWeaponXCharacterData {
 	return &weaponXCharacterDataSqlRepository{db}
 }

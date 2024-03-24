@@ -12,9 +12,11 @@ import (
 	backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
+	charactertrade "github.com/proyecto-dnd/backend/internal/characterTrade"
 	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
+	tradeevent "github.com/proyecto-dnd/backend/internal/tradeEvent"
 	"github.com/proyecto-dnd/backend/internal/dice_event"
 
 	// "github.com/proyecto-dnd/backend/internal/ws"
@@ -119,6 +121,12 @@ var (
 	attackEventRepository attackEvent.AttackEventRepository
 	attackEventService    attackEvent.AttackEventService
 	attackEventHandler    *handler.AttackEventHandler
+
+	characterTradeRepository charactertrade.RepositoryCharacterTrade
+	characterTradeService charactertrade.ServiceCharacterTrade
+	tradeEventRepository tradeevent.RepositoryTradeEvent
+	tradeEventService    tradeevent.ServiceTradeEvent
+	tradeEventHandler *handler.TradeEventHandler
 
 	itemRepository               item.RepositoryItem
 	itemService                  item.ServiceItem
@@ -270,6 +278,12 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	attackEventService = attackEvent.NewAttackEventService(attackEventRepository, characterDataService)
 	attackEventHandler = handler.NewAttackEventHandler(&attackEventService)
 
+	characterTradeRepository = charactertrade.NewCharacterTradeMySqlRepository(db)
+	characterTradeService = charactertrade.NewCharacterTradeService(characterTradeRepository)
+	tradeEventRepository = tradeevent.NewTradeEventMySqlRepository(db)
+	tradeEventService = tradeevent.NewTradeEventService(tradeEventRepository, characterTradeService,weaponXCharacterDataService, armorXCharacterDataService,itemXCharacterDataService)
+	tradeEventHandler = handler.NewTradeEventHandler(&tradeEventService)
+
 	characterXAttackEventRepository = characterXAttackEvent.NewCharacterXAttackEventRepository(db)
 	characterXAttackEventService = characterXAttackEvent.NewCharacterXAttackEventService(characterXAttackEventRepository)
 	characterXAttackEventHandler = handler.NewCharacterXAttackEventHandler(characterXAttackEventService)
@@ -315,6 +329,7 @@ func (r *router) MapRoutes() {
 	r.buildArmorRoutes()
 	r.buildArmorXCharacterDataRoutes()
 	r.buildCharacterXAttackEventRoutes()
+	r.buildTradeEventRoutes()
 	r.buildDiceEventRoutes()
 	r.buildSkillXCharacterDataRoutes()
 
@@ -654,5 +669,18 @@ func (r *router) buildSkillXCharacterDataRoutes() {
 		skillXCharacterDataGroup.POST("", skillXCharacterDataHandler.HandlerCreate())
 		skillXCharacterDataGroup.DELETE("/:id", skillXCharacterDataHandler.HandlerDelete())
 
+	}
+}
+
+
+func (r *router) buildTradeEventRoutes() {
+	tradeEventGroup := r.routerGroup.Group("/tradeevent")
+	{
+		tradeEventGroup.POST("", tradeEventHandler.HandlerCreate())
+		tradeEventGroup.GET("/session/:id", tradeEventHandler.HandlerGetBySessionId())
+		tradeEventGroup.GET("/sender/:id", tradeEventHandler.HandlerGetBySender())
+		tradeEventGroup.GET("/receiver/:id", tradeEventHandler.HandlerGetByReceiver())
+		tradeEventGroup.GET("/character/:id", tradeEventHandler.HandlerGetBySenderOrReceiver())
+		tradeEventGroup.DELETE("/:id", tradeEventHandler.HandlerDelete())
 	}
 }

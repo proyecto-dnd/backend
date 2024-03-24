@@ -81,6 +81,15 @@ func (s *service) Update(weaponXCharacterData domain.WeaponXCharacterData) (doma
     return updatedWeaponRelationship, nil
 }
 
+func (s *service) UpdateOwnership(weaponXCharacterData domain.WeaponXCharacterData) (error) {
+	err := s.weaponXCharacterDataRepo.UpdateOwnership(weaponXCharacterData)
+    if err!= nil {
+        return err
+    }
+
+    return nil
+}
+
 func NewWeaponXCharacterDataService(weaponXCharacterDataRepo RepositoryWeaponXCharacterData, weaponService weapon.ServiceWeapon) ServiceWeaponXCharacterData {
 	return &service{weaponXCharacterDataRepo: weaponXCharacterDataRepo, weaponService: weaponService}
 }

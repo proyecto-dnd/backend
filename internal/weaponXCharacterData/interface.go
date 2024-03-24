@@ -8,6 +8,7 @@ type RepositoryWeaponXCharacterData interface {
 	GetById(id int) (domain.WeaponXCharacterData, error)
 	GetByCharacterDataId(id int) ([]domain.WeaponXCharacterData, error)
 	Update(WeaponXCharacterData domain.WeaponXCharacterData) (domain.WeaponXCharacterData, error)
+	UpdateOwnership(WeaponXCharacterData domain.WeaponXCharacterData) (error)
 	Delete(id int) error
 	DeleteByCharacterDataId(id int) error
 }
@@ -18,6 +19,7 @@ type ServiceWeaponXCharacterData interface {
 	GetById(id int) (domain.WeaponXCharacterData, error)
 	GetByCharacterDataId(id int) ([]domain.WeaponXCharacterData, error)
 	Update(WeaponXCharacterData domain.WeaponXCharacterData) (domain.WeaponXCharacterData, error)
+	UpdateOwnership(WeaponXCharacterData domain.WeaponXCharacterData) (error)
 	Delete(id int) error
 	DeleteByCharacterDataId(id int) error
 }

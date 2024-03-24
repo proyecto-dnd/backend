@@ -2,8 +2,8 @@ package campaign
 
 var (
 	QueryCreateCampaign = `
-		INSERT INTO campaign (dungeon_master, name, description, image)
-		VALUES (?, ?, ?, ?);
+		INSERT INTO campaign (dungeon_master, name, description, image, notes, status)
+		VALUES (?, ?, ?, ?, ?, ?);
 	`
 
 	QueryGetAll = `
@@ -24,7 +24,7 @@ var (
 
 	QueryUpdate = `
 		UPDATE campaign
-		SET dungeon_master = ?, name = ?, description = ?, image = ?
+		SET dungeon_master = ?, name = ?, description = ?, image = ? , notes = ?, status = ?
 		WHERE campaign_id = ?;
 	`
 
