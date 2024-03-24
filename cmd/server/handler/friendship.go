@@ -1,17 +1,21 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/friendship"
+	"github.com/proyecto-dnd/backend/internal/user"
 )
 
 type FriendshipHandler struct {
-	service friendship.FriendshipService
+	service     friendship.FriendshipService
+	userService user.ServiceUsers
 }
 
-func NewFriendshipHandler(service *friendship.FriendshipService) *FriendshipHandler {
-	return &FriendshipHandler{service: *service}
+func NewFriendshipHandler(service *friendship.FriendshipService, userService *user.ServiceUsers) *FriendshipHandler {
+	return &FriendshipHandler{service: *service, userService: *userService}
 }
 
 // friendship godoc
@@ -87,18 +91,34 @@ func (h *FriendshipHandler) HandlerSearchFollowers() gin.HandlerFunc {
 
 func (h *FriendshipHandler) HandlerGetAllFriends() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var userId string
+		// var userId string
 
-		if err := ctx.BindJSON(&userId); err != nil {
-			ctx.JSON(500, err)
+		// if err := ctx.BindJSON(&userId); err != nil {
+		// 	ctx.JSON(500, err)
+		// 	return
+		// }
+
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err)
 			return
 		}
+		// log.Println(cookie.Value)
+		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+		userId := jwtClaimsInfo.Id
+		fmt.Println(jwtClaimsInfo)
 
 		friends, err := h.service.GetAllFriends(userId)
 		if err != nil {
 			ctx.JSON(500, err)
 			return
 		}
+
+		fmt.Println(friends)
 		ctx.JSON(200, friends)
 	}
 }

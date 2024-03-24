@@ -13,6 +13,7 @@ type RepositoryUsers interface {
 	Patch(user domain.User, id string) (domain.User, error)
 	Login(userInfo domain.UserLoginInfo) (string, error)
 	GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error)
+	TransferDataToSql(users []domain.User) (string, error)
 }
 
 type ServiceUsers interface {
@@ -24,4 +25,5 @@ type ServiceUsers interface {
 	Delete(id string) error
 	Login(userInfo domain.UserLoginInfo) (string, error)
 	GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error)
+	TransferDataToSql(users []domain.User) (string, error)
 }

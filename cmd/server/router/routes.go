@@ -170,7 +170,7 @@ type router struct {
 }
 
 func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router {
-	userFirebaseRepository = user.NewUserFirebaseRepository(firebaseApp)
+	userFirebaseRepository = user.NewUserFirebaseRepository(firebaseApp, db)
 	userFirebaseService = user.NewServiceUser(userFirebaseRepository)
 	userFirebaseHandler = handler.NewUserHandler(&userFirebaseService)
 
@@ -220,7 +220,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	userCampaignHandler = handler.NewUserCampaignHandler(&userCampaignService)
 	friendshipRepository = friendship.NewFriendshipRepository(db, userFirebaseRepository, firebaseApp)
 	friendshipService = friendship.NewFriendshipService(friendshipRepository)
-	friendshipHandler = handler.NewFriendshipHandler(&friendshipService)
+	friendshipHandler = handler.NewFriendshipHandler(&friendshipService, &userFirebaseService)
 
 	skillRepository = skill.NewSkillRepository(db)
 	skillService = skill.NewServiceSkill(skillRepository)
@@ -431,7 +431,7 @@ func (r *router) buildFriendshipRoutes() {
 	friendshipGroup := r.routerGroup.Group("/friendship")
 	{
 		friendshipGroup.POST("", friendshipHandler.HandlerCreate())
-		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends())
+		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends()) //TODO MODIFICAR PARA QUE SE BUSQUE POR ID TRAIDOD EL TOKEN
 		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerGetBySimilarName())
 		friendshipGroup.GET("/friends/:name", friendshipHandler.HandlerSearchFollowers())
 		friendshipGroup.DELETE("", friendshipHandler.HandlerDelete())

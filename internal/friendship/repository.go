@@ -181,17 +181,17 @@ func (r *repositoryFriendship) GetAllFriends(userId string) ([]domain.Friendship
 }
 
 func (r *repositoryFriendship) GetBySimilarName(input string) ([]domain.UserResponse, error) {
-	usersList, err := r.userRepository.GetAll()
-	if err != nil {
-		return []domain.UserResponse{}, err
-	}
+	// usersList, err := r.userRepository.GetAll()
+	// if err != nil {
+	// 	return []domain.UserResponse{}, err
+	// }
 
 	usersListByName := make([]domain.UserResponse, 0)
-	for _, user := range usersList {
-		if strings.HasPrefix(strings.ToLower(user.Username), strings.ToLower(input)) {
-			usersListByName = append(usersListByName, user)
-		}
-	}
+	// for _, user := range usersList {
+	// 	if strings.HasPrefix(strings.ToLower(user.Username), strings.ToLower(input)) {
+	// 		usersListByName = append(usersListByName, user)
+	// 	}
+	// }
 
 	return usersListByName, nil
 }

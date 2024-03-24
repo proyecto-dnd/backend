@@ -5,13 +5,15 @@ type User struct {
 	Username    string `json:"username"`
 	Email       string `json:"email"`
 	Password    string `json:"password"`
-	DisplayName string `json:"displayname"`
+	DisplayName string `json:"displayName"`
 }
 
 type UserResponse struct {
-	Id       string `json:"id"`
-	Username string `json:"name"`
-	Email    string `json:"email"`
+	Id          string  `json:"id"`
+	Username    string  `json:"name"`
+	Email       string  `json:"email"`
+	DisplayName string  `json:"displayName"`
+	Image       *string `json:"image"`
 }
 
 type UserLoginInfo struct {
@@ -21,6 +23,6 @@ type UserLoginInfo struct {
 type UserTokenClaims struct {
 	Id          string `json:"id"`
 	Email       string `json:"email"`
-	Username    string `json:"username"`	
+	Username    string `json:"username"`
 	DisplayName string `json:"displayName"`
 }

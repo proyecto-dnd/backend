@@ -31,14 +31,14 @@ func (h *UserHandler) HandlerCreate() gin.HandlerFunc {
 		var userTemp domain.User
 		if err := ctx.BindJSON(&userTemp); err != nil {
 			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+			ctx.JSON(400, err)
 			return
 		}
 
 		createdUser, err := h.service.Create(userTemp)
 		if err != nil {
 			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+			ctx.JSON(400, err)
 			return
 		}
 
@@ -63,6 +63,15 @@ func (h *UserHandler) HandlerGetAll() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
+
+		// _, err = h.service.TransferDataToSql(userList)
+		// if err != nil {
+		// 	// TEMP ERROR RESPONSE
+		// 	fmt.Println(err)
+		// 	ctx.JSON(500, err)
+		// 	return
+		// }
+
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, userList)
 	}

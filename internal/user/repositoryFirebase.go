@@ -1,8 +1,10 @@
 package user
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	firebase "firebase.google.com/go/v4"
@@ -20,17 +22,24 @@ var (
 type repositoryFirebase struct {
 	app        *firebase.App
 	authClient *auth.Client
+	db         *sql.DB
 }
 
-func NewUserFirebaseRepository(app *firebase.App) RepositoryUsers {
+func NewUserFirebaseRepository(app *firebase.App, db *sql.DB) RepositoryUsers {
 	authClient, err := app.Auth(ctx)
 	if err != nil {
 		log.Printf("Error initializing Firebase Auth client: %v", err)
 	}
-	return &repositoryFirebase{app: app, authClient: authClient}
+	return &repositoryFirebase{app: app, authClient: authClient, db: db}
 }
 
 func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
+	//sql backup
+	statement, err := r.db.Prepare(QueryInsertUser)
+	if err != nil {
+		return domain.User{}, err
+	}
+	defer statement.Close()
 
 	params := (&auth.UserToCreate{}).
 		Email(user.Email).
@@ -43,13 +52,27 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
 	}
+	verificationEmail, err := r.authClient.EmailVerificationLink(ctx, newUser.Email)
+	if err != nil {
+		fmt.Println("Error sending verification email.")
+		return domain.User{}, err
+	}
+	fmt.Printf("verificationEmail: %v\n", verificationEmail)
+	
 	client, err := r.app.Auth(ctx)
 	if err != nil {
 		fmt.Println("Error initializing Firebase Auth client.")
 		return domain.User{}, err
 	}
+
 	claims := map[string]interface{}{"displayName": user.DisplayName}
+
 	err = client.SetCustomUserClaims(ctx, newUser.UID, claims)
+	if err != nil {
+		fmt.Println("Error setting custom user claims.")
+		return domain.User{}, err
+	}
+	_, err = statement.Exec(newUser.UID, user.Username, user.Email, user.Password, user.DisplayName)
 	if err != nil {
 		fmt.Println("Error setting custom user claims.")
 		return domain.User{}, err
@@ -59,30 +82,43 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 	userTemp.Username = newUser.DisplayName
 	userTemp.Email = newUser.Email
 	userTemp.Id = newUser.UID
+	userTemp.DisplayName = user.DisplayName
 
 	return userTemp, nil
 }
 func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 
-	var user domain.UserResponse
+	// var user domain.User
 	var users []domain.UserResponse
-	pager := iterator.NewPager(r.authClient.Users(ctx, ""), 100, "")
-	for {
-		var authUsers []*auth.ExportedUserRecord
-		nextPageToken, err := pager.NextPage(&authUsers)
-		if err != nil {
-			log.Printf("paging error %v\n", err)
+	// pager := iterator.NewPager(r.authClient.Users(ctx, ""), 100, "")
+	// for {
+	// 	var authUsers []*auth.ExportedUserRecord
+	// 	nextPageToken, err := pager.NextPage(&authUsers)
+	// 	if err != nil {
+	// 		log.Printf("paging error %v\n", err)
+	// 	}
+	// 	for _, u := range authUsers {
+	// 		user.Username = u.DisplayName
+	// 		user.Email = u.Email
+	// 		user.Password = u.PasswordHash
+	// 		user.Id = u.UID
+	// 		users = append(users, user)
+	// 	}
+	// 	if nextPageToken == "" {
+	// 		break
+	// 	}
+	// }
+	rows, err := r.db.Query(QueryGetAllUsers)
+	if err != nil {
+		return []domain.UserResponse{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var user domain.UserResponse
+		if err := rows.Scan(&user.Id, &user.Username, &user.Email, &user.DisplayName, &user.Image); err != nil {
+			return []domain.UserResponse{}, err
 		}
-		for _, u := range authUsers {
-			user.Username = u.DisplayName
-			user.Email = u.Email
-			// user.Password = u.PasswordHash
-			user.Id = u.UID
-			users = append(users, user)
-		}
-		if nextPageToken == "" {
-			break
-		}
+		users = append(users, user)
 	}
 
 	return users, nil
@@ -163,7 +199,7 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 	cookie, err := r.authClient.SessionCookie(ctx, userInfo.IdToken, expiresIn)
 	if err != nil {
 		fmt.Printf("error creating session cookie: %v\n", err)
-		return "", err
+		return "error creating session cookie", err
 	}
 
 	return cookie, nil
@@ -191,4 +227,51 @@ func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenCla
 	}
 
 	return tokenClaims, nil
+}
+
+func (r *repositoryFirebase) TransferDataToSql(users []domain.User) (string, error) {
+
+	insertString, err := r.BulkInsertString(users)
+
+	if err != nil {
+		return "", err
+	}
+	// fmt.Println(insertString)
+
+	// result, err := r.db.Exec(insertString)
+	// if err != nil {
+	// 	return "", err
+	// }
+
+	// rowsAffected, err := result.RowsAffected()
+	// if err != nil {
+	// 	return "", err
+	// }
+	// if rowsAffected < 1 {
+	// 	return "", errors.New("no rows affected")
+	// }
+
+	// fmt.Println(rowsAffected)
+
+	return insertString, nil
+}
+
+func (r *repositoryFirebase) BulkInsertString(users []domain.User) (string, error) {
+	var values strings.Builder
+
+	// values.WriteString("(")
+
+	for i, user := range users {
+
+		values.WriteString(fmt.Sprintf("('%s', '%s', '%s', '%s', '%s')", user.Id, user.Username, user.Email, user.Password, user.DisplayName))
+
+		if i < len(users)-1 {
+			values.WriteString(", ")
+		}
+	}
+
+	// values.WriteString(")")
+
+	insertSQL := fmt.Sprintf("INSERT INTO user (uid, name, email, password, display_name) VALUES %s;", values.String())
+	return insertSQL, nil
 }

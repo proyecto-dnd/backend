@@ -33,18 +33,23 @@ func (s *service) Create(user domain.User) (domain.UserResponse, error) {
 }
 
 func (s *service) GetAll() ([]domain.UserResponse, error) {
+	// users, err := s.repositoryFirebase.GetAll()
+	// if err != nil {
+	// 	return []domain.UserResponse{}, err
+	// }
+
+	// var usersResponse []domain.UserResponse
+
+	// for _, u := range users {
+	// 	usersResponse = append(usersResponse, u)
+	// }
+
+	// return usersResponse, nil
 	users, err := s.repositoryFirebase.GetAll()
 	if err != nil {
 		return []domain.UserResponse{}, err
 	}
-
-	var usersResponse []domain.UserResponse
-
-	for _, u := range users {
-		usersResponse = append(usersResponse, u)
-	}
-
-	return usersResponse, nil
+	return users, nil
 }
 
 func (s *service) GetById(id string) (domain.UserResponse, error) {
@@ -97,4 +102,9 @@ func (s *service) Login(userInfo domain.UserLoginInfo) (string, error) {
 
 func (s *service) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
 	return s.repositoryFirebase.GetJwtInfo(cookieToken)
+}
+
+func (s *service) TransferDataToSql(users []domain.User) (string, error) {
+
+	return s.repositoryFirebase.TransferDataToSql(users)
 }

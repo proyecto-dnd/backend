@@ -31,32 +31,33 @@ func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto) (domain.Camp
 	return createdCampaign, nil
 }
 
-func (s *service) GetAllCampaigns() ([]dto.ResponseCampaignDto, error) {
-	campaigns, err := s.campaignRepository.GetAll()
-	if err != nil {
-		return nil, err
-	}
+func (s *service) GetAllCampaigns() ([]domain.Campaign, error) {
+	// campaigns, err := s.campaignRepository.GetAll()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	var responseCampaigns []dto.ResponseCampaignDto
-	for _, campaign := range campaigns {
-		sessions, err := s.sessionService.GetSessionsByCampaignId(campaign.CampaignId)
-		if err != nil {
-			return nil, err
-		}
+	// var responseCampaigns []dto.ResponseCampaignDto
+	// for _, campaign := range campaigns {
+	// 	sessions, err := s.sessionService.GetSessionsByCampaignId(campaign.CampaignId)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-		responseCampaign := dto.ResponseCampaignDto{
-			DungeonMaster: campaign.DungeonMaster,
-			Name:          campaign.Name,
-			Description:   campaign.Description,
-			Image:         campaign.Image,
-			Sessions:      sessions,
-		}
+	// 	responseCampaign := dto.ResponseCampaignDto{
+	// 		DungeonMaster: campaign.DungeonMaster,
+	// 		Name:          campaign.Name,
+	// 		Description:   campaign.Description,
+	// 		Image:         campaign.Image,
+	// 		Sessions:      sessions,
+	// 	}
 
-		responseCampaigns = append(responseCampaigns, responseCampaign)
+	// 	responseCampaigns = append(responseCampaigns, responseCampaign)
 	
-	}
+	// }
 
-	return responseCampaigns, nil
+	// return responseCampaigns, nil
+	return s.campaignRepository.GetAll()
 }
 
 func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
