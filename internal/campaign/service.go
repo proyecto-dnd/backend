@@ -8,7 +8,7 @@ import (
 
 type service struct {
 	campaignRepository CampaignRepository
-	sessionService  session.SessionService
+	sessionService     session.SessionService
 }
 
 func NewCampaignService(campaignRepository CampaignRepository, sessionService session.SessionService) CampaignService {
@@ -24,7 +24,7 @@ func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto) (domain.Camp
 		Notes:         campaignDto.Notes,
 		Status:        campaignDto.Status,
 	}
-	
+
 	createdCampaign, err := s.campaignRepository.Create(campaignDomain)
 	if err != nil {
 		return domain.Campaign{}, err
@@ -33,34 +33,35 @@ func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto) (domain.Camp
 	return createdCampaign, nil
 }
 
-func (s *service) GetAllCampaigns() ([]dto.ResponseCampaignDto, error) {
-	campaigns, err := s.campaignRepository.GetAll()
-	if err != nil {
-		return nil, err
-	}
+func (s *service) GetAllCampaigns() ([]domain.Campaign, error) {
+	// campaigns, err := s.campaignRepository.GetAll()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	var responseCampaigns []dto.ResponseCampaignDto
-	for _, campaign := range campaigns {
-		sessions, err := s.sessionService.GetSessionsByCampaignId(campaign.CampaignId)
-		if err != nil {
-			return nil, err
-		}
+	// var responseCampaigns []dto.ResponseCampaignDto
+	// for _, campaign := range campaigns {
+	// 	sessions, err := s.sessionService.GetSessionsByCampaignId(campaign.CampaignId)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-		responseCampaign := dto.ResponseCampaignDto{
-			DungeonMaster: campaign.DungeonMaster,
-			Name:          campaign.Name,
-			Description:   campaign.Description,
-			Image:         campaign.Image,
-			Notes:         campaign.Notes,
-			Status:        campaign.Status,
-			Sessions:      sessions,
-		}
+	// responseCampaign := dto.ResponseCampaignDto{
+	// 	DungeonMaster: campaign.DungeonMaster,
+	// 	Name:          campaign.Name,
+	// 	Description:   campaign.Description,
+	// 	Image:         campaign.Image,
+	// 	Notes:         campaign.Notes,
+	// 	Status:        campaign.Status,
+	// 	Sessions:      sessions,
+	// }
 
-		responseCampaigns = append(responseCampaigns, responseCampaign)
-	
-	}
+	// 	responseCampaigns = append(responseCampaigns, responseCampaign)
 
-	return responseCampaigns, nil
+	// }
+
+	// return responseCampaigns, nil
+	return s.campaignRepository.GetAll()
 }
 
 func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
@@ -115,7 +116,6 @@ func (s *service) GetCampaignsByUserId(id string) ([]dto.ResponseCampaignDto, er
 
 	return responseCampaigns, nil
 }
-		
 
 func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto.ResponseCampaignDto, error) {
 	campaignDomain := domain.Campaign{

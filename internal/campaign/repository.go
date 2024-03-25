@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
 var (
-	ErrPrepareStatement = errors.New("error preparing statement")
+	ErrPrepareStatement    = errors.New("error preparing statement")
 	ErrGettingLastInsertId = errors.New("error getting last insert id")
 )
 
@@ -26,7 +27,7 @@ func (r *campaignMySqlRepository) Create(campaign domain.Campaign) (domain.Campa
 		fmt.Println(err)
 		return domain.Campaign{}, ErrPrepareStatement
 	}
-	
+
 	defer statement.Close()
 	result, err := statement.Exec(
 		campaign.DungeonMaster,
@@ -45,15 +46,14 @@ func (r *campaignMySqlRepository) Create(campaign domain.Campaign) (domain.Campa
 		return domain.Campaign{}, ErrGettingLastInsertId
 	}
 	campaign.CampaignId = int(lastId)
-	
+
 	return campaign, nil
 }
-
 
 func (r *campaignMySqlRepository) GetAll() ([]domain.Campaign, error) {
 	rows, err := r.db.Query(QueryGetAll)
 	if err != nil {
-		return nil, err
+		return []domain.Campaign{}, err
 	}
 	defer rows.Close()
 
@@ -61,7 +61,7 @@ func (r *campaignMySqlRepository) GetAll() ([]domain.Campaign, error) {
 	for rows.Next() {
 		var campaign domain.Campaign
 		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image, &campaign.Notes, &campaign.Status); err != nil {
-			return nil, err
+			return []domain.Campaign{}, err
 		}
 		campaigns = append(campaigns, campaign)
 	}

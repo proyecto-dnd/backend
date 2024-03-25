@@ -33,18 +33,23 @@ func (s *service) Create(user domain.User) (domain.UserResponse, error) {
 }
 
 func (s *service) GetAll() ([]domain.UserResponse, error) {
+	// users, err := s.repositoryFirebase.GetAll()
+	// if err != nil {
+	// 	return []domain.UserResponse{}, err
+	// }
+
+	// var usersResponse []domain.UserResponse
+
+	// for _, u := range users {
+	// 	usersResponse = append(usersResponse, u)
+	// }
+
+	// return usersResponse, nil
 	users, err := s.repositoryFirebase.GetAll()
 	if err != nil {
 		return []domain.UserResponse{}, err
 	}
-
-	var usersResponse []domain.UserResponse
-
-	for _, u := range users {
-		usersResponse = append(usersResponse, u)
-	}
-
-	return usersResponse, nil
+	return users, nil
 }
 
 func (s *service) GetById(id string) (domain.UserResponse, error) {
@@ -56,13 +61,22 @@ func (s *service) GetById(id string) (domain.UserResponse, error) {
 	return userToUserResponse(user), nil
 }
 
-func (s *service) Update(user domain.User, id string) (domain.User, error) {
+func (s *service) Update(user domain.UserUpdate, id string) (domain.UserResponse, error) {
+
 	updatedUser, err := s.repositoryFirebase.Update(user, id)
 	if err != nil {
-		return domain.User{}, err
+		return domain.UserResponse{}, err
 	}
 
-	return updatedUser, nil
+	var updatedUserResponse domain.UserResponse
+
+	updatedUserResponse.Id = updatedUser.Id
+	updatedUserResponse.Username = updatedUser.Username
+	updatedUserResponse.Email = updatedUser.Email
+	updatedUserResponse.Image = updatedUser.Image
+	updatedUserResponse.DisplayName = updatedUser.DisplayName
+
+	return updatedUserResponse, nil
 }
 
 func (s *service) Patch(user domain.User, id string) (domain.User, error) {
@@ -97,4 +111,9 @@ func (s *service) Login(userInfo domain.UserLoginInfo) (string, error) {
 
 func (s *service) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
 	return s.repositoryFirebase.GetJwtInfo(cookieToken)
+}
+
+func (s *service) TransferDataToSql(users []domain.User) (string, error) {
+
+	return s.repositoryFirebase.TransferDataToSql(users)
 }
