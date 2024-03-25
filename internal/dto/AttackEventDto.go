@@ -49,5 +49,5 @@ type ResponseEventDto struct {
 	DmgType          *string             `json:"dmg_type"`
 	Description      *string             `json:"description"`
 	TimeStamp        *time.Time          `json:"time_stamp"`
-	Affected         []FullCharacterData `json:"affected"`
+	Affected         []CharacterCardDto `json:"affected"`
 }

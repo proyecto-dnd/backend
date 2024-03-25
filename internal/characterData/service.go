@@ -51,57 +51,14 @@ func (s *service) Delete(id int) error {
 }
 
 // GetAll implements ServiceCharacterData.
-func (s *service) GetAll() ([]dto.FullCharacterData, error) {
-	characters, err := s.characterRepo.GetAll()
-	if err != nil {
-		return []dto.FullCharacterData{}, err
-	}
-	errChan := make(chan error, 5)
-	wg := sync.WaitGroup{}
-	wg.Add(len(characters))
-	maxWorkers := make(chan bool, 1)
-	fullCharacters := make([]dto.FullCharacterData, len(characters))
-	for i := range characters {
-		go func (i int) {
-			maxWorkers <- true
-			defer func ()  {
-				wg.Done()
-				<- maxWorkers
-			}()
-			fullCharacters[i], err = s.fetchAndConvertToFullCharacterData(&characters[i])
-			errChan <- err
-		}(i)
-	}
-	go func() {
-		wg.Wait()
-		close(errChan)
-	}()
+func (s *service) GetAll() ([]dto.CharacterCardDto, error) {
+	return s.characterRepo.GetAll()
 
-	for err := range errChan {
-		if err != nil {
-			return []dto.FullCharacterData{}, err
-		}
-	}
-
-	return fullCharacters, nil
 }
 
 // GetByCampaignId implements ServiceCharacterData.
-func (s *service) GetByCampaignId(campaignid int) ([]dto.FullCharacterData, error) {
-	characters, err := s.characterRepo.GetByCampaignId(campaignid)
-	if err != nil {
-		return []dto.FullCharacterData{}, err
-	}
-	var fullCharacters []dto.FullCharacterData
-	for _, v := range characters {
-		fullCharacter, err := s.fetchAndConvertToFullCharacterData(&v)
-		if err != nil {
-			return []dto.FullCharacterData{}, err
-		}
-		fullCharacters = append(fullCharacters, fullCharacter)
-
-	}
-	return fullCharacters, nil
+func (s *service) GetByCampaignId(campaignid int) ([]dto.CharacterCardDto, error) {
+	return s.characterRepo.GetByCampaignId(campaignid)
 }
 
 // GetById implements ServiceCharacterData.
@@ -119,62 +76,20 @@ func (s *service) GetById(id int) (dto.FullCharacterData, error) {
 }
 
 // GetByUserId implements ServiceCharacterData.
-func (s *service) GetByUserId(userid string) ([]dto.FullCharacterData, error) {
-	characters, err := s.characterRepo.GetByUserId(userid)
-	if err != nil {
-		return []dto.FullCharacterData{}, err
-	}
+func (s *service) GetByUserId(userid string) ([]dto.CharacterCardDto, error) {
+	return s.characterRepo.GetByUserId(userid)
 
-	var fullCharacters []dto.FullCharacterData
-	for _, v := range characters {
-		fullCharacter, err := s.fetchAndConvertToFullCharacterData(&v)
-		if err != nil {
-			return []dto.FullCharacterData{}, err
-		}
-		fullCharacters = append(fullCharacters, fullCharacter)
-
-	}
-	return fullCharacters, nil
 }
 
 // GetByUserIdAndCampaignId implements ServiceCharacterData.
-func (s *service) GetByUserIdAndCampaignId(userid string, campaignid int) ([]dto.FullCharacterData, error) {
-	characters, err := s.characterRepo.GetByUserIdAndCampaignId(userid, campaignid)
-	if err != nil {
-		return []dto.FullCharacterData{}, err
-	}
-
-	var fullCharacters []dto.FullCharacterData
-	for _, v := range characters {
-		fullCharacter, err := s.fetchAndConvertToFullCharacterData(&v)
-		if err != nil {
-			return []dto.FullCharacterData{}, err
-		}
-		fullCharacters = append(fullCharacters, fullCharacter)
-
-	}
-
-	return fullCharacters, nil
+func (s *service) GetByUserIdAndCampaignId(userid string, campaignid int) ([]dto.CharacterCardDto, error) {
+	return s.characterRepo.GetByUserIdAndCampaignId(userid, campaignid)
 }
 
 // GetByAttackEventId implements ServiceCharacterData.
-func (s *service) GetByAttackEventId(attackeventid int) ([]dto.FullCharacterData, error) {
-	characters, err := s.characterRepo.GetByAttackEventId(attackeventid)
-	if err != nil {
-		return []dto.FullCharacterData{}, err
-	}
+func (s *service) GetByAttackEventId(attackeventid int) ([]dto.CharacterCardDto, error) {
+	return s.characterRepo.GetByAttackEventId(attackeventid)
 
-	var fullCharacters []dto.FullCharacterData
-	for _, v := range characters {
-		fullCharacter, err := s.fetchAndConvertToFullCharacterData(&v)
-		if err != nil {
-			return []dto.FullCharacterData{}, err
-		}
-		fullCharacters = append(fullCharacters, fullCharacter)
-
-	}
-
-	return fullCharacters, nil
 }
 
 // Update implements ServiceCharacterData.

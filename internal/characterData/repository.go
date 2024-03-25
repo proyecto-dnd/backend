@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
 var (
@@ -85,53 +86,53 @@ func (r *CharacterDataMySqlRepository) Delete(id int) error {
 }
 
 // GetAll implements RepositoryCharacterData.
-func (r *CharacterDataMySqlRepository) GetAll() ([]domain.CharacterData, error) {
+func (r *CharacterDataMySqlRepository) GetAll() ([]dto.CharacterCardDto, error) {
 	rows, err := r.db.Query(QueryGetAll)
 	if err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 	defer rows.Close()
 
-	var characters []domain.CharacterData
+	var characterDtoList []dto.CharacterCardDto
 
 	for rows.Next() {
-		var character domain.CharacterData
-		err := ScanCharacterData(rows, &character)
+		var characterDto dto.CharacterCardDto
+		err := ScanCharacterCardDto(rows, &characterDto)
 		if err != nil {
-			return []domain.CharacterData{}, err
+			return []dto.CharacterCardDto{}, err
 		}
-		characters = append(characters, character)
+		characterDtoList = append(characterDtoList, characterDto)
 	}
 	if err := rows.Err(); err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 
-	return characters, nil
+	return characterDtoList, nil
 }
 
 // GetByCampaignId implements RepositoryCharacterData.
-func (r *CharacterDataMySqlRepository) GetByCampaignId(campaignid int) ([]domain.CharacterData, error) {
+func (r *CharacterDataMySqlRepository) GetByCampaignId(campaignid int) ([]dto.CharacterCardDto, error) {
 	rows, err := r.db.Query(QueryGetByCampaignId, campaignid)
 	if err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 	defer rows.Close()
 
-	var characters []domain.CharacterData
+	var characterDtoList []dto.CharacterCardDto
 
 	for rows.Next() {
-		var character domain.CharacterData
-		err := ScanCharacterData(rows, &character)
+		var characterDto dto.CharacterCardDto
+		err := ScanCharacterCardDto(rows, &characterDto)
 		if err != nil {
-			return []domain.CharacterData{}, err
+			return []dto.CharacterCardDto{}, err
 		}
-		characters = append(characters, character)
+		characterDtoList = append(characterDtoList, characterDto)
 	}
 	if err := rows.Err(); err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 
-	return characters, nil
+	return characterDtoList, nil
 }
 
 // GetById implements RepositoryCharacterData.
@@ -148,81 +149,81 @@ func (r *CharacterDataMySqlRepository) GetById(id int) (domain.CharacterData, er
 }
 
 // GetByUserId implements RepositoryCharacterData.
-func (r *CharacterDataMySqlRepository) GetByUserId(userid string) ([]domain.CharacterData, error) {
+func (r *CharacterDataMySqlRepository) GetByUserId(userid string) ([]dto.CharacterCardDto, error) {
 	rows, err := r.db.Query(QueryGetByUserId, userid)
 	if err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 	defer rows.Close()
 
-	var characters []domain.CharacterData
+	var characterDtoList []dto.CharacterCardDto
 
 	for rows.Next() {
-		var character domain.CharacterData
+		var characterDto dto.CharacterCardDto
 
-		err := ScanCharacterData(rows, &character)
+		err := ScanCharacterCardDto(rows, &characterDto)
 		if err != nil {
-			return []domain.CharacterData{}, err
+			return []dto.CharacterCardDto{}, err
 		}
-		characters = append(characters, character)
+		characterDtoList = append(characterDtoList, characterDto)
 	}
 	if err := rows.Err(); err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 
-	return characters, nil
+	return characterDtoList, nil
 }
 
 // GetByUserIdAndCampaignId implements RepositoryCharacterData.
-func (r *CharacterDataMySqlRepository) GetByUserIdAndCampaignId(userid string, campaignid int) ([]domain.CharacterData, error) {
+func (r *CharacterDataMySqlRepository) GetByUserIdAndCampaignId(userid string, campaignid int) ([]dto.CharacterCardDto, error) {
 	rows, err := r.db.Query(QueryGetByUserIdAndCampaignId, userid, campaignid)
 	if err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 	defer rows.Close()
 
-	var characters []domain.CharacterData
+	var characterDtoList []dto.CharacterCardDto
 
 	for rows.Next() {
-		var character domain.CharacterData
+		var characterDto dto.CharacterCardDto
 
-		err := ScanCharacterData(rows, &character)
+		err := ScanCharacterCardDto(rows, &characterDto)
 		if err != nil {
-			return []domain.CharacterData{}, err
+			return []dto.CharacterCardDto{}, err
 		}
-		characters = append(characters, character)
+		characterDtoList = append(characterDtoList, characterDto)
 	}
 	if err := rows.Err(); err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 
-	return characters, nil
+	return characterDtoList, nil
 }
 
 // GetByAttackEventId implements RepositoryCharacterData.
-func (r *CharacterDataMySqlRepository) GetByAttackEventId(attackeventid int) ([]domain.CharacterData, error) {
+func (r *CharacterDataMySqlRepository) GetByAttackEventId(attackeventid int) ([]dto.CharacterCardDto, error) {
 	rows, err := r.db.Query(QueryGetByAttackEventId, attackeventid)
 	if err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 	defer rows.Close()
 
-	var characters []domain.CharacterData
+	var characterDtoList []dto.CharacterCardDto
 
 	for rows.Next() {
-		var character domain.CharacterData
+		var characterDto dto.CharacterCardDto
 
-		err := ScanCharacterData(rows, &character)
+		err := ScanCharacterCardDto(rows, &characterDto)
 		if err != nil {
-			return []domain.CharacterData{}, err
+			return []dto.CharacterCardDto{}, err
 		}
-		characters = append(characters, character)
+		characterDtoList = append(characterDtoList, characterDto)
 	}
 	if err := rows.Err(); err != nil {
-		return []domain.CharacterData{}, err
+		return []dto.CharacterCardDto{}, err
 	}
 
-	return characters, nil
+	return characterDtoList, nil
 }
 
 // Update implements RepositoryCharacterData.
@@ -274,6 +275,20 @@ func NewCharacterDataRepository(db *sql.DB) RepositoryCharacterData {
 
 type scannable interface {
 	Scan(dest ...any) error
+}
+
+func ScanCharacterCardDto(rows scannable, characterCardDto *dto.CharacterCardDto) error {
+	err := rows.Scan(
+		&characterCardDto.CharacterId,
+		&characterCardDto.UserId,
+		&characterCardDto.CampaignID,
+		&characterCardDto.Name,
+		&characterCardDto.Race,
+		&characterCardDto.Class,
+		&characterCardDto.Level,
+		&characterCardDto.HitPoints,
+	)
+	return err
 }
 
 func ScanCharacterData(rows scannable, characterData *domain.CharacterData) error {
