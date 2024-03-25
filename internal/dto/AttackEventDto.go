@@ -42,12 +42,12 @@ type ResponseEventDto struct {
 	Type             string              `json:"type"`
 	Environment      string              `json:"environment"`
 	Session          domain.Session      `json:"session"`
-	EventProtagonist FullCharacterData   `json:"event_protagonist"`
+	EventProtagonist CharacterCardDto   `json:"event_protagonist"`
 	EventResolution  string              `json:"event_resolution"`
 	Weapon           *int                `json:"weapon"`
 	Spell            *int                `json:"spell"`
 	DmgType          *string             `json:"dmg_type"`
 	Description      *string             `json:"description"`
 	TimeStamp        *time.Time          `json:"time_stamp"`
-	Affected         []FullCharacterData `json:"affected"`
+	Affected         []CharacterCardDto `json:"affected"`
 }

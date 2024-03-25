@@ -7,24 +7,24 @@ import (
 
 type RepositoryCharacterData interface {
 	Create(character domain.CharacterData) (domain.CharacterData, error)
-	GetAll()([]domain.CharacterData, error)
+	GetAll()([]dto.CharacterCardDto, error)
 	GetById(id int)(domain.CharacterData, error)
-	GetByUserId(userid string)([]domain.CharacterData, error)
-	GetByUserIdAndCampaignId(userid string, campaignid int)([]domain.CharacterData, error)
-	GetByCampaignId(campaignid int)([]domain.CharacterData, error)
-	GetByAttackEventId(attackeventid int)([]domain.CharacterData, error)
+	GetByUserId(userid string)([]dto.CharacterCardDto, error)
+	GetByUserIdAndCampaignId(userid string, campaignid int)([]dto.CharacterCardDto, error)
+	GetByCampaignId(campaignid int)([]dto.CharacterCardDto, error)
+	GetByAttackEventId(attackeventid int)([]dto.CharacterCardDto, error)
 	Update(character domain.CharacterData) (domain.CharacterData, error)
 	Delete(id int)error
 }
 
 type ServiceCharacterData interface {
 	Create(character domain.CharacterData) (dto.FullCharacterData, error)
-	GetAll()([]dto.FullCharacterData, error)
+	GetAll()([]dto.CharacterCardDto, error)
 	GetById(id int)(dto.FullCharacterData, error)
-	GetByUserId(userid string)([]dto.FullCharacterData, error)
-	GetByUserIdAndCampaignId(userid string, campaignid int)([]dto.FullCharacterData, error)
-	GetByCampaignId(campaignid int)([]dto.FullCharacterData, error)
-	GetByAttackEventId(attackeventid int)([]dto.FullCharacterData, error)
+	GetByUserId(userid string)([]dto.CharacterCardDto, error)
+	GetByUserIdAndCampaignId(userid string, campaignid int)([]dto.CharacterCardDto, error)
+	GetByCampaignId(campaignid int)([]dto.CharacterCardDto, error)
+	GetByAttackEventId(attackeventid int)([]dto.CharacterCardDto, error)
 	Update(character domain.CharacterData) (dto.FullCharacterData, error)
 	Delete(id int)error
 }
