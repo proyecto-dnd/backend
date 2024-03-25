@@ -61,13 +61,22 @@ func (s *service) GetById(id string) (domain.UserResponse, error) {
 	return userToUserResponse(user), nil
 }
 
-func (s *service) Update(user domain.User, id string) (domain.User, error) {
+func (s *service) Update(user domain.UserUpdate, id string) (domain.UserResponse, error) {
+
 	updatedUser, err := s.repositoryFirebase.Update(user, id)
 	if err != nil {
-		return domain.User{}, err
+		return domain.UserResponse{}, err
 	}
 
-	return updatedUser, nil
+	var updatedUserResponse domain.UserResponse
+
+	updatedUserResponse.Id = updatedUser.Id
+	updatedUserResponse.Username = updatedUser.Username
+	updatedUserResponse.Email = updatedUser.Email
+	updatedUserResponse.Image = updatedUser.Image
+	updatedUserResponse.DisplayName = updatedUser.DisplayName
+
+	return updatedUserResponse, nil
 }
 
 func (s *service) Patch(user domain.User, id string) (domain.User, error) {

@@ -114,7 +114,7 @@ func (h *UserHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 
-		var userTemp domain.User
+		var userTemp domain.UserUpdate
 		if err := ctx.BindJSON(&userTemp); err != nil {
 			// TEMP ERROR RESPONSE
 			ctx.JSON(500, err)

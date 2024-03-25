@@ -16,8 +16,8 @@ import (
 	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
-	tradeevent "github.com/proyecto-dnd/backend/internal/tradeEvent"
 	"github.com/proyecto-dnd/backend/internal/dice_event"
+	tradeevent "github.com/proyecto-dnd/backend/internal/tradeEvent"
 
 	// "github.com/proyecto-dnd/backend/internal/ws"
 
@@ -123,10 +123,10 @@ var (
 	attackEventHandler    *handler.AttackEventHandler
 
 	characterTradeRepository charactertrade.RepositoryCharacterTrade
-	characterTradeService charactertrade.ServiceCharacterTrade
-	tradeEventRepository tradeevent.RepositoryTradeEvent
-	tradeEventService    tradeevent.ServiceTradeEvent
-	tradeEventHandler *handler.TradeEventHandler
+	characterTradeService    charactertrade.ServiceCharacterTrade
+	tradeEventRepository     tradeevent.RepositoryTradeEvent
+	tradeEventService        tradeevent.ServiceTradeEvent
+	tradeEventHandler        *handler.TradeEventHandler
 
 	itemRepository               item.RepositoryItem
 	itemService                  item.ServiceItem
@@ -281,7 +281,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterTradeRepository = charactertrade.NewCharacterTradeMySqlRepository(db)
 	characterTradeService = charactertrade.NewCharacterTradeService(characterTradeRepository)
 	tradeEventRepository = tradeevent.NewTradeEventMySqlRepository(db)
-	tradeEventService = tradeevent.NewTradeEventService(tradeEventRepository, characterTradeService,weaponXCharacterDataService, armorXCharacterDataService,itemXCharacterDataService)
+	tradeEventService = tradeevent.NewTradeEventService(tradeEventRepository, characterTradeService, weaponXCharacterDataService, armorXCharacterDataService, itemXCharacterDataService)
 	tradeEventHandler = handler.NewTradeEventHandler(&tradeEventService)
 
 	characterXAttackEventRepository = characterXAttackEvent.NewCharacterXAttackEventRepository(db)
@@ -445,7 +445,7 @@ func (r *router) buildUserCampaignRoutes() {
 func (r *router) buildFriendshipRoutes() {
 	friendshipGroup := r.routerGroup.Group("/friendship")
 	{
-		friendshipGroup.POST("", friendshipHandler.HandlerCreate())
+		friendshipGroup.POST("/follow/:name", friendshipHandler.HandlerCreate())
 		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends()) //TODO MODIFICAR PARA QUE SE BUSQUE POR ID TRAIDOD EL TOKEN
 		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerGetBySimilarName())
 		friendshipGroup.GET("/friends/:name", friendshipHandler.HandlerSearchFollowers())
@@ -671,7 +671,6 @@ func (r *router) buildSkillXCharacterDataRoutes() {
 
 	}
 }
-
 
 func (r *router) buildTradeEventRoutes() {
 	tradeEventGroup := r.routerGroup.Group("/tradeevent")

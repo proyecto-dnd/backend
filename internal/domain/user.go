@@ -15,7 +15,14 @@ type UserResponse struct {
 	DisplayName string  `json:"displayName"`
 	Image       *string `json:"image"`
 }
-
+type UserUpdate struct {
+	Id          string  `json:"id"`
+	Username    string  `json:"name"`
+	Email       string  `json:"email"`
+	Password    string  `json:"password"`
+	DisplayName string  `json:"displayName"`
+	Image       *string `json:"image"`
+}
 type UserLoginInfo struct {
 	IdToken string `json:"idToken"`
 }

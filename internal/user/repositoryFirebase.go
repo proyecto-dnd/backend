@@ -43,22 +43,24 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 
 	params := (&auth.UserToCreate{}).
 		Email(user.Email).
-		EmailVerified(true).
 		Password(user.Password).
 		DisplayName(user.Username).
 		Disabled(false)
 
+		//firebase create
 	newUser, err := r.authClient.CreateUser(ctx, params)
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
 	}
-	verificationEmail, err := r.authClient.EmailVerificationLink(ctx, newUser.Email)
-	if err != nil {
-		fmt.Println("Error sending verification email.")
-		return domain.User{}, err
-	}
-	fmt.Printf("verificationEmail: %v\n", verificationEmail)
-	
+
+	//aca se genera el link para verificar el correo. ¿usar template o codear para mandar un mail nuevo?
+	// verificationEmail, err := r.authClient.EmailVerificationLink(ctx, newUser.Email)
+	// if err != nil {
+	// 	fmt.Println("Error sending verification email.")
+	// 	return domain.User{}, err
+	// }
+	// fmt.Printf("verificationEmail: %v\n", verificationEmail)
+
 	client, err := r.app.Auth(ctx)
 	if err != nil {
 		fmt.Println("Error initializing Firebase Auth client.")
@@ -72,6 +74,8 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 		fmt.Println("Error setting custom user claims.")
 		return domain.User{}, err
 	}
+
+	//sql create
 	_, err = statement.Exec(newUser.UID, user.Username, user.Email, user.Password, user.DisplayName)
 	if err != nil {
 		fmt.Println("Error setting custom user claims.")
@@ -162,7 +166,7 @@ func (r *repositoryFirebase) GetById(id string) (domain.User, error) {
 
 	return user, nil
 }
-func (r *repositoryFirebase) Update(user domain.User, id string) (domain.User, error) {
+func (r *repositoryFirebase) Update(user domain.UserUpdate, id string) (domain.UserUpdate, error) {
 	params := (&auth.UserToUpdate{}).
 		Email(user.Email).
 		Password(user.Password).
@@ -173,6 +177,22 @@ func (r *repositoryFirebase) Update(user domain.User, id string) (domain.User, e
 		log.Printf("error updating user: %v\n", err)
 	}
 	// log.Printf("Successfully updated user: %v\n", u)
+	result, err := r.db.Exec(QueryUpdateUser,
+		user.Username,
+		user.Email,
+		user.Password,
+		user.Image,
+		user.DisplayName,
+		id,
+	)
+	if err != nil {
+		return domain.UserUpdate{}, err
+	}
+	_, err = result.RowsAffected()
+	if err != nil {
+		return domain.UserUpdate{}, err
+	}
+	user.Id = id
 
 	return user, nil
 }

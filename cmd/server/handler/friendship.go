@@ -29,6 +29,8 @@ func NewFriendshipHandler(service *friendship.FriendshipService, userService *us
 // @Router /friendship [post]
 func (h *FriendshipHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
+		//user2 por url
 		var tempFriendship domain.Friendship
 		if err := ctx.BindJSON(&tempFriendship); err != nil {
 			ctx.JSON(500, err)
@@ -73,7 +75,7 @@ func (h *FriendshipHandler) HandlerDelete() gin.HandlerFunc {
 func (h *FriendshipHandler) HandlerSearchFollowers() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		name := ctx.Param("name")
-
+		// MOSTRAR AMIGOS EN LOS QUE SE SIGAN MUTUAMENTE
 		var tempFriendship domain.Mutuals
 		tempFriendship.User2Name = name
 		if err := ctx.BindJSON(&tempFriendship); err != nil {
@@ -128,9 +130,10 @@ func (h *FriendshipHandler) HandlerGetBySimilarName() gin.HandlerFunc {
 		name := ctx.Param("name")
 		users, err := h.service.GetBySimilarName(name)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(400, err)
 			return
 		}
+
 		ctx.JSON(200, users)
 	}
 }
