@@ -8,7 +8,7 @@ var (
 	race.name,
 	class.name,
 	character_data.level,
-	character_data.hitpoints,
+	character_data.hitpoints
 	FROM character_data left join race on character_data.race_id = race.race_id left join class on character_data.class_id = class.class_id;`
 
 	QueryGetById = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id,
