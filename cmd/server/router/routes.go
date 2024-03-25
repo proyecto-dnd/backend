@@ -445,7 +445,7 @@ func (r *router) buildUserCampaignRoutes() {
 func (r *router) buildFriendshipRoutes() {
 	friendshipGroup := r.routerGroup.Group("/friendship")
 	{
-		friendshipGroup.POST("/follow/:name", friendshipHandler.HandlerCreate())
+		friendshipGroup.POST("", friendshipHandler.HandlerCreate())
 		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends()) //TODO MODIFICAR PARA QUE SE BUSQUE POR ID TRAIDOD EL TOKEN
 		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerGetBySimilarName())
 		friendshipGroup.GET("/friends/:name", friendshipHandler.HandlerSearchFollowers())
