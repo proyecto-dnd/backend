@@ -65,9 +65,15 @@ func (s *service) GetEventById(id int) (dto.ResponseEventDto, error) {
 		CampaignId:  &event.SessionCampaignId,
 	}
 
-	eventProtagonist, err := s.charactersService.GetById(event.EventProtagonistId)
-	if err != nil {
-		return dto.ResponseEventDto{}, err
+	eventProtagonist := dto.CharacterCardDto{
+		CharacterId: event.CharacterId,
+		UserId:      event.CharacterUserId,
+		CampaignID:  event.CharacterCampaignId,
+		Name:        event.CharacterName,
+		Race:        event.RaceName,
+		Class:       event.ClassName,
+		Level:       event.Level,
+		HitPoints:   event.HitPoints,
 	}
 
 	affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
@@ -108,10 +114,16 @@ func (s *service) GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, e
 			Description: event.SessionDescription,
 			CampaignId:  &event.SessionCampaignId,
 		}
-
-		eventProtagonist, err := s.charactersService.GetById(event.EventProtagonistId)
-		if err != nil {
-			return nil, err
+ 
+		eventProtagonist := dto.CharacterCardDto{
+			CharacterId: event.CharacterId,
+			UserId:      event.CharacterUserId,
+			CampaignID:  event.CharacterCampaignId,
+			Name:        event.CharacterName,
+			Race:        event.RaceName,
+			Class:       event.ClassName,
+			Level:       event.Level,
+			HitPoints:   event.HitPoints,
 		}
 
 		affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
@@ -155,9 +167,15 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 			CampaignId:  &event.SessionCampaignId,
 		}
 
-		eventProtagonist, err := s.charactersService.GetById(event.EventProtagonistId)
-		if err != nil {
-			return nil, err
+		eventProtagonist := dto.CharacterCardDto{
+			CharacterId: event.CharacterId,
+			UserId:      event.CharacterUserId,
+			CampaignID:  event.CharacterCampaignId,
+			Name:        event.CharacterName,
+			Race:        event.RaceName,
+			Class:       event.ClassName,
+			Level:       event.Level,
+			HitPoints:   event.HitPoints,
 		}
 
 		affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
@@ -201,9 +219,15 @@ func (s *service) GetEventsByAffectedId(affectedid int) ([]dto.ResponseEventDto,
 			CampaignId:  &event.SessionCampaignId,
 		}
 
-		eventProtagonist, err := s.charactersService.GetById(event.EventProtagonistId)
-		if err != nil {
-			return nil, err
+		eventProtagonist := dto.CharacterCardDto{
+			CharacterId: event.CharacterId,
+			UserId:      event.CharacterUserId,
+			CampaignID:  event.CharacterCampaignId,
+			Name:        event.CharacterName,
+			Race:        event.RaceName,
+			Class:       event.ClassName,
+			Level:       event.Level,
+			HitPoints:   event.HitPoints,
 		}
 
 		affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
@@ -247,9 +271,15 @@ func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedi
 			CampaignId:  &event.SessionCampaignId,
 		}
 
-		eventProtagonist, err := s.charactersService.GetById(event.EventProtagonistId)
-		if err != nil {
-			return nil, err
+		eventProtagonist := dto.CharacterCardDto{
+			CharacterId: event.CharacterId,
+			UserId:      event.CharacterUserId,
+			CampaignID:  event.CharacterCampaignId,
+			Name:        event.CharacterName,
+			Race:        event.RaceName,
+			Class:       event.ClassName,
+			Level:       event.Level,
+			HitPoints:   event.HitPoints,
 		}
 
 		affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)

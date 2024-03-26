@@ -11,37 +11,57 @@ var (
 	`
 
 	QueryGetById = `
-		SELECT ae.*, s.*
-		FROM attack_event ae
+		SELECT ae.*, s.*, cd.character_id, cd.user_id, cd.campaign_id, cd.name AS character_name, r.name AS race_name, cl.name AS class_name, cd.level, cd.hitpoints
+		FROM character_data cd
+		LEFT JOIN race r ON cd.race_id = r.race_id
+		LEFT JOIN class cl ON cd.class_id = cl.class_id
+		LEFT JOIN character_attack_event cae ON cd.character_id = cae.character_id
+		INNER JOIN attack_event ae ON cae.event_id = ae.event_id AND ae.event_protagonist_id = cd.character_id
 		INNER JOIN session s ON ae.session_id = s.session_id
-		WHERE ae.event_id = ?;
+		WHERE cae.character_id = ?;
 	`
 
 	QueryGetBySessionId = `
-		SELECT ae.*, s.*
-		FROM attack_event ae
+		SELECT ae.*, s.*, cd.character_id, cd.user_id, cd.campaign_id, cd.name AS character_name, r.name AS race_name, cl.name AS class_name, cd.level, cd.hitpoints
+		FROM character_data cd
+		LEFT JOIN race r ON cd.race_id = r.race_id
+		LEFT JOIN class cl ON cd.class_id = cl.class_id
+		LEFT JOIN character_attack_event cae ON cd.character_id = cae.character_id
+		INNER JOIN attack_event ae ON cae.event_id = ae.event_id AND ae.event_protagonist_id = cd.character_id
 		INNER JOIN session s ON ae.session_id = s.session_id
 		WHERE ae.session_id = ?;
 	`
 
 	QueryGetByProtagonistId = `
-		SELECT ae.*, s.*
-		FROM attack_event ae
+		SELECT ae.*, s.*, cd.character_id, cd.user_id, cd.campaign_id, cd.name AS character_name, r.name AS race_name, cl.name AS class_name, cd.level, cd.hitpoints
+		FROM character_data cd
+		LEFT JOIN race r ON cd.race_id = r.race_id
+		LEFT JOIN class cl ON cd.class_id = cl.class_id
+		LEFT JOIN character_attack_event cae ON cd.character_id = cae.character_id
+		INNER JOIN attack_event ae ON cae.event_id = ae.event_id AND ae.event_protagonist_id = cd.character_id
 		INNER JOIN session s ON ae.session_id = s.session_id
 		WHERE ae.event_protagonist_id = ?;
 	`
 
 	QueryGetByAffectedId = `
-		SELECT ae.*, s.* from attack_event ae
+		SELECT ae.*, s.*, cd.character_id, cd.user_id, cd.campaign_id, cd.name AS character_name, r.name AS race_name, cl.name AS class_name, cd.level, cd.hitpoints
+		FROM character_data cd
+		LEFT JOIN race r ON cd.race_id = r.race_id
+		LEFT JOIN class cl ON cd.class_id = cl.class_id
+		LEFT JOIN character_attack_event cae ON cd.character_id = cae.character_id
+		INNER JOIN attack_event ae ON cae.event_id = ae.event_id AND ae.event_protagonist_id = cd.character_id
 		INNER JOIN session s ON ae.session_id = s.session_id
-		INNER JOIN character_attack_event cae ON ae.event_id = cae.event_id 
 		WHERE cae.character_id = ?
 	`
 
 	QueryGetByProtagonistIdAndAffectedId = `
-		SELECT ae.*, s.* from attack_event ae
+		SELECT ae.*, s.*, cd.character_id, cd.user_id, cd.campaign_id, cd.name AS character_name, r.name AS race_name, cl.name AS class_name, cd.level, cd.hitpoints
+		FROM character_data cd
+		LEFT JOIN race r ON cd.race_id = r.race_id
+		LEFT JOIN class cl ON cd.class_id = cl.class_id
+		LEFT JOIN character_attack_event cae ON cd.character_id = cae.character_id
+		INNER JOIN attack_event ae ON cae.event_id = ae.event_id AND ae.event_protagonist_id = cd.character_id
 		INNER JOIN session s ON ae.session_id = s.session_id
-		INNER JOIN character_attack_event cae ON ae.event_id = cae.event_id 
 		WHERE cae.character_id = ? AND ae.event_protagonist_id = ?;
 	`
 
