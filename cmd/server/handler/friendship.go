@@ -30,19 +30,29 @@ func NewFriendshipHandler(service *friendship.FriendshipService, userService *us
 func (h *FriendshipHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		//user2 por url
-		var tempFriendship domain.Friendship
-		if err := ctx.BindJSON(&tempFriendship); err != nil {
-			ctx.JSON(500, err)
+		friend := ctx.Param("friend")
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err)
 			return
 		}
+		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+		userId := jwtClaimsInfo.Id
+		var tempFriendship domain.Friendship
+		tempFriendship.User1Id = userId
+		tempFriendship.User2Id = friend
+
 		createdFriendship, err := h.service.Create(tempFriendship)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(400, "Failed to create friendship ;( ")
 			return
 		}
 
-		ctx.JSON(201, createdFriendship)
+		ctx.JSON(201, "Created succesfully friendship with user1_id: "+createdFriendship.User1Id+" and user2_id: "+createdFriendship.User2Id)
 	}
 }
 
@@ -93,19 +103,13 @@ func (h *FriendshipHandler) HandlerSearchFollowers() gin.HandlerFunc {
 
 func (h *FriendshipHandler) HandlerGetAllFriends() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// var userId string
-
-		// if err := ctx.BindJSON(&userId); err != nil {
-		// 	ctx.JSON(500, err)
-		// 	return
-		// }
 
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
 			ctx.JSON(400, err)
 			return
 		}
-		// log.Println(cookie.Value)
+
 		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
 		if err != nil {
 			ctx.JSON(400, err)

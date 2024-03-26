@@ -53,12 +53,7 @@ func (s *service) GetAll() ([]domain.UserResponse, error) {
 }
 
 func (s *service) GetById(id string) (domain.UserResponse, error) {
-	user, err := s.repositoryFirebase.GetById(id)
-	if err != nil {
-		return domain.UserResponse{}, err
-	}
-
-	return userToUserResponse(user), nil
+	return s.repositoryFirebase.GetById(id)
 }
 
 func (s *service) Update(user domain.UserUpdate, id string) (domain.UserResponse, error) {
@@ -79,13 +74,8 @@ func (s *service) Update(user domain.UserUpdate, id string) (domain.UserResponse
 	return updatedUserResponse, nil
 }
 
-func (s *service) Patch(user domain.User, id string) (domain.User, error) {
-	patchedUser, err := s.repositoryFirebase.Patch(user, id)
-	if err != nil {
-		return domain.User{}, err
-	}
-
-	return patchedUser, nil
+func (s *service) Patch(user domain.UserUpdate, id string) (domain.UserResponse, error) {
+	return s.repositoryFirebase.Patch(user, id)
 }
 
 func (s *service) Delete(id string) error {
@@ -116,4 +106,8 @@ func (s *service) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error)
 func (s *service) TransferDataToSql(users []domain.User) (string, error) {
 
 	return s.repositoryFirebase.TransferDataToSql(users)
+}
+
+func (s *service) SubscribeToPremium(id string, date string) error {
+	return s.repositoryFirebase.SubscribeToPremium(id, date)
 }

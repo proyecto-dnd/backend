@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -16,7 +17,8 @@ import (
 )
 
 var (
-	ctx = &gin.Context{}
+	ctx      = &gin.Context{}
+	ErrEmpty = errors.New("empty list")
 )
 
 type repositoryFirebase struct {
@@ -47,7 +49,7 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 		DisplayName(user.Username).
 		Disabled(false)
 
-		//firebase create
+	//firebase create
 	newUser, err := r.authClient.CreateUser(ctx, params)
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
@@ -61,15 +63,9 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 	// }
 	// fmt.Printf("verificationEmail: %v\n", verificationEmail)
 
-	client, err := r.app.Auth(ctx)
-	if err != nil {
-		fmt.Println("Error initializing Firebase Auth client.")
-		return domain.User{}, err
-	}
+	claims := map[string]interface{}{"displayName": user.DisplayName, "subExpiration": time.Unix(0, 0).String()}
 
-	claims := map[string]interface{}{"displayName": user.DisplayName}
-
-	err = client.SetCustomUserClaims(ctx, newUser.UID, claims)
+	err = r.authClient.SetCustomUserClaims(ctx, newUser.UID, claims)
 	if err != nil {
 		fmt.Println("Error setting custom user claims.")
 		return domain.User{}, err
@@ -151,18 +147,30 @@ func (r *repositoryFirebase) GetByName(name string) ([]domain.User, error) {
 	return users, nil
 }
 
-func (r *repositoryFirebase) GetById(id string) (domain.User, error) {
+func (r *repositoryFirebase) GetById(id string) (domain.UserResponse, error) {
 
 	u, err := r.authClient.GetUser(ctx, id)
 	if err != nil {
 		//TODO RETURN ERROR
 		log.Printf("error getting user %s: %v\n", id, err)
 	}
+	fmt.Println(u)
+	row, err := r.db.Query(QueryGetUserById, id)
+	if err != nil {
+		return domain.UserResponse{}, err
+	}
+	defer row.Close()
 
-	var user domain.User
-	user.Username = u.DisplayName
-	user.Email = u.Email
-	user.Id = u.UID
+	var user domain.UserResponse
+	for row.Next() {
+		if err := row.Scan(&user.Id, &user.Username, &user.Email, &user.DisplayName, &user.Image); err != nil {
+			return domain.UserResponse{}, err
+		}
+	}
+	// var user domain.User
+	// user.Username = u.DisplayName
+	// user.Email = u.Email
+	// user.Id = u.UID
 
 	return user, nil
 }
@@ -202,14 +210,72 @@ func (r *repositoryFirebase) Delete(id string) error {
 	if err != nil {
 		log.Printf("error deleting user: %v\n", err)
 	}
+	result, err := r.db.Exec(QueryDeleteUser, id)
+	if err != nil {
+		return err
+	}
+
+	_, err = result.RowsAffected()
+	if err != nil {
+		return err
+	}
 
 	log.Printf("Successfully deleted user: %s\n", id)
 
 	return nil
 }
 
-func (r *repositoryFirebase) Patch(user domain.User, id string) (domain.User, error) {
-	return user, nil
+func (r *repositoryFirebase) Patch(user domain.UserUpdate, id string) (domain.UserResponse, error) {
+	var fieldsToUpdate []string
+	var args []interface{}
+
+	if user.Username != "" {
+		fieldsToUpdate = append(fieldsToUpdate, "display_name = ?")
+		args = append(args, user.Username)
+		r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).DisplayName(user.Username))
+	}
+	if user.Email != "" {
+		fieldsToUpdate = append(fieldsToUpdate, "email = ?")
+		args = append(args, user.Email)
+		r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).Email(user.Email))
+	}
+	if user.Password != "" {
+		fieldsToUpdate = append(fieldsToUpdate, "password = ?")
+		args = append(args, user.Password)
+		r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).Password(user.Password))
+	}
+	if user.Image != nil && *user.Image != "" {
+		fieldsToUpdate = append(fieldsToUpdate, "image = ?")
+		args = append(args, user.Image)
+	}
+	if user.DisplayName != "" {
+		fieldsToUpdate = append(fieldsToUpdate, "display_name = ?")
+		args = append(args, user.DisplayName)
+	}
+
+	if len(fieldsToUpdate) == 0 {
+		return domain.UserResponse{}, ErrEmpty
+	}
+
+	queryString := "UPDATE user SET " + strings.Join(fieldsToUpdate, ", ") + " WHERE user_id = ?"
+	args = append(args, id)
+
+	result, err := r.db.Exec(queryString, args...)
+	if err != nil {
+		return domain.UserResponse{}, err
+	}
+	_, err = result.RowsAffected()
+	if err != nil {
+		return domain.UserResponse{}, err
+	}
+
+	return domain.UserResponse{
+		Id:          id,
+		Username:    user.Username,
+		Email:       user.Email,
+		Image:       user.Image,
+		DisplayName: user.DisplayName,
+	}, nil
 }
 
 func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error) {
@@ -239,11 +305,13 @@ func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenCla
 		username := claims["name"].(string)
 		email := claims["email"].(string)
 		displayName := claims["displayName"].(string)
+		subExpirationDate := claims["subExpiration"].(string)
 
 		tokenClaims.Id = uid
 		tokenClaims.Username = username
 		tokenClaims.Email = email
 		tokenClaims.DisplayName = displayName
+		tokenClaims.SubExpirationDate = subExpirationDate
 	}
 
 	return tokenClaims, nil
@@ -258,18 +326,18 @@ func (r *repositoryFirebase) TransferDataToSql(users []domain.User) (string, err
 	}
 	// fmt.Println(insertString)
 
-	// result, err := r.db.Exec(insertString)
-	// if err != nil {
-	// 	return "", err
-	// }
+	result, err := r.db.Exec(insertString)
+	if err != nil {
+		return "", err
+	}
 
-	// rowsAffected, err := result.RowsAffected()
-	// if err != nil {
-	// 	return "", err
-	// }
-	// if rowsAffected < 1 {
-	// 	return "", errors.New("no rows affected")
-	// }
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return "", err
+	}
+	if rowsAffected < 1 {
+		return "", errors.New("no rows affected")
+	}
 
 	// fmt.Println(rowsAffected)
 
@@ -294,4 +362,15 @@ func (r *repositoryFirebase) BulkInsertString(users []domain.User) (string, erro
 
 	insertSQL := fmt.Sprintf("INSERT INTO user (uid, name, email, password, display_name) VALUES %s;", values.String())
 	return insertSQL, nil
+}
+
+func (r *repositoryFirebase) SubscribeToPremium(id string, date string) error {
+	claims := map[string]interface{}{"subExpiration": date}
+
+	err := r.authClient.SetCustomUserClaims(ctx, id, claims)
+	if err != nil {
+		fmt.Println("Error setting custom user claims: " + err.Error())
+		return err
+	}
+	return nil
 }

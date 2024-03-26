@@ -156,7 +156,7 @@ func (r *repositoryFriendship) GetAllFriends(userId string) ([]domain.Friendship
 	}
 	defer statement.Close()
 
-	rows, err := statement.Query(userId, userId)
+	rows, err := statement.Query(userId)
 	if err != nil {
 		return nil, err
 	}

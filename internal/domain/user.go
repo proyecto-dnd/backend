@@ -28,8 +28,9 @@ type UserLoginInfo struct {
 }
 
 type UserTokenClaims struct {
-	Id          string `json:"id"`
-	Email       string `json:"email"`
-	Username    string `json:"username"`
-	DisplayName string `json:"displayName"`
+	Id                string `json:"id"`
+	Email             string `json:"email"`
+	Username          string `json:"username"`
+	DisplayName       string `json:"displayName"`
+	SubExpirationDate string `json:"subExpiration"`
 }

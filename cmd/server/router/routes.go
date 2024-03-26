@@ -311,11 +311,11 @@ func (r *router) MapRoutes() {
 	r.buildProficiencyXClassRoutes()
 	r.buildUserCampaignRoutes()
 	r.buildFriendshipRoutes()
-	// r.buildSpellRoutes()
-	// r.buildClassXSpellRoutes()
-	// r.buildRaceXProficiencyRoutes()
-	// r.buildBackgroundXProficiencyRoutes()
-	// r.buildCharacterXSpellRoutes()
+	r.buildSpellRoutes()
+	r.buildClassXSpellRoutes()
+	r.buildRaceXProficiencyRoutes()
+	r.buildBackgroundXProficiencyRoutes()
+	r.buildCharacterXSpellRoutes()
 	r.buildFeatureRoutes()
 	r.buildItemRoutes()
 	r.buildItemXCharacterDataRoutes()
@@ -350,6 +350,7 @@ func (r *router) buildUserRoutes() {
 		// TODO Add Middlewares if needed
 		userGroup.POST("/register", userFirebaseHandler.HandlerCreate())
 		userGroup.POST("/login", userFirebaseHandler.HandlerLogin())
+		userGroup.POST("/subscribe/:months", userFirebaseHandler.HandlerSubPremium())
 		userGroup.GET("", userFirebaseHandler.HandlerGetAll())
 		userGroup.GET("/:id", userFirebaseHandler.HandlerGetById())
 		userGroup.GET("/jwt", userFirebaseHandler.HandlerGetJwtInfo())
@@ -446,7 +447,7 @@ func (r *router) buildFriendshipRoutes() {
 	friendshipGroup := r.routerGroup.Group("/friendship")
 	{
 		friendshipGroup.POST("", friendshipHandler.HandlerCreate())
-		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends()) //TODO MODIFICAR PARA QUE SE BUSQUE POR ID TRAIDOD EL TOKEN
+		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends())
 		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerGetBySimilarName())
 		friendshipGroup.GET("/friends/:name", friendshipHandler.HandlerSearchFollowers())
 		friendshipGroup.DELETE("", friendshipHandler.HandlerDelete())

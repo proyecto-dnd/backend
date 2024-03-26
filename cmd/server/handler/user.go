@@ -3,6 +3,8 @@ package handler
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
@@ -145,7 +147,7 @@ func (h *UserHandler) HandlerPatch() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 
-		var userTemp domain.User
+		var userTemp domain.UserUpdate
 		if err := ctx.BindJSON(&userTemp); err != nil {
 			// TEMP ERROR RESPONSE
 			ctx.JSON(500, err)
@@ -223,6 +225,7 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 
 func (h *UserHandler) HandlerGetJwtInfo() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
 			ctx.JSON(400, err)
@@ -236,5 +239,32 @@ func (h *UserHandler) HandlerGetJwtInfo() gin.HandlerFunc {
 		}
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, jwtClaimsInfo)
+	}
+}
+
+func (h *UserHandler) HandlerSubPremium() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		monthsParam := ctx.Param("months")
+
+		months, err := strconv.Atoi(monthsParam)
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+
+		err = h.service.SubscribeToPremium(cookie.Value, time.Now().AddDate(0, months, 0).String())
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+
+		ctx.JSON(200, "Subscribed to Premium")
 	}
 }
