@@ -76,6 +76,7 @@ func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
 	}
 
 	responseCampaign := dto.ResponseCampaignDto{
+		CampaignId:    campaign.CampaignId,
 		DungeonMaster: campaign.DungeonMaster,
 		Name:          campaign.Name,
 		Description:   campaign.Description,
@@ -102,6 +103,7 @@ func (s *service) GetCampaignsByUserId(id string) ([]dto.ResponseCampaignDto, er
 		}
 
 		responseCampaign := dto.ResponseCampaignDto{
+			CampaignId:    campaign.CampaignId,
 			DungeonMaster: campaign.DungeonMaster,
 			Name:          campaign.Name,
 			Description:   campaign.Description,
@@ -138,6 +140,7 @@ func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto
 	}
 
 	responseCampaign := dto.ResponseCampaignDto{
+		CampaignId:    updatedCampaign.CampaignId,
 		DungeonMaster: updatedCampaign.DungeonMaster,
 		Name:          updatedCampaign.Name,
 		Description:   updatedCampaign.Description,

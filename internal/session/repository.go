@@ -88,7 +88,7 @@ func (r *sessionMySqlRepository) GetByCampaignId(id int) ([]domain.Session, erro
 	var sessions []domain.Session
 	for rows.Next() {
 		var session domain.Session
-		if err := rows.Scan(&session.SessionId, &session.Start, &session.End, &session.Description, &session.CampaignId, &session.CurrentEnviroment, &session.CurrentEnviroment); err != nil {
+		if err := rows.Scan(&session.SessionId, &session.Start, &session.End, &session.Description, &session.CampaignId, &session.CurrentEnviroment); err != nil {
 			return nil, err
 		}
 		sessions = append(sessions, session)
