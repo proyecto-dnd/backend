@@ -104,6 +104,17 @@ func (h *CharacterHandler) HandlerGetByCampaignIdAndUserId() gin.HandlerFunc {
 	}
 }
 
+func (h *CharacterHandler) HandlerGetGenerics() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		characters, err := h.service.GetGenerics()
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, characters)
+	}
+}
+
 func (h *CharacterHandler) HandlerGetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
