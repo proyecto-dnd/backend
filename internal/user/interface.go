@@ -5,7 +5,7 @@ import (
 )
 
 type RepositoryUsers interface {
-	Create(user domain.User) (domain.User, error)
+	Create(user domain.User) (domain.UserResponse, error)
 	GetAll() ([]domain.UserResponse, error)
 	GetById(id string) (domain.UserResponse, error)
 	Update(user domain.UserUpdate, id string) (domain.UserUpdate, error)

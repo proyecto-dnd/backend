@@ -35,19 +35,23 @@ func NewUserFirebaseRepository(app *firebase.App, db *sql.DB) RepositoryUsers {
 	return &repositoryFirebase{app: app, authClient: authClient, db: db}
 }
 
-func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
+func (r *repositoryFirebase) Create(user domain.User) (domain.UserResponse, error) {
 	//sql backup
 	statement, err := r.db.Prepare(QueryInsertUser)
 	if err != nil {
-		return domain.User{}, err
+		return domain.UserResponse{}, err
 	}
 	defer statement.Close()
 
+	fmt.Println(user)
+	fmt.Println(user.DisplayName)
 	params := (&auth.UserToCreate{}).
 		Email(user.Email).
 		Password(user.Password).
 		DisplayName(user.Username).
 		Disabled(false)
+
+	fmt.Println(params)
 
 	//firebase create
 	newUser, err := r.authClient.CreateUser(ctx, params)
@@ -55,30 +59,22 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.User, error) {
 		log.Printf("Error creating user: %v", err)
 	}
 
-	//aca se genera el link para verificar el correo. ¿usar template o codear para mandar un mail nuevo?
-	// verificationEmail, err := r.authClient.EmailVerificationLink(ctx, newUser.Email)
-	// if err != nil {
-	// 	fmt.Println("Error sending verification email.")
-	// 	return domain.User{}, err
-	// }
-	// fmt.Printf("verificationEmail: %v\n", verificationEmail)
-
 	claims := map[string]interface{}{"displayName": user.DisplayName, "subExpiration": time.Unix(0, 0).String()}
 
 	err = r.authClient.SetCustomUserClaims(ctx, newUser.UID, claims)
 	if err != nil {
 		fmt.Println("Error setting custom user claims.")
-		return domain.User{}, err
+		return domain.UserResponse{}, err
 	}
 
 	//sql create
 	_, err = statement.Exec(newUser.UID, user.Username, user.Email, user.Password, user.DisplayName)
 	if err != nil {
 		fmt.Println("Error setting custom user claims.")
-		return domain.User{}, err
+		return domain.UserResponse{}, err
 	}
 
-	var userTemp domain.User
+	var userTemp domain.UserResponse
 	userTemp.Username = newUser.DisplayName
 	userTemp.Email = newUser.Email
 	userTemp.Id = newUser.UID

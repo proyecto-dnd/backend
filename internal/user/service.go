@@ -24,12 +24,7 @@ func userToUserResponse(user domain.User) domain.UserResponse {
 }
 
 func (s *service) Create(user domain.User) (domain.UserResponse, error) {
-	newUser, err := s.repositoryFirebase.Create(user)
-	if err != nil {
-		return domain.UserResponse{}, err
-	}
-
-	return userToUserResponse(newUser), nil
+	return s.repositoryFirebase.Create(user)
 }
 
 func (s *service) GetAll() ([]domain.UserResponse, error) {

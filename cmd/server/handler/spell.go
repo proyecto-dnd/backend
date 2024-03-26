@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -37,6 +38,7 @@ func (h *SpellHandler) HandlergetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		spellList, err := h.service.GetAll()
 		if err != nil {
+			fmt.Println(err)
 			ctx.JSON(400, err)
 			return
 		}
@@ -57,7 +59,7 @@ func (h *SpellHandler) HandlerGetById() gin.HandlerFunc {
 
 		tempSpell, err := h.service.GetById(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(400, err)
 			return
 		}
 

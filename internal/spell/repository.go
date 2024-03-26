@@ -3,6 +3,7 @@ package spell
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -78,7 +79,20 @@ func (r *spellMySqlRepository) GetAll() ([]domain.Spell, error) {
 	spells := []domain.Spell{}
 	for rows.Next() {
 		var spell domain.Spell
-		if err := rows.Scan(&spell.Name, &spell.Description, &spell.Range, &spell.Ritual, &spell.Duration, &spell.Concentration, &spell.CastingTime, &spell.Level, &spell.DamageType, &spell.Level, &spell.DamageType, &spell.DifficultyClass, &spell.Aoe, &spell.School); err != nil {
+		if err := rows.Scan(
+			&spell.SpellId,
+			&spell.Name,
+			&spell.Description,
+			&spell.Range,
+			&spell.Ritual,
+			&spell.Duration,
+			&spell.Concentration,
+			&spell.CastingTime,
+			&spell.Level,
+			&spell.DamageType,
+			&spell.DifficultyClass,
+			&spell.Aoe,
+			&spell.School); err != nil {
 			return nil, err
 		}
 		spells = append(spells, spell)
@@ -89,11 +103,22 @@ func (r *spellMySqlRepository) GetAll() ([]domain.Spell, error) {
 
 func (r *spellMySqlRepository) GetById(id int) (domain.Spell, error) {
 	var spell domain.Spell
-	err := r.db.QueryRow(QueryGetById, id).Scan(&spell.Name, &spell.Description, &spell.Range, &spell.Ritual, &spell.Duration, &spell.Concentration, &spell.CastingTime, &spell.Level, &spell.DamageType, &spell.Level, &spell.DamageType, &spell.DifficultyClass, &spell.Aoe, &spell.School)
+	err := r.db.QueryRow(QueryGetById, id).Scan(
+		&spell.SpellId,
+		&spell.Name,
+		&spell.Description,
+		&spell.Range,
+		&spell.Ritual,
+		&spell.Duration,
+		&spell.Concentration,
+		&spell.CastingTime,
+		&spell.Level,
+		&spell.DamageType,
+		&spell.DifficultyClass,
+		&spell.Aoe,
+		&spell.School)
 	if err != nil {
-		if err == ErrNotFound {
-			return domain.Spell{}, ErrNotFound
-		}
+		fmt.Println(err)
 		return domain.Spell{}, err
 	}
 	return spell, nil
@@ -153,7 +178,7 @@ func (r *spellMySqlRepository) Delete(id int) error {
 
 func (r *spellMySqlRepository) GetByCharacterDataId(characterId int) ([]domain.Spell, error) {
 	rows, err := r.db.Query(QueryGetByCharacterDataId, characterId)
-	
+
 	if err != nil {
 		return []domain.Spell{}, err
 	}
@@ -178,6 +203,6 @@ func (r *spellMySqlRepository) GetByCharacterDataId(characterId int) ([]domain.S
 		}
 		spells = append(spells, spell)
 	}
-	
+
 	return spells, nil
 }
