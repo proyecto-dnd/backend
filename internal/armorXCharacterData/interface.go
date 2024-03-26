@@ -10,6 +10,7 @@ type RepositoryArmorXCharacterData interface {
 	GetByIdArmorXCharacterData(id int) (domain.ArmorXCharacterData, error)
 	GetByCharacterDataIdArmor(id int) ([]domain.ArmorXCharacterData, error)
 	UpdateArmorXCharacterData(data domain.ArmorXCharacterData) (domain.ArmorXCharacterData, error)
+	UpdateOwnership(armorXCharacterData domain.ArmorXCharacterData) (error)
 }
 
 type ServiceArmorXCharacterData interface {
@@ -20,4 +21,5 @@ type ServiceArmorXCharacterData interface {
 	GetByIdArmorXCharacterData(id int) (domain.ArmorXCharacterData, error)
 	GetByCharacterDataIdArmor(id int) ([]domain.ArmorXCharacterData, error)
 	UpdateArmorXCharacterData(data domain.ArmorXCharacterData) (domain.ArmorXCharacterData, error)
+	UpdateOwnership(armorXCharacterData domain.ArmorXCharacterData) (error)
 }

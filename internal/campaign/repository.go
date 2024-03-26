@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
 var (
-	ErrPrepareStatement = errors.New("error preparing statement")
+	ErrPrepareStatement    = errors.New("error preparing statement")
 	ErrGettingLastInsertId = errors.New("error getting last insert id")
 )
 
@@ -26,13 +27,15 @@ func (r *campaignMySqlRepository) Create(campaign domain.Campaign) (domain.Campa
 		fmt.Println(err)
 		return domain.Campaign{}, ErrPrepareStatement
 	}
-	
+
 	defer statement.Close()
 	result, err := statement.Exec(
 		campaign.DungeonMaster,
 		campaign.Name,
 		campaign.Description,
 		campaign.Image,
+		campaign.Notes,
+		campaign.Status,
 	)
 	if err != nil {
 		return domain.Campaign{}, err
@@ -43,23 +46,22 @@ func (r *campaignMySqlRepository) Create(campaign domain.Campaign) (domain.Campa
 		return domain.Campaign{}, ErrGettingLastInsertId
 	}
 	campaign.CampaignId = int(lastId)
-	
+
 	return campaign, nil
 }
-
 
 func (r *campaignMySqlRepository) GetAll() ([]domain.Campaign, error) {
 	rows, err := r.db.Query(QueryGetAll)
 	if err != nil {
-		return nil, err
+		return []domain.Campaign{}, err
 	}
 	defer rows.Close()
 
 	var campaigns []domain.Campaign
 	for rows.Next() {
 		var campaign domain.Campaign
-		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image); err != nil {
-			return nil, err
+		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image, &campaign.Notes, &campaign.Status); err != nil {
+			return []domain.Campaign{}, err
 		}
 		campaigns = append(campaigns, campaign)
 	}
@@ -68,7 +70,7 @@ func (r *campaignMySqlRepository) GetAll() ([]domain.Campaign, error) {
 
 func (r *campaignMySqlRepository) GetById(id int) (domain.Campaign, error) {
 	var campaign domain.Campaign
-	err := r.db.QueryRow(QueryGetById, id).Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image)
+	err := r.db.QueryRow(QueryGetById, id).Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image, &campaign.Notes, &campaign.Status)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return domain.Campaign{}, errors.New("campaign not found")
@@ -89,7 +91,7 @@ func (r *campaignMySqlRepository) GetCampaignsByUserId(id string) ([]domain.Camp
 	var campaigns []domain.Campaign
 	for rows.Next() {
 		var campaign domain.Campaign
-		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image); err != nil {
+		if err := rows.Scan(&campaign.CampaignId, &campaign.DungeonMaster, &campaign.Name, &campaign.Description, &campaign.Image, &campaign.Notes, &campaign.Status); err != nil {
 			return nil, err
 		}
 		campaigns = append(campaigns, campaign)
@@ -104,7 +106,7 @@ func (r *campaignMySqlRepository) Update(campaign domain.Campaign, id int) (doma
 	}
 	defer statement.Close()
 
-	_, err = statement.Exec(campaign.DungeonMaster, campaign.Name, campaign.Description, campaign.Image, id)
+	_, err = statement.Exec(campaign.DungeonMaster, campaign.Name, campaign.Description, campaign.Image, &campaign.Notes, &campaign.Status, id)
 	if err != nil {
 		return domain.Campaign{}, err
 	}

@@ -2,7 +2,7 @@ package session
 
 var (
 	QueryCreateSession = `
-		INSERT INTO session (start, end, description, campaign_id)
+		INSERT INTO session (start, end, description, campaign_id, current_enviroment)
 		VALUES (?, ?, ?, ?);
 	`
 
@@ -20,7 +20,7 @@ var (
 
 	QueryUpdate = `
 		UPDATE session
-		SET start = ?, end = ?, description = ?, campaign_id = ?
+		SET start = ?, end = ?, description = ?, campaign_id = ? current_enviroment = ?
 		WHERE session_id = ?;
 	`
 

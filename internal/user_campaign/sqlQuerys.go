@@ -11,7 +11,7 @@ var (
 	`
 
 	QueryGetById = `
-		SELECT * FROM user_campaign WHERE user_campaign_id = ?;
+		SELECT * FROM user_campaign WHERE user_campaign = ?;
 	`
 
 	QueryGetByCampaignId = `
@@ -23,6 +23,6 @@ var (
 	`
 
 	QueryDelete = `
-		DELETE FROM user_campaign WHERE user_campaign_id = ?;
+		DELETE FROM user_campaign WHERE user_campaign = ?;
 	`
 )

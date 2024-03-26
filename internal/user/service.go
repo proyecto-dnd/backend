@@ -33,45 +33,49 @@ func (s *service) Create(user domain.User) (domain.UserResponse, error) {
 }
 
 func (s *service) GetAll() ([]domain.UserResponse, error) {
+	// users, err := s.repositoryFirebase.GetAll()
+	// if err != nil {
+	// 	return []domain.UserResponse{}, err
+	// }
+
+	// var usersResponse []domain.UserResponse
+
+	// for _, u := range users {
+	// 	usersResponse = append(usersResponse, u)
+	// }
+
+	// return usersResponse, nil
 	users, err := s.repositoryFirebase.GetAll()
 	if err != nil {
 		return []domain.UserResponse{}, err
 	}
-
-	var usersResponse []domain.UserResponse
-
-	for _, u := range users {
-		usersResponse = append(usersResponse, u)
-	}
-
-	return usersResponse, nil
+	return users, nil
 }
 
 func (s *service) GetById(id string) (domain.UserResponse, error) {
-	user, err := s.repositoryFirebase.GetById(id)
+	return s.repositoryFirebase.GetById(id)
+}
+
+func (s *service) Update(user domain.UserUpdate, id string) (domain.UserResponse, error) {
+
+	updatedUser, err := s.repositoryFirebase.Update(user, id)
 	if err != nil {
 		return domain.UserResponse{}, err
 	}
 
-	return userToUserResponse(user), nil
+	var updatedUserResponse domain.UserResponse
+
+	updatedUserResponse.Id = updatedUser.Id
+	updatedUserResponse.Username = updatedUser.Username
+	updatedUserResponse.Email = updatedUser.Email
+	updatedUserResponse.Image = updatedUser.Image
+	updatedUserResponse.DisplayName = updatedUser.DisplayName
+
+	return updatedUserResponse, nil
 }
 
-func (s *service) Update(user domain.User, id string) (domain.User, error) {
-	updatedUser, err := s.repositoryFirebase.Update(user, id)
-	if err != nil {
-		return domain.User{}, err
-	}
-
-	return updatedUser, nil
-}
-
-func (s *service) Patch(user domain.User, id string) (domain.User, error) {
-	patchedUser, err := s.repositoryFirebase.Patch(user, id)
-	if err != nil {
-		return domain.User{}, err
-	}
-
-	return patchedUser, nil
+func (s *service) Patch(user domain.UserUpdate, id string) (domain.UserResponse, error) {
+	return s.repositoryFirebase.Patch(user, id)
 }
 
 func (s *service) Delete(id string) error {
@@ -88,10 +92,22 @@ func (s *service) Login(userInfo domain.UserLoginInfo) (string, error) {
 
 	cookie, err := s.repositoryFirebase.Login(userInfo)
 	if err != nil {
-		log.Println("ACAAAAAAAAAA")
 		log.Printf(err.Error())
 		return "", err
 	}
 
 	return cookie, nil
+}
+
+func (s *service) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
+	return s.repositoryFirebase.GetJwtInfo(cookieToken)
+}
+
+func (s *service) TransferDataToSql(users []domain.User) (string, error) {
+
+	return s.repositoryFirebase.TransferDataToSql(users)
+}
+
+func (s *service) SubscribeToPremium(id string, date string) error {
+	return s.repositoryFirebase.SubscribeToPremium(id, date)
 }

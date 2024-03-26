@@ -58,7 +58,7 @@ func (r *sessionMySqlRepository) GetAll() ([]domain.Session, error) {
 	var sessions []domain.Session
 	for rows.Next() {
 		var session domain.Session
-		if err := rows.Scan(&session.SessionId, &session.Start, &session.End, &session.Description, &session.CampaignId); err != nil {
+		if err := rows.Scan(&session.SessionId, &session.Start, &session.End, &session.Description, &session.CampaignId, &session.CurrentEnviroment); err != nil {
 			return nil, err
 		}
 		sessions = append(sessions, session)
@@ -68,7 +68,7 @@ func (r *sessionMySqlRepository) GetAll() ([]domain.Session, error) {
 
 func (r *sessionMySqlRepository) GetById(id int) (domain.Session, error) {
 	var session domain.Session
-	err := r.db.QueryRow(QueryGetById, id).Scan(&session.SessionId, &session.Start, &session.End, &session.Description, &session.CampaignId)
+	err := r.db.QueryRow(QueryGetById, id).Scan(&session.SessionId, &session.Start, &session.End, &session.Description, &session.CampaignId, &session.CurrentEnviroment)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return domain.Session{}, errors.New("session not found")
@@ -88,7 +88,7 @@ func (r *sessionMySqlRepository) GetByCampaignId(id int) ([]domain.Session, erro
 	var sessions []domain.Session
 	for rows.Next() {
 		var session domain.Session
-		if err := rows.Scan(&session.SessionId, &session.Start, &session.End, &session.Description, &session.CampaignId); err != nil {
+		if err := rows.Scan(&session.SessionId, &session.Start, &session.End, &session.Description, &session.CampaignId, &session.CurrentEnviroment); err != nil {
 			return nil, err
 		}
 		sessions = append(sessions, session)
@@ -103,7 +103,7 @@ func (r *sessionMySqlRepository) Update(session domain.Session, id int) (domain.
 	}
 	defer statement.Close()
 
-	_, err = statement.Exec(&session.Start, &session.End, &session.Description, &session.CampaignId, id)
+	_, err = statement.Exec(&session.Start, &session.End, &session.Description, &session.CampaignId, &session.CurrentEnviroment, id)
 	if err != nil {
 		return domain.Session{}, err
 	}

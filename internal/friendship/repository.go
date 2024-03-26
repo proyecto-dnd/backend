@@ -50,7 +50,7 @@ func (r *repositoryFriendship) SearchFollowers(mutuals domain.Mutuals) ([]domain
 	}()
 
 	go func() {
-		user1Friends, err := r.GetFriends(mutuals.User1Id)
+		user1Friends, err := r.GetAllFriends(mutuals.User1Id)
 		if err != nil {
 			user1FriendsChan <- []domain.Friendship{}
 			return
@@ -83,22 +83,6 @@ func (r *repositoryFriendship) SearchFollowers(mutuals domain.Mutuals) ([]domain
 	}
 
 	return tempFriendList, nil
-	// usersList, err := r.userRepository.GetAll()
-	// if err != nil {
-	// 	return []domain.UserResponse{}, err
-	// }
-
-	// user1Friends, err := r.GetFriends(mutuals.User1Id)
-	// if err != nil {
-	// 	return []domain.UserResponse{}, err
-	// }
-
-	// var userListByName []domain.UserResponse
-	// for _, user := range usersList {
-	// 	if strings.HasPrefix(user.Username, mutuals.User2Name) {
-	// 		userListByName = append(userListByName, user)
-	// 	}
-	// }
 
 	// var tempFriendList []domain.UserResponse
 	// for _, friend := range user1Friends {
@@ -165,14 +149,14 @@ func (r *repositoryFriendship) IsFriends(userId1 string, userId2 string) (bool, 
 	return count > 0, nil
 }
 
-func (r *repositoryFriendship) GetFriends(userId string) ([]domain.Friendship, error) {
+func (r *repositoryFriendship) GetAllFriends(userId string) ([]domain.Friendship, error) {
 	statement, err := r.db.Prepare(QueryGetFriends)
 	if err != nil {
 		return nil, ErrPrepareStatement
 	}
 	defer statement.Close()
 
-	rows, err := statement.Query(userId, userId)
+	rows, err := statement.Query(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -194,4 +178,20 @@ func (r *repositoryFriendship) GetFriends(userId string) ([]domain.Friendship, e
 	}
 
 	return friendships, nil
+}
+
+func (r *repositoryFriendship) GetBySimilarName(input string) ([]domain.UserResponse, error) {
+	usersList, err := r.userRepository.GetAll()
+	if err != nil {
+		return []domain.UserResponse{}, err
+	}
+
+	usersListByName := make([]domain.UserResponse, 0)
+	for _, user := range usersList {
+		if strings.HasPrefix(strings.ToLower(user.Username), strings.ToLower(input)) {
+			usersListByName = append(usersListByName, user)
+		}
+	}
+
+	return usersListByName, nil
 }

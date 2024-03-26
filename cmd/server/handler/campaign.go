@@ -54,7 +54,6 @@ func (h *CampaignHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		campaignList, err := h.service.GetAllCampaigns()
 		if err != nil {
-			fmt.Println(err)
 			ctx.JSON(500, err)
 			return
 		}

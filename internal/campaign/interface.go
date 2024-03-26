@@ -17,7 +17,7 @@ type CampaignHandler interface {
 
 type CampaignService interface {
 	CreateCampaign(dto.CreateCampaignDto) (domain.Campaign, error)
-	GetAllCampaigns() ([]dto.ResponseCampaignDto, error)
+	GetAllCampaigns() ([]domain.Campaign, error)
 	GetCampaignByID(id int) (dto.ResponseCampaignDto, error)
 	GetCampaignsByUserId(id string) ([]dto.ResponseCampaignDto, error)
 	UpdateCampaign(Campaign dto.CreateCampaignDto, id int) (dto.ResponseCampaignDto, error)
@@ -26,9 +26,9 @@ type CampaignService interface {
 
 type CampaignRepository interface {
 	Create(Campaign domain.Campaign) (domain.Campaign, error)
-	GetAll()([]domain.Campaign, error)
-	GetById(id int)(domain.Campaign, error)
-	GetCampaignsByUserId (id string) ([]domain.Campaign, error)
+	GetAll() ([]domain.Campaign, error)
+	GetById(id int) (domain.Campaign, error)
+	GetCampaignsByUserId(id string) ([]domain.Campaign, error)
 	Update(Campaign domain.Campaign, id int) (domain.Campaign, error)
-	Delete(id int)error
+	Delete(id int) error
 }

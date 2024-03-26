@@ -3,6 +3,8 @@ package handler
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
@@ -31,14 +33,14 @@ func (h *UserHandler) HandlerCreate() gin.HandlerFunc {
 		var userTemp domain.User
 		if err := ctx.BindJSON(&userTemp); err != nil {
 			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+			ctx.JSON(400, err)
 			return
 		}
 
 		createdUser, err := h.service.Create(userTemp)
 		if err != nil {
 			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+			ctx.JSON(400, err)
 			return
 		}
 
@@ -63,6 +65,15 @@ func (h *UserHandler) HandlerGetAll() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
+
+		// _, err = h.service.TransferDataToSql(userList)
+		// if err != nil {
+		// 	// TEMP ERROR RESPONSE
+		// 	fmt.Println(err)
+		// 	ctx.JSON(500, err)
+		// 	return
+		// }
+
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, userList)
 	}
@@ -105,7 +116,7 @@ func (h *UserHandler) HandlerUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 
-		var userTemp domain.User
+		var userTemp domain.UserUpdate
 		if err := ctx.BindJSON(&userTemp); err != nil {
 			// TEMP ERROR RESPONSE
 			ctx.JSON(500, err)
@@ -136,7 +147,7 @@ func (h *UserHandler) HandlerPatch() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 
-		var userTemp domain.User
+		var userTemp domain.UserUpdate
 		if err := ctx.BindJSON(&userTemp); err != nil {
 			// TEMP ERROR RESPONSE
 			ctx.JSON(500, err)
@@ -209,5 +220,51 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 		// log.Println(cookie)
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, "Setted Cookie")
+	}
+}
+
+func (h *UserHandler) HandlerGetJwtInfo() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+		// log.Println(cookie.Value)
+		jwtClaimsInfo, err := h.service.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+		// TEMP SUCCESS RESPONSE
+		ctx.JSON(200, jwtClaimsInfo)
+	}
+}
+
+func (h *UserHandler) HandlerSubPremium() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		monthsParam := ctx.Param("months")
+
+		months, err := strconv.Atoi(monthsParam)
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+
+		err = h.service.SubscribeToPremium(cookie.Value, time.Now().AddDate(0, months, 0).String())
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+
+		ctx.JSON(200, "Subscribed to Premium")
 	}
 }
