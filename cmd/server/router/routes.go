@@ -611,6 +611,7 @@ func (r *router) buildCharacterDataRoutes() {
 		characterDataGroup.GET("/filter", characterDataHandler.HandlerGetByCampaignIdAndUserId())
 		characterDataGroup.GET("/:id", characterDataHandler.HandlerGetById())
 		characterDataGroup.GET("/event/:eventid", characterDataHandler.HandlerGetByAttackEventId())
+		characterDataGroup.GET("/generic", characterDataHandler.HandlerGetGenerics())
 		characterDataGroup.PUT("/:id", characterDataHandler.HandlerUpdate())
 		characterDataGroup.DELETE("/:id", characterDataHandler.HandlerDelete())
 	}

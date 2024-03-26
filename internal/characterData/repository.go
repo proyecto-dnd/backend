@@ -19,6 +19,35 @@ type CharacterDataMySqlRepository struct {
 	db *sql.DB
 }
 
+func NewCharacterDataRepository(db *sql.DB) RepositoryCharacterData {
+	return &CharacterDataMySqlRepository{db}
+}
+
+// GetGenerics implements RepositoryCharacterData.
+func (r *CharacterDataMySqlRepository) GetGenerics() ([]dto.CharacterCardDto, error) {
+	rows, err := r.db.Query(QueryGetGenerics)
+	if err != nil {
+		return []dto.CharacterCardDto{}, err
+	}
+	defer rows.Close()
+
+	var characterDtoList []dto.CharacterCardDto
+
+	for rows.Next() {
+		var characterDto dto.CharacterCardDto
+		err := ScanCharacterCardDto(rows, &characterDto)
+		if err != nil {
+			return []dto.CharacterCardDto{}, err
+		}
+		characterDtoList = append(characterDtoList, characterDto)
+	}
+	if err := rows.Err(); err != nil {
+		return []dto.CharacterCardDto{}, err
+	}
+
+	return characterDtoList, nil
+}
+
 // Create implements RepositoryCharacterData.
 func (r *CharacterDataMySqlRepository) Create(character domain.CharacterData) (domain.CharacterData, error) {
 	statement, err := r.db.Prepare(QueryCreateCharacter)
@@ -269,10 +298,6 @@ func (r *CharacterDataMySqlRepository) Update(character domain.CharacterData) (d
 	return character, nil
 }
 
-func NewCharacterDataRepository(db *sql.DB) RepositoryCharacterData {
-	return &CharacterDataMySqlRepository{db}
-}
-
 type scannable interface {
 	Scan(dest ...any) error
 }
@@ -308,15 +333,15 @@ func ScanCharacterData(rows scannable, characterData *domain.CharacterData) erro
 		&characterData.Race.Cha,
 		&characterData.Class.ClassId,
 		&characterData.Class.Name,
-		&characterData.Class.Description, 
-		&characterData.Class.ProficiencyBonus, 
-		&characterData.Class.HitDice, 
-		&characterData.Class.ArmorProficiencies, 
+		&characterData.Class.Description,
+		&characterData.Class.ProficiencyBonus,
+		&characterData.Class.HitDice,
+		&characterData.Class.ArmorProficiencies,
 		&characterData.Class.WeaponProficiencies,
 		&characterData.Class.ToolProficiencies,
 		&characterData.Class.SpellcastingAbility,
 		&characterData.Background.BackgroundID,
-		&characterData.Background.Name, 
+		&characterData.Background.Name,
 		&characterData.Background.Languages,
 		&characterData.Background.PersonalityTraits,
 		&characterData.Background.Ideals,
