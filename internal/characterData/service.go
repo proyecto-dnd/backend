@@ -2,7 +2,6 @@ package characterdata
 
 import (
 	"fmt"
-	"sync"
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -12,6 +11,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/skill"
 	"github.com/proyecto-dnd/backend/internal/spell"
 	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
+	"sync"
 )
 
 // To do: Optimize query quantity
@@ -31,6 +31,11 @@ func NewServiceCharacterData(characterRepo RepositoryCharacterData, itemService 
 	return &service{characterRepo: characterRepo, itemService: itemService, weaponService: weaponService, armorService: armorService, skillService: skillService, featureService: featureService, spellService: spellService, proficiencyService: proficiencyService}
 }
 
+// GetGenerics implements ServiceCharacterData.
+func (s *service) GetGenerics() ([]dto.CharacterCardDto, error) {
+	return s.characterRepo.GetGenerics()
+}
+
 // Create implements ServiceCharacterData.
 func (s *service) Create(character domain.CharacterData) (dto.FullCharacterData, error) {
 	newCharacter, err := s.characterRepo.Create(character)
@@ -47,7 +52,7 @@ func (s *service) Create(character domain.CharacterData) (dto.FullCharacterData,
 // Delete implements ServiceCharacterData.
 func (s *service) Delete(id int) error {
 	return s.characterRepo.Delete(id)
-	
+
 }
 
 // GetAll implements ServiceCharacterData.
@@ -254,10 +259,10 @@ func (s *service) fetchAndConvertToFullCharacterData(character *domain.Character
 		close(errChan)
 	}()
 
-	for err := range errChan{
+	for err := range errChan {
 		if err != nil {
 			fmt.Println(err)
-		return dto.FullCharacterData{}, err
+			return dto.FullCharacterData{}, err
 		}
 	}
 
