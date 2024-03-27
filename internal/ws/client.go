@@ -88,20 +88,7 @@ func (c *Client) readPump() {
 
 		switch event.Type {
 		case "trade":
-			// Commented in the case that it happens to be useful, borrable
-			// var tradeEvent domain.TradeEvent
-			// err = json.Unmarshal(event.EventData, &tradeEvent)
-			// if err != nil {
-			// 	log.Printf("error: %v", err)
-			// 	continue
-			// } else {
-			// 	tradeEvent, err = c.hub.tradeEventService.Create(tradeEvent)
-			// 	if err != nil {
-			// 		log.Printf("error: %v", err)
-			// 		continue
-			// 	}
-			// 	event.EventData, _ = json.Marshal(tradeEvent)
-			// }
+			
 		case "attack":
 			var attackEventDto dto.CreateAttackEventDto
 			err = json.Unmarshal(event.EventData, &attackEventDto)
