@@ -28,23 +28,7 @@ func (s *service) Create(user domain.User) (domain.UserResponse, error) {
 }
 
 func (s *service) GetAll() ([]domain.UserResponse, error) {
-	// users, err := s.repositoryFirebase.GetAll()
-	// if err != nil {
-	// 	return []domain.UserResponse{}, err
-	// }
-
-	// var usersResponse []domain.UserResponse
-
-	// for _, u := range users {
-	// 	usersResponse = append(usersResponse, u)
-	// }
-
-	// return usersResponse, nil
-	users, err := s.repositoryFirebase.GetAll()
-	if err != nil {
-		return []domain.UserResponse{}, err
-	}
-	return users, nil
+	return s.repositoryFirebase.GetAll()
 }
 
 func (s *service) GetById(id string) (domain.UserResponse, error) {

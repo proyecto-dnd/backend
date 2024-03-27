@@ -1,7 +1,7 @@
 package domain
 
 type Class struct {
-	ClassId             int `json:"class_id"`
+	ClassId             int    `json:"class_id"`
 	Name                string `json:"name"`
 	Description         string `json:"description"`
 	ProficiencyBonus    int    `json:"proficiency_bonus"`
@@ -9,5 +9,5 @@ type Class struct {
 	ArmorProficiencies  string `json:"armor_proficiencies"`
 	WeaponProficiencies string `json:"weapon_proficiencies"`
 	ToolProficiencies   string `json:"tool_proficiencies"`
-	SpellcastingAbility []byte    `json:"spellcasting_ability"`
+	SpellcastingAbility string `json:"spellcasting_ability"`
 }

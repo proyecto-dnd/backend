@@ -1,7 +1,7 @@
 package user
 
 var (
-	QueryInsertUser = `INSERT INTO user (uid, name, email, password, display_name) VALUES(?,?,?,?,?)`
+	QueryInsertUser = `INSERT INTO user (uid, name, email, password, display_name,image) VALUES(?,?,?,?,?,?)`
 	//user.Id, &user.Username, &user.Email, &user.Password, &user.DisplayName
 	QueryGetAllUsers = `SELECT uid, name, email, display_name, image FROM user`
 	QueryGetUserById = `SELECT uid, name, email, display_name, image FROM user WHERE uid = ?`

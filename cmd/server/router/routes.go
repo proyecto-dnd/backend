@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+
 	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
@@ -451,7 +452,7 @@ func (r *router) buildUserCampaignRoutes() {
 func (r *router) buildFriendshipRoutes() {
 	friendshipGroup := r.routerGroup.Group("/friendship")
 	{
-		friendshipGroup.POST("", friendshipHandler.HandlerCreate())
+		friendshipGroup.POST("/:friend", friendshipHandler.HandlerCreate())
 		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends())
 		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerGetBySimilarName())
 		friendshipGroup.GET("/friends/:name", friendshipHandler.HandlerSearchFollowers())

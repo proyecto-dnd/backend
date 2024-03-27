@@ -49,9 +49,8 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.UserResponse, erro
 		Email(user.Email).
 		Password(user.Password).
 		DisplayName(user.Username).
-		Disabled(false)
-
-	fmt.Println(params)
+		Disabled(false).
+		PhotoURL("https://proyecto-dnd.vercel.app/user.png")
 
 	//firebase create
 	newUser, err := r.authClient.CreateUser(ctx, params)
@@ -68,7 +67,7 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.UserResponse, erro
 	}
 
 	//sql create
-	_, err = statement.Exec(newUser.UID, user.Username, user.Email, user.Password, user.DisplayName)
+	_, err = statement.Exec(newUser.UID, user.Username, user.Email, user.Password, user.DisplayName, "https://proyecto-dnd.vercel.app/user.png")
 	if err != nil {
 		fmt.Println("Error setting custom user claims.")
 		return domain.UserResponse{}, err
@@ -79,14 +78,17 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.UserResponse, erro
 	userTemp.Email = newUser.Email
 	userTemp.Id = newUser.UID
 	userTemp.DisplayName = user.DisplayName
+	// newUser.PasswordHash = user.Password
 
 	return userTemp, nil
 }
 func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 
-	// var user domain.User
+	// var user domain.UserResponse
 	var users []domain.UserResponse
 	// pager := iterator.NewPager(r.authClient.Users(ctx, ""), 100, "")
+
+	
 	// for {
 	// 	var authUsers []*auth.ExportedUserRecord
 	// 	nextPageToken, err := pager.NextPage(&authUsers)
@@ -96,7 +98,7 @@ func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 	// 	for _, u := range authUsers {
 	// 		user.Username = u.DisplayName
 	// 		user.Email = u.Email
-	// 		user.Password = u.PasswordHash
+	// 		// user.Password = u.PasswordHash
 	// 		user.Id = u.UID
 	// 		users = append(users, user)
 	// 	}
@@ -104,6 +106,7 @@ func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 	// 		break
 	// 	}
 	// }
+
 	rows, err := r.db.Query(QueryGetAllUsers)
 	if err != nil {
 		return []domain.UserResponse{}, err
@@ -114,6 +117,7 @@ func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 		if err := rows.Scan(&user.Id, &user.Username, &user.Email, &user.DisplayName, &user.Image); err != nil {
 			return []domain.UserResponse{}, err
 		}
+
 		users = append(users, user)
 	}
 
@@ -150,14 +154,12 @@ func (r *repositoryFirebase) GetById(id string) (domain.UserResponse, error) {
 		//TODO RETURN ERROR
 		log.Printf("error getting user %s: %v\n", id, err)
 	}
-	
+
 	row, err := r.db.Query(QueryGetUserById, id)
 	if err != nil {
 		return domain.UserResponse{}, err
 	}
 	defer row.Close()
-
-
 
 	var user domain.UserResponse
 	for row.Next() {
@@ -204,22 +206,36 @@ func (r *repositoryFirebase) Update(user domain.UserUpdate, id string) (domain.U
 	return user, nil
 }
 func (r *repositoryFirebase) Delete(id string) error {
-
-	err := r.authClient.DeleteUser(ctx, id)
-	if err != nil {
-		log.Printf("error deleting user: %v\n", err)
-	}
-	result, err := r.db.Exec(QueryDeleteUser, id)
+	userList, err := r.GetAll()
 	if err != nil {
 		return err
 	}
+	//extract uid from userList
 
-	_, err = result.RowsAffected()
-	if err != nil {
-		return err
+	var idList []string
+	for _, u := range userList {
+		id = u.Id
+		idList = append(idList, id)
 	}
+	r.authClient.DeleteUsers(ctx, idList)
 
-	log.Printf("Successfully deleted user: %s\n", id)
+	fmt.Println("UNLIMITED POWER!!!!!")
+
+	// err := r.authClient.DeleteUser(ctx, id)
+	// if err != nil {
+	// 	log.Printf("error deleting user: %v\n", err)
+	// }
+	// result, err := r.db.Exec(QueryDeleteUser, id)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// _, err = result.RowsAffected()
+	// if err != nil {
+	// 	return err
+	// }
+
+	// log.Printf("Successfully deleted user: %s\n", id)
 
 	return nil
 }

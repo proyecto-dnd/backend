@@ -40,14 +40,14 @@ func (r *repositoryFriendship) SearchFollowers(mutuals domain.Mutuals) ([]domain
 	user1FriendsChan := make(chan []domain.Friendship)
 	tempFriendListChan := make(chan domain.UserResponse)
 
-	go func() {
-		usersList, err := r.userRepository.GetAll()
-		if err != nil {
-			usersListChan <- []domain.UserResponse{}
-			return
-		}
-		usersListChan <- usersList
-	}()
+	// go func() {
+	// 	usersList, err := r.userRepository.GetAll()
+	// 	if err != nil {
+	// 		usersListChan <- []domain.UserResponse{}
+	// 		return
+	// 	}
+	// 	usersListChan <- usersList
+	// }()
 
 	go func() {
 		user1Friends, err := r.GetAllFriends(mutuals.User1Id)

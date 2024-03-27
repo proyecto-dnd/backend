@@ -62,10 +62,11 @@ func (h *UserHandler) HandlerGetAll() gin.HandlerFunc {
 		if err != nil {
 			// TEMP ERROR RESPONSE
 			fmt.Println(err)
-			ctx.JSON(500, err)
+			ctx.JSON(400, err)
 			return
 		}
 
+		//transfer users data to sql in bulk
 		// _, err = h.service.TransferDataToSql(userList)
 		// if err != nil {
 		// 	// TEMP ERROR RESPONSE
@@ -175,16 +176,16 @@ func (h *UserHandler) HandlerPatch() gin.HandlerFunc {
 func (h *UserHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
-
+		fmt.Println(id)
 		err := h.service.Delete(id)
 		if err != nil {
 			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+			ctx.JSON(400, err)
 			return
 		}
 
 		// TEMP SUCCESS RESPONSE
-		ctx.JSON(200, "Deleted User with id "+id)
+		ctx.JSON(200, "SE BORRO TODO.")
 	}
 }
 
@@ -208,17 +209,16 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
-		// log.Println(tempUserInfo)
+
 		cookie, err := h.service.Login(tempUserInfo)
 		if err != nil {
-			// TEMP ERROR RESPONSE
+
 			log.Println("LOGIN SERVICE: " + err.Error())
 			ctx.JSON(500, err)
 			return
 		}
 		ctx.SetCookie("Session", cookie, 3600, "/", "localhost", false, false)
-		// log.Println(cookie)
-		// TEMP SUCCESS RESPONSE
+
 		ctx.JSON(200, "Setted Cookie")
 	}
 }
