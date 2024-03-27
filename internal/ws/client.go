@@ -8,7 +8,6 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/proyecto-dnd/backend/internal/domain"
-	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
 const (
@@ -32,7 +31,7 @@ type Client struct {
 }
 
 type Message struct {
-	Content   EventData      `json:"content"`
+	Content   EventData `json:"content"`
 	Sent      time.Time `json:"sent"`
 	SessionID int       `json:"session_id"`
 }
@@ -103,7 +102,7 @@ func (c *Client) readPump() {
 			// 	event.EventData, _ = json.Marshal(tradeEvent)
 			// }
 		case "attack":
-			var attackEventDto dto.CreateAttackEventDto
+			var attackEventDto domain.AttackEvent
 			err = json.Unmarshal(event.EventData, &attackEventDto)
 			if err != nil {
 				log.Printf("error: %v", err)

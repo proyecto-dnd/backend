@@ -1,20 +1,22 @@
 package dto
 
 import (
-	"github.com/proyecto-dnd/backend/internal/domain"
 	"time"
+
+	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
 type CreateAttackEventDto struct {
-	Type               string  `json:"type"`
-	Environment        string  `json:"environment"`
-	Session_id         int     `json:"session_id"`
-	EventProtagonistId int     `json:"event_protagonist_id"`
-	EventResolution    string  `json:"event_resolution"`
-	Weapon             *int    `json:"weapon"`
-	Spell              *int    `json:"spell"`
-	DmgType            *string `json:"dmg_type"`
-	Description        *string `json:"description"`
+	Type               string     `json:"type"`
+	Environment        string     `json:"environment"`
+	Session_id         int        `json:"session_id"`
+	EventProtagonistId int        `json:"event_protagonist_id"`
+	EventResolution    string     `json:"event_resolution"`
+	Weapon             *int       `json:"weapon"`
+	Spell              *int       `json:"spell"`
+	DmgType            *string    `json:"dmg_type"`
+	Description        *string    `json:"description"`
+	Timestamp          *time.Time `json:"timestamp"`
 }
 
 type RepositoryResponseAttackEvent struct {

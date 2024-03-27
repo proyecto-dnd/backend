@@ -19,13 +19,13 @@ type AttackEventHandler interface {
 }
 
 type AttackEventService interface {
-	CreateEvent(dto.CreateAttackEventDto) (domain.AttackEvent, error)
+	CreateEvent(domain.AttackEvent) (domain.AttackEvent, error)
 	GetAllEvents() ([]domain.AttackEvent, error)
 	GetEventById(id int) (dto.ResponseEventDto, error)
 	GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, error)
 	GetEventsByProtagonistId(protagonistId int) ([]dto.ResponseEventDto, error)
-	GetEventsByAffectedId (affectedId int) ([]dto.ResponseEventDto, error)
-	GetEventsByProtagonistIdAndAffectedId (protagonistId int, affectedId int) ([]dto.ResponseEventDto, error)
+	GetEventsByAffectedId(affectedId int) ([]dto.ResponseEventDto, error)
+	GetEventsByProtagonistIdAndAffectedId(protagonistId int, affectedId int) ([]dto.ResponseEventDto, error)
 	UpdateEvent(event dto.CreateAttackEventDto, id int) (domain.AttackEvent, error)
 	DeleteEvent(id int) error
 }

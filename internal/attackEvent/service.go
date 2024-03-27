@@ -17,24 +17,23 @@ func NewAttackEventService(repo AttackEventRepository, characterService characte
 	return &service{repo: repo, charactersService: characterService}
 }
 
-func (s *service) CreateEvent(eventDto dto.CreateAttackEventDto) (domain.AttackEvent, error) {
+func (s *service) CreateEvent(attackEvent domain.AttackEvent) (domain.AttackEvent, error) {
 
-	timestamp := time.Now()
 
-	eventDomain := domain.AttackEvent{
-		Type:               eventDto.Type,
-		Weapon:             eventDto.Weapon,
-		Spell:              eventDto.Spell,
-		Environment:        eventDto.Environment,
-		Session_id:         eventDto.Session_id,
-		EventProtagonistId: eventDto.EventProtagonistId,
-		EventResolution:    eventDto.EventResolution,
-		DmgType:            eventDto.DmgType,
-		Description:        eventDto.Description,
-		TimeStamp:          &timestamp,
-	}
+	// eventDomain := domain.AttackEvent{
+	// 	Type:               eventDto.Type,
+	// 	Weapon:             eventDto.Weapon,
+	// 	Spell:              eventDto.Spell,
+	// 	Environment:        eventDto.Environment,
+	// 	Session_id:         eventDto.Session_id,
+	// 	EventProtagonistId: eventDto.EventProtagonistId,
+	// 	EventResolution:    eventDto.EventResolution,
+	// 	DmgType:            eventDto.DmgType,
+	// 	Description:        eventDto.Description,
+	// 	TimeStamp:          eventDto.TimeStamp,
+	// }
 
-	createdEvent, err := s.repo.Create(eventDomain)
+	createdEvent, err := s.repo.Create(attackEvent)
 	if err != nil {
 		return domain.AttackEvent{}, err
 	}

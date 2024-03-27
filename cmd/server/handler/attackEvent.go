@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/attackEvent"
+	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
@@ -27,7 +28,7 @@ func NewAttackEventHandler(service *attackEvent.AttackEventService) *AttackEvent
 // @Router /event [post]
 func (h *AttackEventHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var tempEvent dto.CreateAttackEventDto
+		var tempEvent domain.AttackEvent
 		if err := ctx.BindJSON(&tempEvent); err != nil {
 			ctx.JSON(500, err)
 			return
