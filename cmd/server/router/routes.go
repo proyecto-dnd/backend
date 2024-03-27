@@ -260,10 +260,6 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	sessionService = session.NewSessionService(sessionRepository)
 	sessionHandler = handler.NewSessionHandler(&sessionService)
 
-	campaignRepository = campaign.NewCampaignRepository(db)
-	campaignService = campaign.NewCampaignService(campaignRepository, sessionService)
-	campaignHandler = handler.NewCampaignHandler(&campaignService)
-
 	backgroundXProficiencyRepository = backgroundXproficiency.NewBackgroundXProficiencyRepository(db)
 	backgroundXProficiencyService = backgroundXproficiency.NewBackgroundXProficiencyService(backgroundXProficiencyRepository)
 	backgroundXProficiencyHandler = handler.NewBackgroundXProficiencyHandler(backgroundXProficiencyService)
@@ -279,6 +275,10 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	attackEventRepository = attackEvent.NewAttackEventRepository(db)
 	attackEventService = attackEvent.NewAttackEventService(attackEventRepository, characterDataService)
 	attackEventHandler = handler.NewAttackEventHandler(&attackEventService)
+
+	campaignRepository = campaign.NewCampaignRepository(db)
+	campaignService = campaign.NewCampaignService(campaignRepository, sessionService, userCampaignService, characterDataService)
+	campaignHandler = handler.NewCampaignHandler(&campaignService, &userFirebaseService)
 
 	characterTradeRepository = charactertrade.NewCharacterTradeMySqlRepository(db)
 	characterTradeService = charactertrade.NewCharacterTradeService(characterTradeRepository)

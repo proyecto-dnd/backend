@@ -17,7 +17,7 @@ func (s *service) CreateUserCampaign(userCampaignDto dto.CreateUserCampaignDto) 
 	userCampaignDomain := domain.UserCampaign{
 		CampaignId: userCampaignDto.CampaignId,
 		UserId:     userCampaignDto.UserId,
-		IsDm:       userCampaignDto.IsDm,
+		CharacterId:       userCampaignDto.CharacterId,
 		IsOwner:    userCampaignDto.IsOwner,
 	}
 
