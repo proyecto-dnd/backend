@@ -2,7 +2,6 @@ package router
 
 import (
 	"database/sql"
-
 	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/cmd/server/handler"
@@ -18,6 +17,7 @@ import (
 	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
 	"github.com/proyecto-dnd/backend/internal/dice_event"
 	tradeevent "github.com/proyecto-dnd/backend/internal/tradeEvent"
+	"github.com/proyecto-dnd/backend/internal/ws"
 
 	// "github.com/proyecto-dnd/backend/internal/ws"
 
@@ -175,6 +175,7 @@ type router struct {
 	routerGroup *gin.RouterGroup
 	db          *sql.DB
 	firebaseApp *firebase.App
+	hub         *ws.Hub
 }
 
 func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router {
@@ -292,10 +293,13 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	diceEventService = dice_event.NewDiceEventService(diceEventRepository)
 	diceEventHandler = handler.NewDiceEventHandler(diceEventService)
 
+	hub := ws.NewHub(tradeEventService, attackEventService, diceEventService)
+	go hub.Run()
 	return &router{
 		engine:      engine,
 		db:          db,
 		firebaseApp: firebaseApp,
+		hub:         hub,
 	}
 }
 
@@ -333,6 +337,7 @@ func (r *router) MapRoutes() {
 	r.buildDiceEventRoutes()
 	r.buildSkillXCharacterDataRoutes()
 
+	r.buildWebsocketRoutes()
 	// TODO Add other builders here	and write their functions
 }
 
@@ -683,5 +688,12 @@ func (r *router) buildTradeEventRoutes() {
 		tradeEventGroup.GET("/receiver/:id", tradeEventHandler.HandlerGetByReceiver())
 		tradeEventGroup.GET("/character/:id", tradeEventHandler.HandlerGetBySenderOrReceiver())
 		tradeEventGroup.DELETE("/:id", tradeEventHandler.HandlerDelete())
+	}
+}
+
+func (r *router) buildWebsocketRoutes() {
+	wsGroup := r.routerGroup.Group("/ws")
+	{
+		wsGroup.GET("/:session_id", r.hub.ServeWs)
 	}
 }

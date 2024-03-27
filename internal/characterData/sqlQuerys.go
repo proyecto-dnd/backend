@@ -3,7 +3,7 @@ package characterdata
 var (
 	QueryCreateCharacter = "INSERT INTO character_data (user_id, campaign_id, race_id, class_id, background_id, name, story, alignment, age, hair, eyes, skin, height, weight, img_url, str, dex, `int`, con, wiz, cha, hitpoints, hit_dice, speed, armor_class, level, exp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 
-	QueryGetAll = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id,
+	QueryGetAll = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id, character_data.img_url,
 	character_data.name,
 	race.name,
 	class.name,
@@ -18,7 +18,7 @@ var (
 	character_data.name, character_data.story, character_data.alignment, character_data.age, character_data.hair, character_data.eyes, character_data.skin, character_data.height, character_data.weight, character_data.img_url, character_data.str, character_data.dex, character_data.int, character_data.con, character_data.wiz, character_data.cha, character_data.hitpoints, character_data.hit_dice, character_data.speed, character_data.armor_class, character_data.level, character_data.exp
 	FROM character_data left join race on character_data.race_id = race.race_id left join class on character_data.class_id = class.class_id left join background on character_data.background_id = background.background_id WHERE character_data.character_id = ?;`
 
-	QueryGetByUserId = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id,
+	QueryGetByUserId = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id, character_data.img_url,
 	race.name,
 	class.name,
 	character_data.name,
@@ -26,7 +26,7 @@ var (
 	character_data.level
 	FROM character_data left join race on character_data.race_id = race.race_id left join class on character_data.class_id = class.class_id WHERE character_data.user_id = ?;`
 
-	QueryGetByUserIdAndCampaignId = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id,
+	QueryGetByUserIdAndCampaignId = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id, character_data.img_url,
 	race.name,
 	class.name,
 	character_data.name,
@@ -34,7 +34,7 @@ var (
 	character_data.level
 	FROM character_data left join race on character_data.race_id = race.race_id left join class on character_data.class_id = class.class_id WHERE character_data.user_id = ? and character_data.campaign_id = ?;`
 
-	QueryGetGenerics = 	`SELECT character_data.character_id, character_data.user_id, character_data.campaign_id,
+	QueryGetGenerics = 	`SELECT character_data.character_id, character_data.user_id, character_data.campaign_id, character_data.img_url,
 	race.name,
 	class.name,
 	character_data.name,
@@ -43,7 +43,7 @@ var (
 	FROM character_data left join race on character_data.race_id = race.race_id left join class on character_data.class_id = class.class_id 
 	WHERE character_data.user_id IS NULL and character_data.campaign_id IS NULL;`
 
-	QueryGetByCampaignId = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id,
+	QueryGetByCampaignId = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id, character_data.img_url,
 	race.name,
 	class.name,
 	character_data.name,
@@ -52,7 +52,7 @@ var (
 	FROM character_data left join race on character_data.race_id = race.race_id left join class on character_data.class_id = class.class_id WHERE character_data.campaign_id = ?;`
 
 	QueryGetByAttackEventId = `
-	SELECT character_data.character_id, character_data.user_id, character_data.campaign_id,
+	SELECT character_data.character_id, character_data.user_id, character_data.campaign_id, character_data.img_url,
 	race.name,
 	class.name,
 	character_data.name,

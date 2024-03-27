@@ -3,55 +3,73 @@ package ws
 import (
 	"encoding/json"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
-var (
-	pongWait = 10 * time.Second
-	pingInterval = (pongWait * 9) / 10
+const (
+	writeWait      = 10 * time.Second
+	pongWait       = 10 * time.Second
+	pingPeriod     = (pongWait * 9) / 10
+	maxMessageSize = 2048
 )
 
-type ClientList map[*Client]bool
+var upgrader = websocket.Upgrader{
+	CheckOrigin:     func(r *http.Request) bool { return true },
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
 type Client struct {
-	conn     *websocket.Conn
-	manager  *Manager
-	egress   chan Event
-	chatroom int
+	hub       *Hub
+	conn      *websocket.Conn
+	send      chan *Message
+	sessionId int
 }
 
-func NewClient(conn *websocket.Conn, manager *Manager) *Client {
+type Message struct {
+	Content   EventData      `json:"content"`
+	Sent      time.Time `json:"sent"`
+	SessionID int       `json:"session_id"`
+}
+
+func NewClient(hub *Hub, conn *websocket.Conn, sessionId int) *Client {
 	return &Client{
-		conn:     conn,
-		manager:  manager,
-		egress:   make(chan Event),
+		hub:       hub,
+		conn:      conn,
+		send:      make(chan *Message),
+		sessionId: sessionId,
 	}
 }
 
-func (c *Client) readMessage() {
-	defer func ()  {
-		c.manager.removeClient(c)
-	}()
+// func (c *Client) pongHandler(pongMsg string) error {
+// 	return c.conn.SetReadDeadline(time.Now().Add(pongWait))
+// }
+
+type EventData struct {
+	Type      string          `json:"type"`
+	EventData json.RawMessage `json:"eventData"`
 }
 
-func (c *Client) readMessages() {
+func (c *Client) readPump() {
 	defer func() {
-		c.manager.removeClient(c)
+		c.hub.unregister <- c
+		c.conn.Close()
 	}()
 
-	c.conn.SetReadLimit(512)
-
-	if err := c.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
-		log.Println(err)
-		return
-	}
-		
-	c.conn.SetPongHandler(c.pongHandler)
+	c.conn.SetReadLimit(maxMessageSize)
+	// if err := c.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
+	// c.conn.SetPongHandler(c.pongHandler)
 
 	for {
-		_, payload, err := c.conn.ReadMessage()
+		_, message, err := c.conn.ReadMessage()
 
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -60,56 +78,101 @@ func (c *Client) readMessages() {
 			break
 		}
 
-		var request Event
-		if err := json.Unmarshal(payload, &request); err != nil {
-			log.Println(err)
-			break
+		var event EventData
+
+		err = json.Unmarshal(message, &event)
+		if err != nil || event.Type == "" || event.EventData == nil {
+			log.Printf("error: %v", err)
+			continue
 		}
-		
-		if err := c.manager.routeEvent(request, c); err != nil {
-			log.Println(err)
+
+		switch event.Type {
+		case "trade":
+			// Commented in the case that it happens to be useful, borrable
+			// var tradeEvent domain.TradeEvent
+			// err = json.Unmarshal(event.EventData, &tradeEvent)
+			// if err != nil {
+			// 	log.Printf("error: %v", err)
+			// 	continue
+			// } else {
+			// 	tradeEvent, err = c.hub.tradeEventService.Create(tradeEvent)
+			// 	if err != nil {
+			// 		log.Printf("error: %v", err)
+			// 		continue
+			// 	}
+			// 	event.EventData, _ = json.Marshal(tradeEvent)
+			// }
+		case "attack":
+			var attackEventDto dto.CreateAttackEventDto
+			err = json.Unmarshal(event.EventData, &attackEventDto)
+			if err != nil {
+				log.Printf("error: %v", err)
+				continue
+			} else {
+				attackEvent, err := c.hub.attackEventService.CreateEvent(attackEventDto)
+				if err != nil {
+					log.Printf("error: %v", err)
+					continue
+				}
+				event.EventData, _ = json.Marshal(attackEvent)
+			}
+		case "dice":
+			var diceEvent domain.DiceEvent
+			err = json.Unmarshal(event.EventData, &diceEvent)
+			if err != nil {
+				log.Printf("error: %v", err)
+				continue
+			} else {
+				diceEvent, err = c.hub.diceEventService.Create(diceEvent)
+				if err != nil {
+					log.Printf("error: %v", err)
+					continue
+				}
+				event.EventData, _ = json.Marshal(diceEvent)
+			}
 		}
+
+		msg := &Message{
+			Content:   event,
+			Sent:      time.Now(),
+			SessionID: c.sessionId,
+		}
+
+		log.Println(msg)
+		log.Println(event)
+
+		c.hub.broadcast <- msg
 	}
 }
 
-func (c *Client) pongHandler(pongMsg string) error {
-	log.Println("pong")
-	return c.conn.SetReadDeadline(time.Now().Add(pongWait))
-}
-
-func (c *Client) writeMessages() {
-	ticker := time.NewTicker(pingInterval)
-	defer func ()  {
-		ticker.Stop()
-		c.manager.removeClient(c)
+func (c *Client) writePump() {
+	defer func() {
+		c.conn.Close()
 	}()
 
 	for {
 		select {
-		case message, ok := <- c.egress:
+		case message, ok := <-c.send:
+			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+
 			if !ok {
-				if err := c.conn.WriteMessage(websocket.CloseMessage, nil); err != nil {
-					log.Println("connection closed: ", err)
-				}
-
+				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 
-			data, err := json.Marshal(message)
+			w, err := c.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
-				log.Println(err)
 				return
 			}
 
-			if err := c.conn.WriteMessage(websocket.TextMessage, data); err != nil {
-				log.Println(err)
+			jsonMessage, err := json.Marshal(message)
+			if err != nil {
+				return
 			}
 
-			log.Println("message sent")
-		case <- ticker.C:
-			log.Println("ping")
-			if err := c.conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
-				log.Println("write message", err)
+			w.Write([]byte(jsonMessage))
+
+			if err := w.Close(); err != nil {
 				return
 			}
 		}

@@ -53,13 +53,15 @@ func main() {
 	firebaseApp := firebaseConnection.InitializeFirebaseApp()
 	go s3.InitializeS3()
 
+	
+	
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.Use(cors.Default())
-
+	
 	router := router.NewRouter(engine, db, firebaseApp)
 	router.MapRoutes()
-
+	
 	//PARA DOCKERIZAR CAMBIAR localhost por 0.0.0.0
 	if err := engine.Run("0.0.0.0:8080"); err != nil {
 		panic(err)
