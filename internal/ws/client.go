@@ -7,39 +7,41 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
 const (
-	writeWait = 10 * time.Second
-	pongWait = 10 * time.Second
-	pingPeriod = (pongWait * 9) / 10
-	maxMessageSize = 512
+	writeWait      = 10 * time.Second
+	pongWait       = 10 * time.Second
+	pingPeriod     = (pongWait * 9) / 10
+	maxMessageSize = 2048
 )
 
 var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool { return true },
-	ReadBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true },
+	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
 
 type Client struct {
-	hub *Hub
-	conn *websocket.Conn
-	send chan *Message
+	hub       *Hub
+	conn      *websocket.Conn
+	send      chan *Message
 	sessionId int
 }
 
 type Message struct {
-	Content string `json:"content"`
-	Sent time.Time `json:"sent"`
-	SessionID int `json:"session_id"`
+	Content   EventData      `json:"content"`
+	Sent      time.Time `json:"sent"`
+	SessionID int       `json:"session_id"`
 }
 
 func NewClient(hub *Hub, conn *websocket.Conn, sessionId int) *Client {
 	return &Client{
-		hub: hub,
-		conn: conn,
-		send: make(chan *Message),
+		hub:       hub,
+		conn:      conn,
+		send:      make(chan *Message),
 		sessionId: sessionId,
 	}
 }
@@ -48,7 +50,12 @@ func NewClient(hub *Hub, conn *websocket.Conn, sessionId int) *Client {
 // 	return c.conn.SetReadDeadline(time.Now().Add(pongWait))
 // }
 
-func (c *Client) readPump()  {
+type EventData struct {
+	Type      string          `json:"type"`
+	EventData json.RawMessage `json:"eventData"`
+}
+
+func (c *Client) readPump() {
 	defer func() {
 		c.hub.unregister <- c
 		c.conn.Close()
@@ -69,15 +76,70 @@ func (c *Client) readPump()  {
 				log.Printf("error: %v", err)
 			}
 			break
-		}		
-		
+		}
+
+		var event EventData
+
+		err = json.Unmarshal(message, &event)
+		if err != nil || event.Type == "" || event.EventData == nil {
+			log.Printf("error: %v", err)
+			continue
+		}
+
+		switch event.Type {
+		case "trade":
+			// Commented in the case that it happens to be useful, borrable
+			// var tradeEvent domain.TradeEvent
+			// err = json.Unmarshal(event.EventData, &tradeEvent)
+			// if err != nil {
+			// 	log.Printf("error: %v", err)
+			// 	continue
+			// } else {
+			// 	tradeEvent, err = c.hub.tradeEventService.Create(tradeEvent)
+			// 	if err != nil {
+			// 		log.Printf("error: %v", err)
+			// 		continue
+			// 	}
+			// 	event.EventData, _ = json.Marshal(tradeEvent)
+			// }
+		case "attack":
+			var attackEventDto dto.CreateAttackEventDto
+			err = json.Unmarshal(event.EventData, &attackEventDto)
+			if err != nil {
+				log.Printf("error: %v", err)
+				continue
+			} else {
+				attackEvent, err := c.hub.attackEventService.CreateEvent(attackEventDto)
+				if err != nil {
+					log.Printf("error: %v", err)
+					continue
+				}
+				event.EventData, _ = json.Marshal(attackEvent)
+			}
+		case "dice":
+			var diceEvent domain.DiceEvent
+			err = json.Unmarshal(event.EventData, &diceEvent)
+			if err != nil {
+				log.Printf("error: %v", err)
+				continue
+			} else {
+				diceEvent, err = c.hub.diceEventService.Create(diceEvent)
+				if err != nil {
+					log.Printf("error: %v", err)
+					continue
+				}
+				event.EventData, _ = json.Marshal(diceEvent)
+			}
+		}
+
 		msg := &Message{
-			Content: string(message),
-			Sent: time.Now(),
+			Content:   event,
+			Sent:      time.Now(),
 			SessionID: c.sessionId,
 		}
 
 		log.Println(msg)
+		log.Println(event)
 
 		c.hub.broadcast <- msg
 	}
@@ -90,7 +152,7 @@ func (c *Client) writePump() {
 
 	for {
 		select {
-		case message, ok := <- c.send:
+		case message, ok := <-c.send:
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 
 			if !ok {
@@ -116,4 +178,3 @@ func (c *Client) writePump() {
 		}
 	}
 }
-

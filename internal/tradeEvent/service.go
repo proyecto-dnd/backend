@@ -31,23 +31,21 @@ func (s *serviceTradeEvent) Create(tradeEvent domain.TradeEvent) (domain.TradeEv
 
 	for i, tradingItems := range tradeEvent.TradingItems {
 		tradeEvent.TradingItems[i].TradeEvent_Id = newTradeEvent.TradeEvent_Id
-		tradeEvent.TradingItems[i].ItemReciever = tradeEvent.Receiver
-		tradeEvent.TradingItems[i].ItemOwner = tradeEvent.Sender
-		if tradingItems.Weapon != nil {
-			err = s.weaponXCharacterService.UpdateOwnership(domain.WeaponXCharacterData{Character_Weapon_Id: *tradingItems.Weapon, CharacterData_Id: tradeEvent.Receiver, Weapon: domain.Weapon{}, Equipped: false})
+		if tradingItems.WeaponXCharacter != nil {
+			err = s.weaponXCharacterService.UpdateOwnership(domain.WeaponXCharacterData{Character_Weapon_Id: *tradingItems.WeaponXCharacter, CharacterData_Id: tradeEvent.Receiver, Weapon: domain.Weapon{}, Equipped: false})
 			if err != nil {
 				return domain.TradeEvent{}, err
 			}
 		}
-		if tradingItems.Armor != nil {
-			err = s.armorXCharacterService.UpdateOwnership(domain.ArmorXCharacterData{ArmorXCharacterData_Id: *tradingItems.Armor, Armor: domain.Armor{}, CharacterData_Id: tradeEvent.Receiver, Equipped: false})
+		if tradingItems.ArmorXCharacter != nil {
+			err = s.armorXCharacterService.UpdateOwnership(domain.ArmorXCharacterData{ArmorXCharacterData_Id: *tradingItems.ArmorXCharacter, Armor: domain.Armor{}, CharacterData_Id: tradeEvent.Receiver, Equipped: false})
 			if err != nil {
 				return domain.TradeEvent{}, err
 			}
 		}
 
-		if tradingItems.Item != nil {
-			itemXCharacterToUpdate, err := s.itemXCharacterService.GetById(*tradingItems.Item)
+		if tradingItems.ItemXCharacter != nil {
+			itemXCharacterToUpdate, err := s.itemXCharacterService.GetById(*tradingItems.ItemXCharacter)
 			if err != nil {
 				return domain.TradeEvent{}, err
 			}
@@ -55,16 +53,16 @@ func (s *serviceTradeEvent) Create(tradeEvent domain.TradeEvent) (domain.TradeEv
 				return domain.TradeEvent{}, ErrCannotBeNegative
 			}
 			if itemXCharacterToUpdate.Quantity == *tradingItems.Quantity {
-				err = s.itemXCharacterService.UpdateOwnership(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.Item, CharacterData_Id: tradeEvent.Receiver, Item: domain.Item{Item_Id: itemXCharacterToUpdate.Item.Item_Id}, Quantity: itemXCharacterToUpdate.Quantity})
+				err = s.itemXCharacterService.UpdateOwnership(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.ItemXCharacter, CharacterData_Id: tradeEvent.Receiver, Item: domain.Item{Item_Id: itemXCharacterToUpdate.Item.Item_Id}, Quantity: itemXCharacterToUpdate.Quantity})
 				if err != nil {
 					return domain.TradeEvent{}, err
 				}
 			} else {
-				_,err = s.itemXCharacterService.Update(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.Item, CharacterData_Id: tradeEvent.Sender, Item: domain.Item{Item_Id: itemXCharacterToUpdate.Item.Item_Id}, Quantity: itemXCharacterToUpdate.Quantity - *tradingItems.Quantity})
+				_,err = s.itemXCharacterService.Update(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.ItemXCharacter, CharacterData_Id: tradeEvent.Sender, Item: domain.Item{Item_Id: itemXCharacterToUpdate.Item.Item_Id}, Quantity: itemXCharacterToUpdate.Quantity - *tradingItems.Quantity})
 				if err != nil {
 					return domain.TradeEvent{}, err
 				}
-				_ ,err = s.itemXCharacterService.Create(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.Item, CharacterData_Id: tradeEvent.Receiver, Item: domain.Item{Item_Id: itemXCharacterToUpdate.Item.Item_Id}, Quantity: *tradingItems.Quantity})
+				_ ,err = s.itemXCharacterService.Create(domain.ItemXCharacterData{Character_Item_Id: *tradingItems.ItemXCharacter, CharacterData_Id: tradeEvent.Receiver, Item: domain.Item{Item_Id: itemXCharacterToUpdate.Item.Item_Id}, Quantity: *tradingItems.Quantity})
 				if err != nil {
 					return domain.TradeEvent{}, err
 				}

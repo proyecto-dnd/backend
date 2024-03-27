@@ -1,10 +1,14 @@
 package ws
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/proyecto-dnd/backend/internal/attackEvent"
+	"github.com/proyecto-dnd/backend/internal/dice_event"
+	tradeevent "github.com/proyecto-dnd/backend/internal/tradeEvent"
 )
 
 type Hub struct {
@@ -12,14 +16,20 @@ type Hub struct {
 	broadcast  chan *Message
 	register   chan *Client
 	unregister chan *Client
+	tradeEventService tradeevent.ServiceTradeEvent
+	attackEventService attackEvent.AttackEventService
+	diceEventService dice_event.DiceEventService
 }
 
-func NewHub() *Hub {
+func NewHub(tradeEventService tradeevent.ServiceTradeEvent, attackEventService attackEvent.AttackEventService, diceEventService dice_event.DiceEventService) *Hub {
 	return &Hub{
 		broadcast:  make(chan *Message),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
+		tradeEventService: tradeEventService,
+		attackEventService: attackEventService,
+		diceEventService: diceEventService,
 	}
 }
 
@@ -30,6 +40,7 @@ func (h *Hub) Run() {
 			h.clients[client] = true
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
+				fmt.Println("Unregistered client: ", client)
 				delete(h.clients, client)
 				close(client.send)
 			}

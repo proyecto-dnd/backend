@@ -307,6 +307,7 @@ func ScanCharacterCardDto(rows scannable, characterCardDto *dto.CharacterCardDto
 		&characterCardDto.CharacterId,
 		&characterCardDto.UserId,
 		&characterCardDto.CampaignID,
+		&characterCardDto.ImageUrl,
 		&characterCardDto.Name,
 		&characterCardDto.Race,
 		&characterCardDto.Class,

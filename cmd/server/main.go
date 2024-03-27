@@ -13,7 +13,6 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/proyecto-dnd/backend/cmd/server/router"
-	"github.com/proyecto-dnd/backend/internal/ws"
 	"github.com/proyecto-dnd/backend/pkg/firebaseConnection"
 	"github.com/proyecto-dnd/backend/pkg/s3"
 
@@ -54,16 +53,15 @@ func main() {
 	firebaseApp := firebaseConnection.InitializeFirebaseApp()
 	go s3.InitializeS3()
 
-	hub := ws.NewHub()
-	go hub.Run()
-
+	
+	
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.Use(cors.Default())
-
-	router := router.NewRouter(engine, db, firebaseApp, hub)
+	
+	router := router.NewRouter(engine, db, firebaseApp)
 	router.MapRoutes()
-
+	
 	//PARA DOCKERIZAR CAMBIAR localhost por 0.0.0.0
 	if err := engine.Run("0.0.0.0:8080"); err != nil {
 		panic(err)
