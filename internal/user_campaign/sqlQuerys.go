@@ -2,7 +2,7 @@ package user_campaign
 
 var (
 	QueryCreateUserCampaign = `
-		INSERT INTO user_campaign (campaign_id, user_id, is_dm, is_owner)
+		INSERT INTO user_campaign (campaign_id, user_id, character_id, is_owner)
 		VALUES (?, ?, ?, ?);
 	`
 

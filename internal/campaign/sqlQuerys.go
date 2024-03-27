@@ -2,8 +2,8 @@ package campaign
 
 var (
 	QueryCreateCampaign = `
-		INSERT INTO campaign (dungeon_master, name, description, image, notes, status)
-		VALUES (?, ?, ?, ?, ?, ?);
+		INSERT INTO campaign (dungeon_master, name, description, image, notes, status, images)
+		VALUES (?, ?, ?, ?, ?, ?, ?);
 	`
 
 	QueryGetAll = `
@@ -22,9 +22,15 @@ var (
 	
 	`
 
+	QueryGetUserData = `
+		SELECT u.uid, u.name, u.email, u.display_name, u.image from user u 
+		LEFT JOIN user_campaign uc ON u.uid  = uc.user_id 
+		WHERE uc.campaign_id = ?;
+	`
+
 	QueryUpdate = `
 		UPDATE campaign
-		SET dungeon_master = ?, name = ?, description = ?, image = ? , notes = ?, status = ?
+		SET dungeon_master = ?, name = ?, description = ?, image = ? , notes = ?, status = ? images = ?
 		WHERE campaign_id = ?;
 	`
 
