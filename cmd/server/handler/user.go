@@ -94,7 +94,7 @@ func (h *UserHandler) HandlerGetById() gin.HandlerFunc {
 		userTemp, err := h.service.GetById(id)
 		if err != nil {
 			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+			ctx.JSON(400, err)
 			return
 		}
 		// TEMP SUCCESS RESPONSE

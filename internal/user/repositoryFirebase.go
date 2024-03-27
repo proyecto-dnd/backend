@@ -145,17 +145,19 @@ func (r *repositoryFirebase) GetByName(name string) ([]domain.User, error) {
 
 func (r *repositoryFirebase) GetById(id string) (domain.UserResponse, error) {
 
-	u, err := r.authClient.GetUser(ctx, id)
+	_, err := r.authClient.GetUser(ctx, id)
 	if err != nil {
 		//TODO RETURN ERROR
 		log.Printf("error getting user %s: %v\n", id, err)
 	}
-	fmt.Println(u)
+	
 	row, err := r.db.Query(QueryGetUserById, id)
 	if err != nil {
 		return domain.UserResponse{}, err
 	}
 	defer row.Close()
+
+
 
 	var user domain.UserResponse
 	for row.Next() {
@@ -163,6 +165,7 @@ func (r *repositoryFirebase) GetById(id string) (domain.UserResponse, error) {
 			return domain.UserResponse{}, err
 		}
 	}
+	// fmt.Println(user)
 	// var user domain.User
 	// user.Username = u.DisplayName
 	// user.Email = u.Email
