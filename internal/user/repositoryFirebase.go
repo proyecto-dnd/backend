@@ -225,6 +225,7 @@ func (r *repositoryFirebase) Delete(id string) error {
 	if err != nil {
 		log.Printf("error deleting user: %v\n", err)
 	}
+	
 	result, err := r.db.Exec(QueryDeleteUser, id)
 	if err != nil {
 		return err
