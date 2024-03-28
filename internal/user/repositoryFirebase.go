@@ -206,36 +206,36 @@ func (r *repositoryFirebase) Update(user domain.UserUpdate, id string) (domain.U
 	return user, nil
 }
 func (r *repositoryFirebase) Delete(id string) error {
-	userList, err := r.GetAll()
+	// userList, err := r.GetAll()
+	// if err != nil {
+	// 	return err
+	// }
+	// //extract uid from userList
+
+	// var idList []string
+	// for _, u := range userList {
+	// 	id = u.Id
+	// 	idList = append(idList, id)
+	// }
+	// r.authClient.DeleteUsers(ctx, idList)
+
+	// fmt.Println("UNLIMITED POWER!!!!!")
+
+	err := r.authClient.DeleteUser(ctx, id)
+	if err != nil {
+		log.Printf("error deleting user: %v\n", err)
+	}
+	result, err := r.db.Exec(QueryDeleteUser, id)
 	if err != nil {
 		return err
 	}
-	//extract uid from userList
 
-	var idList []string
-	for _, u := range userList {
-		id = u.Id
-		idList = append(idList, id)
+	_, err = result.RowsAffected()
+	if err != nil {
+		return err
 	}
-	r.authClient.DeleteUsers(ctx, idList)
 
-	fmt.Println("UNLIMITED POWER!!!!!")
-
-	// err := r.authClient.DeleteUser(ctx, id)
-	// if err != nil {
-	// 	log.Printf("error deleting user: %v\n", err)
-	// }
-	// result, err := r.db.Exec(QueryDeleteUser, id)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// _, err = result.RowsAffected()
-	// if err != nil {
-	// 	return err
-	// }
-
-	// log.Printf("Successfully deleted user: %s\n", id)
+	log.Printf("Successfully deleted user: %s\n", id)
 
 	return nil
 }
