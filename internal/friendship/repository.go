@@ -186,7 +186,7 @@ func (r *repositoryFriendship) GetBySimilarName(input string) ([]domain.UserResp
 		return []domain.UserResponse{}, err
 	}
 
-	usersListByName := make([]domain.UserResponse, 0)
+	var usersListByName []domain.UserResponse
 	for _, user := range usersList {
 		if strings.HasPrefix(strings.ToLower(user.Username), strings.ToLower(input)) {
 			usersListByName = append(usersListByName, user)
