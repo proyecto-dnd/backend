@@ -23,7 +23,7 @@ func NewCampaignService(campaignRepository CampaignRepository, sessionService se
 
 func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto, userId string) (domain.Campaign, error) {
 	campaignDomain := domain.Campaign{
-		DungeonMaster: campaignDto.DungeonMaster,
+		DungeonMaster: userId,
 		Name:          campaignDto.Name,
 		Description:   campaignDto.Description,
 		Image:         campaignDto.Image,

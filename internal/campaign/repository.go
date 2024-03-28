@@ -36,6 +36,7 @@ func (r *campaignMySqlRepository) Create(campaign domain.Campaign) (domain.Campa
 		campaign.Image,
 		campaign.Notes,
 		campaign.Status,
+		campaign.Images,
 	)
 	if err != nil {
 		return domain.Campaign{}, err
