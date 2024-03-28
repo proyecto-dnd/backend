@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -217,7 +218,10 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 			ctx.JSON(500, err)
 			return
 		}
-		ctx.SetCookie("Session", cookie, 3600, "/", "localhost", false, false)
+		host := ctx.Request.Host
+		domainParts := strings.Split(host, ":")
+		domain := domainParts[0]
+		ctx.SetCookie("Session", cookie, 3600, "/", domain, false, false)
 
 		ctx.JSON(200, "Setted Cookie")
 	}
