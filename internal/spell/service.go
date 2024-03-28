@@ -61,3 +61,7 @@ func (s *service) GetByCharacterDataId(characterId int) ([]domain.Spell, error) 
 	}
 	return spellList, nil
 }
+
+func (s *service) GetByClassId(classId int) ([]domain.Spell, error) {
+	return s.repository.GetByClassId(classId)
+}

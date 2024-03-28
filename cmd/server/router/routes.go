@@ -479,6 +479,7 @@ func (r *router) buildSpellRoutes() {
 		spellGroup.GET("", spellHandler.HandlergetAll())
 		spellGroup.GET("/:id", spellHandler.HandlerGetById())
 		spellGroup.GET("/character/:id", spellHandler.HandlerGetByCharacterId())
+		spellGroup.GET("/class/:id", spellHandler.HandlerGetByClassId())
 		spellGroup.PUT("/:id", spellHandler.HandlerUpdate())
 		spellGroup.DELETE("/:id", spellHandler.HandlerDelete())
 	}

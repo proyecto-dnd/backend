@@ -1,16 +1,16 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/campaign"
-	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/dto"
+	"github.com/proyecto-dnd/backend/internal/user"
 )
 
 type CampaignHandler struct {
-	service campaign.CampaignService
+	service     campaign.CampaignService
 	userService user.ServiceUsers
 }
 
@@ -31,26 +31,26 @@ func (h *CampaignHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		userId := jwtClaimsInfo.Id
 
 		var tempCampaign dto.CreateCampaignDto
 		if err := ctx.BindJSON(&tempCampaign); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		createdCampaign, err := h.service.CreateCampaign(tempCampaign, userId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -69,7 +69,7 @@ func (h *CampaignHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		campaignList, err := h.service.GetAllCampaigns()
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, campaignList)
@@ -90,13 +90,13 @@ func (h *CampaignHandler) HandlerGetById() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		tempCampaign, err := h.service.GetCampaignByID(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, tempCampaign)
@@ -117,7 +117,7 @@ func (h *CampaignHandler) HandlerGetByUserId() gin.HandlerFunc {
 
 		tempCampaign, err := h.service.GetCampaignsByUserId(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, tempCampaign)
@@ -139,20 +139,20 @@ func (h *CampaignHandler) HandlerUpdate() gin.HandlerFunc {
 		id := ctx.Param("id")
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		var tempCampaign dto.CreateCampaignDto
 		if err := ctx.BindJSON(&tempCampaign); err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		updatedCampaign, err := h.service.UpdateCampaign(tempCampaign, intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, updatedCampaign)
@@ -173,14 +173,13 @@ func (h *CampaignHandler) HandlerDelete() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
-		
 
 		serviceErr := h.service.DeleteCampaign(intId)
 		if serviceErr != nil {
-			ctx.JSON(500, serviceErr)
+			ctx.JSON(500, serviceErr.Error())
 			return
 		}
 

@@ -33,12 +33,12 @@ func (h *FriendshipHandler) HandlerCreate() gin.HandlerFunc {
 		friend := ctx.Param("friend")
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 		userId := jwtClaimsInfo.Id
@@ -69,12 +69,12 @@ func (h *FriendshipHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempFriendship domain.Friendship
 		if err := ctx.BindJSON(&tempFriendship); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		_, err := h.service.Create(tempFriendship)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -89,12 +89,12 @@ func (h *FriendshipHandler) HandlerSearchFollowers() gin.HandlerFunc {
 		var tempFriendship domain.Mutuals
 		tempFriendship.User2Name = name
 		if err := ctx.BindJSON(&tempFriendship); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		followers, err := h.service.SearchFollowers(tempFriendship)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, followers)
@@ -106,13 +106,13 @@ func (h *FriendshipHandler) HandlerGetAllFriends() gin.HandlerFunc {
 
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 
 		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 		userId := jwtClaimsInfo.Id
@@ -120,7 +120,7 @@ func (h *FriendshipHandler) HandlerGetAllFriends() gin.HandlerFunc {
 
 		friends, err := h.service.GetAllFriends(userId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -134,7 +134,7 @@ func (h *FriendshipHandler) HandlerGetBySimilarName() gin.HandlerFunc {
 		name := ctx.Param("name")
 		users, err := h.service.GetBySimilarName(name)
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 

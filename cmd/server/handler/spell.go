@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -21,12 +20,12 @@ func (h *SpellHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempSpell dto.SpellDto
 		if err := ctx.BindJSON(&tempSpell); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		createdSpell, err := h.service.Create(tempSpell)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -38,8 +37,8 @@ func (h *SpellHandler) HandlergetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		spellList, err := h.service.GetAll()
 		if err != nil {
-			fmt.Println(err)
-			ctx.JSON(400, err)
+
+			ctx.JSON(400, err.Error())
 			return
 		}
 
@@ -53,13 +52,13 @@ func (h *SpellHandler) HandlerGetById() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		tempSpell, err := h.service.GetById(intId)
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 
@@ -69,15 +68,15 @@ func (h *SpellHandler) HandlerGetById() gin.HandlerFunc {
 
 func (h *SpellHandler) HandlerGetByCharacterId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("characterId")
+		id := ctx.Param("id")
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		spells, err := h.service.GetByCharacterDataId(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, spells)
@@ -90,18 +89,18 @@ func (h *SpellHandler) HandlerUpdate() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		var tempSpell dto.SpellDto
 		if err := ctx.BindJSON(&tempSpell); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		updatedSpell, err := h.service.Update(tempSpell, intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -115,14 +114,31 @@ func (h *SpellHandler) HandlerDelete() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		if err = h.service.Delete(intId); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		ctx.JSON(200, "Deleted spell with id: "+id)
+	}
+}
+
+func (h *SpellHandler) HandlerGetByClassId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+		spells, err := h.service.GetByClassId(intId)
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+		ctx.JSON(200, spells)
 	}
 }

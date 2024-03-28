@@ -88,7 +88,6 @@ func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 	var users []domain.UserResponse
 	// pager := iterator.NewPager(r.authClient.Users(ctx, ""), 100, "")
 
-	
 	// for {
 	// 	var authUsers []*auth.ExportedUserRecord
 	// 	nextPageToken, err := pager.NextPage(&authUsers)
@@ -219,13 +218,13 @@ func (r *repositoryFirebase) Delete(id string) error {
 	// }
 	// r.authClient.DeleteUsers(ctx, idList)
 
-	// fmt.Println("UNLIMITED POWER!!!!!")
+	// fmt.Println("https://media1.tenor.com/m/LBWyQg647MoAAAAC/execute-order66-order66.gif")
 
 	err := r.authClient.DeleteUser(ctx, id)
 	if err != nil {
 		log.Printf("error deleting user: %v\n", err)
 	}
-	
+
 	result, err := r.db.Exec(QueryDeleteUser, id)
 	if err != nil {
 		return err

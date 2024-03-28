@@ -206,3 +206,36 @@ func (r *spellMySqlRepository) GetByCharacterDataId(characterId int) ([]domain.S
 
 	return spells, nil
 }
+
+func (r *spellMySqlRepository) GetByClassId(classId int) ([]domain.Spell, error) {
+	rows, err := r.db.Query(QueryGetByClassId, classId)
+
+	if err != nil {
+		return []domain.Spell{}, err
+	}
+	spells := []domain.Spell{}
+	for rows.Next() {
+		var spell domain.Spell
+		err := rows.Scan(
+			&spell.SpellId,
+			&spell.Name,
+			&spell.Description,
+			&spell.Range,
+			&spell.Ritual,
+			&spell.Duration,
+			&spell.Concentration,
+			&spell.CastingTime,
+			&spell.Level,
+			&spell.DamageType,
+			&spell.DifficultyClass,
+			&spell.Aoe,
+			&spell.School)
+
+		if err != nil {
+			return []domain.Spell{}, err
+		}
+		spells = append(spells, spell)
+	}
+
+	return spells, nil
+}
