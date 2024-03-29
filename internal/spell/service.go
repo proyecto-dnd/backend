@@ -42,12 +42,7 @@ func (s *service) GetById(id int) (domain.Spell, error) {
 }
 
 func (s *service) Update(spellDto dto.SpellDto, id int) (domain.Spell, error) {
-	updatedSpell, err := s.repository.Update(spellDto, id)
-	if err != nil {
-		return domain.Spell{}, err
-	}
-
-	return updatedSpell, nil
+	return s.repository.Update(spellDto, id)
 }
 
 func (s *service) Delete(id int) error {

@@ -700,3 +700,5 @@ func (r *router) buildWebsocketRoutes() {
 		wsGroup.GET("/:session_id", r.hub.ServeWs)
 	}
 }
+
+
