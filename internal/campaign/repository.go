@@ -126,7 +126,7 @@ func (r *campaignMySqlRepository) Update(campaign domain.Campaign, id int) (doma
 	}
 	defer statement.Close()
 
-	_, err = statement.Exec(campaign.DungeonMaster, campaign.Name, campaign.Description, campaign.Image, &campaign.Notes, &campaign.Status, id)
+	_, err = statement.Exec(campaign.DungeonMaster, campaign.Name, campaign.Description, campaign.Image, &campaign.Notes, &campaign.Status, &campaign.Images, id)
 	if err != nil {
 		return domain.Campaign{}, err
 	}

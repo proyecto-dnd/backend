@@ -139,6 +139,7 @@ func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
 	for _, user := range <-usersChan {
 
 		userCharacter, err := s.characterDataService.GetByUserIdAndCampaignId(user.Id, campaign.CampaignId)
+		
 		if err != nil {
 			return dto.ResponseCampaignDto{}, err
 		}
@@ -213,6 +214,7 @@ func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto
 		Image:         campaignDto.Image,
 		Notes:         campaignDto.Notes,
 		Status:        campaignDto.Status,
+		Images:        campaignDto.Images,
 	}
 
 	updatedCampaign, err := s.campaignRepository.Update(campaignDomain, id)
@@ -233,6 +235,7 @@ func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto
 		Image:         updatedCampaign.Image,
 		Notes:         updatedCampaign.Notes,
 		Status:        updatedCampaign.Status,
+		Images:        updatedCampaign.Images,
 		Sessions:      sessions,
 	}
 

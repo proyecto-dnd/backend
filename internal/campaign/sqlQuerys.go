@@ -30,7 +30,7 @@ var (
 
 	QueryUpdate = `
 		UPDATE campaign
-		SET dungeon_master = ?, name = ?, description = ?, image = ? , notes = ?, status = ? images = ?
+		SET dungeon_master = ?, name = ?, description = ?, image = ? , notes = ?, status = ?, images = ?
 		WHERE campaign_id = ?;
 	`
 
