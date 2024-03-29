@@ -115,8 +115,8 @@ var (
 	raceXProficiencyService    raceXproficiency.RaceXProficiencyService
 	raceXProficiencyHandler    *handler.RaceXProficiencyHandler
 
-	characterXSpellRepository characterXspell.CharacterXSpellRepository
-	characterXSpellService    characterXspell.CharacterXSpellService
+	characterXSpellRepository characterXspell.RepositoryCharacterXSpell
+	characterXSpellService    characterXspell.ServiceCharacterXSpell
 	characterXSpellHandler    *handler.CharacterXSpellHandler
 
 	attackEventRepository attackEvent.AttackEventRepository
@@ -253,8 +253,8 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	classXSpellService = classXspell.NewClassXSpelService(classXSpellRepository)
 	classXSpellHandler = handler.NewClassXSpellHandler(&classXSpellService)
 	characterXSpellRepository = characterXspell.NewCharacterXSpellRepository(db)
-	characterXSpellRepository = characterXspell.NewCharacterXSpellService(characterXSpellRepository)
-	characterXSpellHandler = handler.NewCharacterXSpellHandler(characterXSpellService)
+	characterXSpellService = characterXspell.NewCharacterXSpellService(characterXSpellRepository)
+	characterXSpellHandler = handler.NewCharacterXSpellHandler(&characterXSpellService)
 
 	sessionRepository = session.NewSessionRepository(db)
 	sessionService = session.NewSessionService(sessionRepository)
@@ -514,6 +514,7 @@ func (r *router) buildCharacterXSpellRoutes() {
 	{
 		characterXSpellGroup.POST("", characterXSpellHandler.HandlerCreate())
 		characterXSpellGroup.DELETE("/:id", characterXSpellHandler.HandlerDelete())
+		characterXSpellGroup.DELETE("/delete", characterXSpellHandler.HandlerDeleteParams())
 	}
 }
 
@@ -699,3 +700,5 @@ func (r *router) buildWebsocketRoutes() {
 		wsGroup.GET("/:session_id", r.hub.ServeWs)
 	}
 }
+
+

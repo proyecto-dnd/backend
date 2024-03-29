@@ -3,6 +3,7 @@ package characterXspell
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
@@ -13,15 +14,15 @@ var (
 	ErrNotFound            = errors.New("characters not found")
 )
 
-type characterXSpellRepository struct {
+type CharacterXSpellRepository struct {
 	db *sql.DB
 }
 
-func NewCharacterXSpellRepository(db *sql.DB) CharacterXSpellRepository {
-	return &characterXSpellRepository{db: db}
+func NewCharacterXSpellRepository(db *sql.DB) RepositoryCharacterXSpell {
+	return &CharacterXSpellRepository{db: db}
 }
 
-func (r characterXSpellRepository) Create(characterXSpell domain.CharacterXSpell) (domain.CharacterXSpell, error) {
+func (r *CharacterXSpellRepository) Create(characterXSpell domain.CharacterXSpell) (domain.CharacterXSpell, error) {
 	statement, err := r.db.Prepare(QueryInsert)
 	if err != nil {
 		return domain.CharacterXSpell{}, ErrPrepareStatement
@@ -34,6 +35,7 @@ func (r characterXSpellRepository) Create(characterXSpell domain.CharacterXSpell
 	if err != nil {
 		return domain.CharacterXSpell{}, err
 	}
+
 	lastId, err := result.LastInsertId()
 	if err != nil {
 		return domain.CharacterXSpell{}, ErrGettingLastInsertId
@@ -43,10 +45,11 @@ func (r characterXSpellRepository) Create(characterXSpell domain.CharacterXSpell
 		CharacterId:      characterXSpell.CharacterId,
 		SpellId:          characterXSpell.SpellId,
 	}
+	fmt.Println(createdCharacterXSpell)
 	return createdCharacterXSpell, nil
 }
 
-func (r characterXSpellRepository) Delete(id int) error {
+func (r *CharacterXSpellRepository) Delete(id int) error {
 	statement, err := r.db.Prepare(QueryDelete)
 	if err != nil {
 		return ErrPrepareStatement
@@ -57,5 +60,18 @@ func (r characterXSpellRepository) Delete(id int) error {
 		return err
 	}
 
+	return nil
+}
+
+func (r *CharacterXSpellRepository) DeleteParams(characterId int, spellId int) error {
+	statement, err := r.db.Prepare(QueryDeleteParams)
+	if err != nil {
+		return ErrPrepareStatement
+	}
+	defer statement.Close()
+	_, err = statement.Exec(characterId, spellId)
+	if err != nil {
+		return err
+	}
 	return nil
 }

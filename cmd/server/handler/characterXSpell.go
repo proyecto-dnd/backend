@@ -9,24 +9,26 @@ import (
 )
 
 type CharacterXSpellHandler struct {
-	service characterXspell.CharacterXSpellService
+	service characterXspell.ServiceCharacterXSpell
 }
 
-func NewCharacterXSpellHandler(service characterXspell.CharacterXSpellService) *CharacterXSpellHandler {
-	return &CharacterXSpellHandler{service: service}
+func NewCharacterXSpellHandler(service *characterXspell.ServiceCharacterXSpell) *CharacterXSpellHandler {
+	return &CharacterXSpellHandler{service: *service}
 }
 
 func (h *CharacterXSpellHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
 		var tempCharacterXSpell domain.CharacterXSpell
+
 		if err := ctx.BindJSON(&tempCharacterXSpell); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		createdCharacterXSpell, err := h.service.Create(tempCharacterXSpell)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -37,7 +39,7 @@ func (h *CharacterXSpellHandler) HandlerCreate() gin.HandlerFunc {
 func (h *CharacterXSpellHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
-		
+
 		intId, err := strconv.Atoi(id)
 		if err != nil {
 			ctx.JSON(500, err)
@@ -51,5 +53,27 @@ func (h *CharacterXSpellHandler) HandlerDelete() gin.HandlerFunc {
 		}
 
 		ctx.JSON(200, "Deleted characterXspell with id "+id)
+	}
+}
+
+func (h *CharacterXSpellHandler) HandlerDeleteParams() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		characterId, err := strconv.Atoi(ctx.Query("characterId"))
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+		spellId, err := strconv.Atoi(ctx.Query("spellId"))
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+
+		err = h.service.DeleteParams(characterId, spellId)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, "Deleted characterXspell with characterId="+strconv.Itoa(characterId)+" and spellId="+strconv.Itoa(spellId))
 	}
 }

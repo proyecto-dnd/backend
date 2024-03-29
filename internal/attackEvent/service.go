@@ -104,51 +104,67 @@ func (s *service) GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, e
 		return nil, err
 	}
 
-	var eventsToReturn []dto.ResponseEventDto
-	for _, event := range events {
-		session := domain.Session{
-			SessionId:   event.Session_id,
-			Start:       event.Start,
-			End:         event.End,
-			Description: event.SessionDescription,
-			CampaignId:  &event.SessionCampaignId,
-		}
- 
-		eventProtagonist := dto.CharacterCardDto{
-			CharacterId: event.CharacterId,
-			UserId:      event.CharacterUserId,
-			CampaignID:  event.CharacterCampaignId,
-			Name:        event.CharacterName,
-			Race:        event.RaceName,
-			Class:       event.ClassName,
-			Level:       event.Level,
-			HitPoints:   event.HitPoints,
-		}
+	results := make(chan dto.ResponseEventDto, len(events))
+	errors := make(chan error, len(events))
 
-		affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
-		if err != nil {
+	for _, event := range events {
+		go func(event dto.RepositoryResponseAttackEvent) {
+			session := domain.Session{
+				SessionId:   event.Session_id,
+				Start:       event.Start,
+				End:         event.End,
+				Description: event.SessionDescription,
+				CampaignId:  &event.SessionCampaignId,
+			}
+
+			eventProtagonist := dto.CharacterCardDto{
+				CharacterId: event.CharacterId,
+				UserId:      event.CharacterUserId,
+				CampaignID:  event.CharacterCampaignId,
+				Name:        event.CharacterName,
+				Race:        event.RaceName,
+				Class:       event.ClassName,
+				Level:       event.Level,
+				HitPoints:   event.HitPoints,
+			}
+
+			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			if err != nil {
+				errors <- err
+				return
+			}
+
+			eventToReturn := dto.ResponseEventDto{
+				AttackEventId:    event.AttackEventId,
+				Type:             event.Type,
+				Environment:      event.Environment,
+				Session:          session,
+				EventProtagonist: eventProtagonist,
+				EventResolution:  event.EventResolution,
+				Weapon:           event.Weapon,
+				Spell:            event.Spell,
+				DmgType:          event.DmgType,
+				Description:      event.Description,
+				TimeStamp:        event.TimeStamp,
+				Affected:         affected,
+			}
+			results <- eventToReturn
+		}(event)
+	}
+
+	var eventsToReturn []dto.ResponseEventDto
+	for i := 0; i < len(events); i++ {
+		select {
+		case eventToReturn := <-results:
+			eventsToReturn = append(eventsToReturn, eventToReturn)
+		case err := <-errors:
 			return nil, err
 		}
-
-		eventToReturn := dto.ResponseEventDto{
-			AttackEventId:    event.AttackEventId,
-			Type:             event.Type,
-			Environment:      event.Environment,
-			Session:          session,
-			EventProtagonist: eventProtagonist,
-			EventResolution:  event.EventResolution,
-			Weapon:           event.Weapon,
-			Spell:            event.Spell,
-			DmgType:          event.DmgType,
-			Description:      event.Description,
-			TimeStamp:        event.TimeStamp,
-			Affected:         affected,
-		}
-		eventsToReturn = append(eventsToReturn, eventToReturn)
 	}
 
 	return eventsToReturn, nil
 }
+
 
 func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEventDto, error) {
 	events, err := s.repo.GetByProtagonistId(protagonistid)
@@ -156,51 +172,67 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 		return nil, err
 	}
 
-	var eventsToReturn []dto.ResponseEventDto
+	results := make(chan dto.ResponseEventDto, len(events))
+	errors := make(chan error, len(events))
+
 	for _, event := range events {
-		session := domain.Session{
-			SessionId:   event.Session_id,
-			Start:       event.Start,
-			End:         event.End,
-			Description: event.SessionDescription,
-			CampaignId:  &event.SessionCampaignId,
-		}
+		go func(event dto.RepositoryResponseAttackEvent) {
+			session := domain.Session{
+				SessionId:   event.Session_id,
+				Start:       event.Start,
+				End:         event.End,
+				Description: event.SessionDescription,
+				CampaignId:  &event.SessionCampaignId,
+			}
 
-		eventProtagonist := dto.CharacterCardDto{
-			CharacterId: event.CharacterId,
-			UserId:      event.CharacterUserId,
-			CampaignID:  event.CharacterCampaignId,
-			Name:        event.CharacterName,
-			Race:        event.RaceName,
-			Class:       event.ClassName,
-			Level:       event.Level,
-			HitPoints:   event.HitPoints,
-		}
+			eventProtagonist := dto.CharacterCardDto{
+				CharacterId: event.CharacterId,
+				UserId:      event.CharacterUserId,
+				CampaignID:  event.CharacterCampaignId,
+				Name:        event.CharacterName,
+				Race:        event.RaceName,
+				Class:       event.ClassName,
+				Level:       event.Level,
+				HitPoints:   event.HitPoints,
+			}
 
-		affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
-		if err != nil {
+			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			if err != nil {
+				errors <- err
+				return
+			}
+
+			eventToReturn := dto.ResponseEventDto{
+				AttackEventId:    event.AttackEventId,
+				Type:             event.Type,
+				Environment:      event.Environment,
+				Session:          session,
+				EventProtagonist: eventProtagonist,
+				EventResolution:  event.EventResolution,
+				Weapon:           event.Weapon,
+				Spell:            event.Spell,
+				DmgType:          event.DmgType,
+				Description:      event.Description,
+				TimeStamp:        event.TimeStamp,
+				Affected:         affected,
+			}
+			results <- eventToReturn
+		}(event)
+	}
+
+	var eventsToReturn []dto.ResponseEventDto
+	for i := 0; i < len(events); i++ {
+		select {
+		case eventToReturn := <-results:
+			eventsToReturn = append(eventsToReturn, eventToReturn)
+		case err := <-errors:
 			return nil, err
 		}
-
-		eventToReturn := dto.ResponseEventDto{
-			AttackEventId:    event.AttackEventId,
-			Type:             event.Type,
-			Environment:      event.Environment,
-			Session:          session,
-			EventProtagonist: eventProtagonist,
-			EventResolution:  event.EventResolution,
-			Weapon:           event.Weapon,
-			Spell:            event.Spell,
-			DmgType:          event.DmgType,
-			Description:      event.Description,
-			TimeStamp:        event.TimeStamp,
-			Affected:         affected,
-		}
-		eventsToReturn = append(eventsToReturn, eventToReturn)
 	}
 
 	return eventsToReturn, nil
 }
+
 
 func (s *service) GetEventsByAffectedId(affectedid int) ([]dto.ResponseEventDto, error) {
 	events, err := s.repo.GetByAffectedId(affectedid)
@@ -208,51 +240,67 @@ func (s *service) GetEventsByAffectedId(affectedid int) ([]dto.ResponseEventDto,
 		return nil, err
 	}
 
-	var eventsToReturn []dto.ResponseEventDto
+	results := make(chan dto.ResponseEventDto, len(events))
+	errors := make(chan error, len(events))
+
 	for _, event := range events {
-		session := domain.Session{
-			SessionId:   event.Session_id,
-			Start:       event.Start,
-			End:         event.End,
-			Description: event.SessionDescription,
-			CampaignId:  &event.SessionCampaignId,
-		}
+		go func(event dto.RepositoryResponseAttackEvent) {
+			session := domain.Session{
+				SessionId:   event.Session_id,
+				Start:       event.Start,
+				End:         event.End,
+				Description: event.SessionDescription,
+				CampaignId:  &event.SessionCampaignId,
+			}
 
-		eventProtagonist := dto.CharacterCardDto{
-			CharacterId: event.CharacterId,
-			UserId:      event.CharacterUserId,
-			CampaignID:  event.CharacterCampaignId,
-			Name:        event.CharacterName,
-			Race:        event.RaceName,
-			Class:       event.ClassName,
-			Level:       event.Level,
-			HitPoints:   event.HitPoints,
-		}
+			eventProtagonist := dto.CharacterCardDto{
+				CharacterId: event.CharacterId,
+				UserId:      event.CharacterUserId,
+				CampaignID:  event.CharacterCampaignId,
+				Name:        event.CharacterName,
+				Race:        event.RaceName,
+				Class:       event.ClassName,
+				Level:       event.Level,
+				HitPoints:   event.HitPoints,
+			}
 
-		affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
-		if err != nil {
+			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			if err != nil {
+				errors <- err
+				return
+			}
+
+			eventToReturn := dto.ResponseEventDto{
+				AttackEventId:    event.AttackEventId,
+				Type:             event.Type,
+				Environment:      event.Environment,
+				Session:          session,
+				EventProtagonist: eventProtagonist,
+				EventResolution:  event.EventResolution,
+				Weapon:           event.Weapon,
+				Spell:            event.Spell,
+				DmgType:          event.DmgType,
+				Description:      event.Description,
+				TimeStamp:        event.TimeStamp,
+				Affected:         affected,
+			}
+			results <- eventToReturn
+		}(event)
+	}
+
+	var eventsToReturn []dto.ResponseEventDto
+	for i := 0; i < len(events); i++ {
+		select {
+		case eventToReturn := <-results:
+			eventsToReturn = append(eventsToReturn, eventToReturn)
+		case err := <-errors:
 			return nil, err
 		}
-
-		eventToReturn := dto.ResponseEventDto{
-			AttackEventId:    event.AttackEventId,
-			Type:             event.Type,
-			Environment:      event.Environment,
-			Session:          session,
-			EventProtagonist: eventProtagonist,
-			EventResolution:  event.EventResolution,
-			Weapon:           event.Weapon,
-			Spell:            event.Spell,
-			DmgType:          event.DmgType,
-			Description:      event.Description,
-			TimeStamp:        event.TimeStamp,
-			Affected:         affected,
-		}
-		eventsToReturn = append(eventsToReturn, eventToReturn)
 	}
 
 	return eventsToReturn, nil
 }
+
 
 func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedid int) ([]dto.ResponseEventDto, error) {
 	events, err := s.repo.GetByProtagonistIdAndAffectedId(protagonistid, affectedid)
@@ -260,51 +308,67 @@ func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedi
 		return nil, err
 	}
 
-	var eventsToReturn []dto.ResponseEventDto
+	results := make(chan dto.ResponseEventDto, len(events))
+	errors := make(chan error, len(events))
+
 	for _, event := range events {
-		session := domain.Session{
-			SessionId:   event.Session_id,
-			Start:       event.Start,
-			End:         event.End,
-			Description: event.SessionDescription,
-			CampaignId:  &event.SessionCampaignId,
-		}
+		go func(event dto.RepositoryResponseAttackEvent) {
+			session := domain.Session{
+				SessionId:   event.Session_id,
+				Start:       event.Start,
+				End:         event.End,
+				Description: event.SessionDescription,
+				CampaignId:  &event.SessionCampaignId,
+			}
 
-		eventProtagonist := dto.CharacterCardDto{
-			CharacterId: event.CharacterId,
-			UserId:      event.CharacterUserId,
-			CampaignID:  event.CharacterCampaignId,
-			Name:        event.CharacterName,
-			Race:        event.RaceName,
-			Class:       event.ClassName,
-			Level:       event.Level,
-			HitPoints:   event.HitPoints,
-		}
+			eventProtagonist := dto.CharacterCardDto{
+				CharacterId: event.CharacterId,
+				UserId:      event.CharacterUserId,
+				CampaignID:  event.CharacterCampaignId,
+				Name:        event.CharacterName,
+				Race:        event.RaceName,
+				Class:       event.ClassName,
+				Level:       event.Level,
+				HitPoints:   event.HitPoints,
+			}
 
-		affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
-		if err != nil {
+			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			if err != nil {
+				errors <- err
+				return
+			}
+
+			eventToReturn := dto.ResponseEventDto{
+				AttackEventId:    event.AttackEventId,
+				Type:             event.Type,
+				Environment:      event.Environment,
+				Session:          session,
+				EventProtagonist: eventProtagonist,
+				EventResolution:  event.EventResolution,
+				Weapon:           event.Weapon,
+				Spell:            event.Spell,
+				DmgType:          event.DmgType,
+				Description:      event.Description,
+				TimeStamp:        event.TimeStamp,
+				Affected:         affected,
+			}
+			results <- eventToReturn
+		}(event)
+	}
+
+	var eventsToReturn []dto.ResponseEventDto
+	for i := 0; i < len(events); i++ {
+		select {
+		case eventToReturn := <-results:
+			eventsToReturn = append(eventsToReturn, eventToReturn)
+		case err := <-errors:
 			return nil, err
 		}
-
-		eventToReturn := dto.ResponseEventDto{
-			AttackEventId:    event.AttackEventId,
-			Type:             event.Type,
-			Environment:      event.Environment,
-			Session:          session,
-			EventProtagonist: eventProtagonist,
-			EventResolution:  event.EventResolution,
-			Weapon:           event.Weapon,
-			Spell:            event.Spell,
-			DmgType:          event.DmgType,
-			Description:      event.Description,
-			TimeStamp:        event.TimeStamp,
-			Affected:         affected,
-		}
-		eventsToReturn = append(eventsToReturn, eventToReturn)
 	}
 
 	return eventsToReturn, nil
 }
+
 
 func (s *service) UpdateEvent(eventDto dto.CreateAttackEventDto, id int) (domain.AttackEvent, error) {
 

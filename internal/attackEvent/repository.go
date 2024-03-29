@@ -30,7 +30,6 @@ func (r *attackEventMySqlRepository) Create(event domain.AttackEvent) (domain.At
 
 	defer statement.Close()
 
-	fmt.Println(event)
 	result, err := statement.Exec(
 		event.Type,
 		event.Environment,
@@ -76,7 +75,7 @@ func (r *attackEventMySqlRepository) GetAll() ([]domain.AttackEvent, error) {
 
 func (r *attackEventMySqlRepository) GetById(id int) (dto.RepositoryResponseAttackEvent, error) {
 	var event dto.RepositoryResponseAttackEvent
-	err := r.db.QueryRow(QueryGetById, id).Scan(&event.AttackEventId, &event.Type, &event.Environment, &event.Session_id, &event.EventProtagonistId, &event.EventResolution, &event.DmgType, &event.Weapon, &event.Spell, &event.Description, &event.TimeStamp, &event.SessionSessionId, &event.Start, &event.End, &event.SessionDescription, &event.SessionCampaignId, &event.SessionCurrentEnviroment, &event.CharacterId, &event.CharacterUserId, &event.CharacterCampaignId, &event.CharacterName, &event.RaceName, &event.ClassName, &event.Level, &event.HitPoints)
+	err := r.db.QueryRow(QueryGetById, id).Scan(&event.AttackEventId, &event.Type, &event.Environment, &event.Session_id, &event.EventProtagonistId, &event.EventResolution, &event.Weapon, &event.Spell, &event.DmgType, &event.Description, &event.TimeStamp, &event.SessionSessionId, &event.Start, &event.End, &event.SessionDescription, &event.SessionCampaignId, &event.SessionCurrentEnviroment, &event.CharacterId, &event.CharacterUserId, &event.CharacterCampaignId, &event.CharacterName, &event.ClassName, &event.RaceName, &event.Level, &event.HitPoints)
 	if err != nil {
 		fmt.Println(err)
 		return dto.RepositoryResponseAttackEvent{}, err
@@ -94,7 +93,7 @@ func (r *attackEventMySqlRepository) GetBySessionId(session_id int) ([]dto.Repos
 	var events []dto.RepositoryResponseAttackEvent
 	for rows.Next() {
 		var event dto.RepositoryResponseAttackEvent
-		if err := rows.Scan(&event.AttackEventId, &event.Type, &event.Environment, &event.Session_id, &event.EventProtagonistId, &event.EventResolution, &event.DmgType, &event.Weapon, &event.Spell, &event.Description, &event.TimeStamp, &event.SessionSessionId, &event.Start, &event.End, &event.SessionDescription, &event.SessionCampaignId, &event.SessionCurrentEnviroment, &event.CharacterId, &event.CharacterUserId, &event.CharacterCampaignId, &event.CharacterName, &event.RaceName, &event.ClassName, &event.Level, &event.HitPoints); err != nil {
+		if err := rows.Scan(&event.AttackEventId, &event.Type, &event.Environment, &event.Session_id, &event.EventProtagonistId, &event.EventResolution, &event.Weapon, &event.Spell, &event.DmgType, &event.Description, &event.TimeStamp, &event.SessionSessionId, &event.Start, &event.End, &event.SessionDescription, &event.SessionCampaignId, &event.SessionCurrentEnviroment, &event.CharacterId, &event.CharacterUserId, &event.CharacterCampaignId, &event.CharacterName, &event.ClassName, &event.RaceName, &event.Level, &event.HitPoints); err != nil {
 			return nil, err
 		}
 		events = append(events, event)
@@ -112,7 +111,7 @@ func (r *attackEventMySqlRepository) GetByProtagonistId(protagonist_id int) ([]d
 	var events []dto.RepositoryResponseAttackEvent
 	for rows.Next() {
 		var event dto.RepositoryResponseAttackEvent
-		if err := rows.Scan(&event.AttackEventId, &event.Type, &event.Environment, &event.Session_id, &event.EventProtagonistId, &event.EventResolution, &event.DmgType, &event.Weapon, &event.Spell, &event.Description, &event.TimeStamp, &event.SessionSessionId, &event.Start, &event.End, &event.SessionDescription, &event.SessionCampaignId, &event.SessionCurrentEnviroment, &event.CharacterId, &event.CharacterUserId, &event.CharacterCampaignId, &event.CharacterName, &event.RaceName, &event.ClassName, &event.Level, &event.HitPoints); err != nil {
+		if err := rows.Scan(&event.AttackEventId, &event.Type, &event.Environment, &event.Session_id, &event.EventProtagonistId, &event.EventResolution, &event.Weapon, &event.Spell, &event.DmgType, &event.Description, &event.TimeStamp, &event.SessionSessionId, &event.Start, &event.End, &event.SessionDescription, &event.SessionCampaignId, &event.SessionCurrentEnviroment, &event.CharacterId, &event.CharacterUserId, &event.CharacterCampaignId, &event.CharacterName, &event.ClassName, &event.RaceName, &event.Level, &event.HitPoints); err != nil {
 			return nil, err
 		}
 		events = append(events, event)
@@ -130,7 +129,7 @@ func (r *attackEventMySqlRepository) GetByAffectedId(affected_id int) ([]dto.Rep
 	var events []dto.RepositoryResponseAttackEvent
 	for rows.Next() {
 		var event dto.RepositoryResponseAttackEvent
-		if err := rows.Scan(&event.AttackEventId, &event.Type, &event.Environment, &event.Session_id, &event.EventProtagonistId, &event.EventResolution, &event.DmgType, &event.Weapon, &event.Spell, &event.Description, &event.TimeStamp, &event.SessionSessionId, &event.Start, &event.End, &event.SessionDescription, &event.SessionCampaignId, &event.SessionCurrentEnviroment, &event.CharacterId, &event.CharacterUserId, &event.CharacterCampaignId, &event.CharacterName, &event.RaceName, &event.ClassName, &event.Level, &event.HitPoints); err != nil {
+		if err := rows.Scan(&event.AttackEventId, &event.Type, &event.Environment, &event.Session_id, &event.EventProtagonistId, &event.EventResolution, &event.Weapon, &event.Spell, &event.DmgType, &event.Description, &event.TimeStamp, &event.SessionSessionId, &event.Start, &event.End, &event.SessionDescription, &event.SessionCampaignId, &event.SessionCurrentEnviroment, &event.CharacterId, &event.CharacterUserId, &event.CharacterCampaignId, &event.CharacterName, &event.ClassName, &event.RaceName, &event.Level, &event.HitPoints); err != nil {
 			return nil, err
 		}
 		events = append(events, event)
