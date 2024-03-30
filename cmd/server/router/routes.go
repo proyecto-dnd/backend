@@ -359,6 +359,7 @@ func (r *router) buildUserRoutes() {
 		userGroup.POST("/subscribe/:months", userFirebaseHandler.HandlerSubPremium())
 		userGroup.GET("", userFirebaseHandler.HandlerGetAll())
 		userGroup.GET("/:id", userFirebaseHandler.HandlerGetById())
+		userGroup.GET("/checkSub", userFirebaseHandler.HandlerCheckSubscriptionExpDate())
 		userGroup.GET("/jwt", userFirebaseHandler.HandlerGetJwtInfo())
 		userGroup.PUT("/:id", userFirebaseHandler.HandlerUpdate())
 		userGroup.PATCH("/:id", userFirebaseHandler.HandlerPatch())
@@ -700,5 +701,3 @@ func (r *router) buildWebsocketRoutes() {
 		wsGroup.GET("/:session_id", r.hub.ServeWs)
 	}
 }
-
-
