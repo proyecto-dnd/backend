@@ -87,6 +87,6 @@ func (s *service) TransferDataToSql(users []domain.User) (string, error) {
 	return s.repositoryFirebase.TransferDataToSql(users)
 }
 
-func (s *service) SubscribeToPremium(id string, date string) error {
+func (s *service) SubscribeToPremium(id string, date string) (string, error) {
 	return s.repositoryFirebase.SubscribeToPremium(id, date)
 }

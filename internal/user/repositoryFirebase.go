@@ -315,18 +315,31 @@ func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenCla
 
 	var tokenClaims domain.UserTokenClaims
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-
-		uid := claims["user_id"].(string)
-		username := claims["name"].(string)
-		email := claims["email"].(string)
-		displayName := claims["displayName"].(string)
-		subExpirationDate := claims["subExpiration"].(string)
-
-		tokenClaims.Id = uid
-		tokenClaims.Username = username
-		tokenClaims.Email = email
-		tokenClaims.DisplayName = displayName
-		tokenClaims.SubExpirationDate = subExpirationDate
+		if claims["user_id"] != nil {
+			tokenClaims.Id = claims["user_id"].(string)
+		} else {
+			tokenClaims.Id = claims["claims"].(map[string]interface{})["user_id"].(string)
+		}
+		if claims["name"] != nil {
+			tokenClaims.Username = claims["name"].(string)
+		} else {
+			tokenClaims.Username = claims["claims"].(map[string]interface{})["name"].(string)
+		}
+		if claims["email"] != nil {
+			tokenClaims.Email = claims["email"].(string)
+		} else {
+			tokenClaims.Email = claims["claims"].(map[string]interface{})["email"].(string)
+		}
+		if claims["displayName"] != nil {
+			tokenClaims.DisplayName = claims["displayName"].(string)
+		} else {
+			tokenClaims.DisplayName = claims["claims"].(map[string]interface{})["displayName"].(string)
+		}
+		if claims["subExpiration"] != nil {
+			tokenClaims.SubExpirationDate = claims["subExpiration"].(string)
+		} else {
+			tokenClaims.SubExpirationDate = claims["claims"].(map[string]interface{})["subExpiration"].(string)
+		}
 	}
 
 	return tokenClaims, nil
@@ -354,8 +367,6 @@ func (r *repositoryFirebase) TransferDataToSql(users []domain.User) (string, err
 		return "", errors.New("no rows affected")
 	}
 
-	// fmt.Println(rowsAffected)
-
 	return insertString, nil
 }
 
@@ -379,13 +390,61 @@ func (r *repositoryFirebase) BulkInsertString(users []domain.User) (string, erro
 	return insertSQL, nil
 }
 
-func (r *repositoryFirebase) SubscribeToPremium(id string, date string) error {
-	claims := map[string]interface{}{"subExpiration": date}
+func (r *repositoryFirebase) SubscribeToPremium(id string, date string) (string, error) {
 
-	err := r.authClient.SetCustomUserClaims(ctx, id, claims)
+	token, _, err := new(jwt.Parser).ParseUnverified(id, jwt.MapClaims{})
+	if err != nil {
+		return "", err
+	}
+
+	var tokenClaims domain.UserTokenClaims
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		if claims["user_id"] != nil {
+			tokenClaims.Id = claims["user_id"].(string)
+		} else {
+			tokenClaims.Id = claims["claims"].(map[string]interface{})["user_id"].(string)
+		}
+		if claims["name"] != nil {
+			tokenClaims.Username = claims["name"].(string)
+		} else {
+			tokenClaims.Username = claims["claims"].(map[string]interface{})["name"].(string)
+		}
+		if claims["email"] != nil {
+			tokenClaims.Email = claims["email"].(string)
+		} else {
+			tokenClaims.Email = claims["claims"].(map[string]interface{})["email"].(string)
+		}
+		if claims["displayName"] != nil {
+			tokenClaims.DisplayName = claims["displayName"].(string)
+		} else {
+			tokenClaims.DisplayName = claims["claims"].(map[string]interface{})["displayName"].(string)
+		}
+		if claims["subExpiration"] != nil {
+			tokenClaims.SubExpirationDate = claims["subExpiration"].(string)
+		} else {
+			tokenClaims.SubExpirationDate = claims["claims"].(map[string]interface{})["subExpiration"].(string)
+		}
+	}
+
+	// extract all the token claims form the token
+	claims := map[string]interface{}{"displayName": tokenClaims.DisplayName, "subExpiration": date, "user_id": tokenClaims.Id, "name": tokenClaims.Username, "email": tokenClaims.Email}
+
+	err = r.authClient.SetCustomUserClaims(ctx, tokenClaims.Id, claims)
 	if err != nil {
 		fmt.Println("Error setting custom user claims: " + err.Error())
-		return err
+		return "", err
 	}
-	return nil
+	newToken, err := r.authClient.VerifySessionCookieAndCheckRevoked(ctx, id)
+	if err != nil {
+		fmt.Println("Error verifying session cookie: " + err.Error())
+		return "", err
+	}
+
+	refreshedToken, err := r.authClient.CustomTokenWithClaims(ctx, newToken.Subject, claims)
+	if err != nil {
+		fmt.Println("Error creating custom token: " + err.Error())
+		return "", err
+	}
+
+	return refreshedToken, nil
 }

@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
+
 	"github.com/gin-gonic/gin"
-	"github.com/proyecto-dnd/backend/internal/session"
 	"github.com/proyecto-dnd/backend/internal/dto"
+	"github.com/proyecto-dnd/backend/internal/session"
 )
 
 type SessionHandler struct {
@@ -54,8 +54,7 @@ func (h *SessionHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		sessionList, err := h.service.GetAllSessions()
 		if err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, sessionList)
@@ -76,13 +75,13 @@ func (h *SessionHandler) HandlerGetById() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		tempSession, err := h.service.GetSessionById(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, tempSession)
@@ -103,13 +102,13 @@ func (h *SessionHandler) HandlerGetByCampaignId() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		tempSession, err := h.service.GetSessionsByCampaignId(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, tempSession)
@@ -131,20 +130,20 @@ func (h *SessionHandler) HandlerUpdate() gin.HandlerFunc {
 		id := ctx.Param("id")
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		var tempSession dto.CreateSessionDto
 		if err := ctx.BindJSON(&tempSession); err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		updatedSession, err := h.service.UpdateSession(tempSession, intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, updatedSession)
@@ -165,14 +164,13 @@ func (h *SessionHandler) HandlerDelete() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
-		
 
 		serviceErr := h.service.DeleteSession(intId)
 		if serviceErr != nil {
-			ctx.JSON(500, serviceErr)
+			ctx.JSON(500, serviceErr.Error())
 			return
 		}
 

@@ -14,7 +14,7 @@ type RepositoryUsers interface {
 	Login(userInfo domain.UserLoginInfo) (string, error)
 	GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error)
 	TransferDataToSql(users []domain.User) (string, error)
-	SubscribeToPremium(id string, date string) error
+	SubscribeToPremium(id string, date string) (string,error)
 }
 
 type ServiceUsers interface {
@@ -27,5 +27,5 @@ type ServiceUsers interface {
 	Login(userInfo domain.UserLoginInfo) (string, error)
 	GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error)
 	TransferDataToSql(users []domain.User) (string, error)
-	SubscribeToPremium(id string, date string) error
+	SubscribeToPremium(id string, date string) (string, error)
 }
