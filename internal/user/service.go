@@ -90,3 +90,7 @@ func (s *service) TransferDataToSql(users []domain.User) (string, error) {
 func (s *service) SubscribeToPremium(id string, date string) (string, error) {
 	return s.repositoryFirebase.SubscribeToPremium(id, date)
 }
+
+func (s *service) CheckSubExpiration(userId string) error {
+	return s.repositoryFirebase.CheckSubExpiration(userId)
+}

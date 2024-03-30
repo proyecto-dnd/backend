@@ -43,8 +43,6 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.UserResponse, erro
 	}
 	defer statement.Close()
 
-	fmt.Println(user)
-	fmt.Println(user.DisplayName)
 	params := (&auth.UserToCreate{}).
 		Email(user.Email).
 		Password(user.Password).
@@ -307,14 +305,12 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 }
 
 func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
-	log.Println(1)
-	
+
 	token, _, err := new(jwt.Parser).ParseUnverified(cookieToken, jwt.MapClaims{})
-	if err != nil {
-		log.Println(2)
+	if err != nil {		
 		return domain.UserTokenClaims{}, err
 	}
-	
+
 	var tokenClaims domain.UserTokenClaims
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		if claims["user_id"] != nil {
@@ -405,48 +401,87 @@ func (r *repositoryFirebase) SubscribeToPremium(id string, date string) (string,
 			tokenClaims.Id = claims["user_id"].(string)
 		} else {
 			tokenClaims.Id = claims["claims"].(map[string]interface{})["user_id"].(string)
-		}
-		if claims["name"] != nil {
-			tokenClaims.Username = claims["name"].(string)
-		} else {
-			tokenClaims.Username = claims["claims"].(map[string]interface{})["name"].(string)
-		}
-		if claims["email"] != nil {
-			tokenClaims.Email = claims["email"].(string)
-		} else {
-			tokenClaims.Email = claims["claims"].(map[string]interface{})["email"].(string)
-		}
-		if claims["displayName"] != nil {
-			tokenClaims.DisplayName = claims["displayName"].(string)
-		} else {
-			tokenClaims.DisplayName = claims["claims"].(map[string]interface{})["displayName"].(string)
-		}
-		if claims["subExpiration"] != nil {
-			tokenClaims.SubExpirationDate = claims["subExpiration"].(string)
-		} else {
-			tokenClaims.SubExpirationDate = claims["claims"].(map[string]interface{})["subExpiration"].(string)
+
 		}
 	}
 
-	// extract all the token claims form the token
-	claims := map[string]interface{}{"displayName": tokenClaims.DisplayName, "subExpiration": date, "user_id": tokenClaims.Id, "name": tokenClaims.Username, "email": tokenClaims.Email}
+	// 	if claims["name"] != nil {
+	// 		tokenClaims.Username = claims["name"].(string)
+	// 	} else {
+	// 		tokenClaims.Username = claims["claims"].(map[string]interface{})["name"].(string)
+	// 	}
+	// 	if claims["email"] != nil {
+	// 		tokenClaims.Email = claims["email"].(string)
+	// 	} else {
+	// 		tokenClaims.Email = claims["claims"].(map[string]interface{})["email"].(string)
+	// 	}
+	// 	if claims["displayName"] != nil {
+	// 		tokenClaims.DisplayName = claims["displayName"].(string)
+	// 	} else {
+	// 		tokenClaims.DisplayName = claims["claims"].(map[string]interface{})["displayName"].(string)
+	// 	}
+	// 	if claims["subExpiration"] != nil {
+	// 		tokenClaims.SubExpirationDate = claims["subExpiration"].(string)
+	// 	} else {
+	// 		tokenClaims.SubExpirationDate = claims["claims"].(map[string]interface{})["subExpiration"].(string)
+	// 	}
+	// }
 
-	err = r.authClient.SetCustomUserClaims(ctx, tokenClaims.Id, claims)
+	// claims := map[string]interface{}{"displayName": tokenClaims.DisplayName, "subExpiration": date, "user_id": tokenClaims.Id, "name": tokenClaims.Username, "email": tokenClaims.Email}
+
+	// err = r.authClient.SetCustomUserClaims(ctx, tokenClaims.Id, claims)
+	// if err != nil {
+	// 	fmt.Println("Error setting custom user claims: " + err.Error())
+	// 	return "", err
+	// }
+	// newToken, err := r.authClient.VerifySessionCookieAndCheckRevoked(ctx, id)
+	// if err != nil {
+	// 	fmt.Println("Error verifying session cookie: " + err.Error())
+	// 	return "", err
+	// }
+
+	// refreshedToken, err := r.authClient.CustomTokenWithClaims(ctx, newToken.Subject, claims)
+	// if err != nil {
+	// 	fmt.Println("Error creating custom token: " + err.Error())
+	// 	return "", err
+	// }
+
+	statement, err := r.db.Prepare(QueryUpdateSubExpirationDate)
 	if err != nil {
-		fmt.Println("Error setting custom user claims: " + err.Error())
-		return "", err
+		return "couldn't sub", errors.New("Error preparing statement: " + err.Error())
 	}
-	newToken, err := r.authClient.VerifySessionCookieAndCheckRevoked(ctx, id)
+	defer statement.Close()
+
+	_, err = statement.Exec(date, tokenClaims.Id)
 	if err != nil {
-		fmt.Println("Error verifying session cookie: " + err.Error())
-		return "", err
+		return "couldn't sub", errors.New("Error executing statement: " + err.Error())
 	}
 
-	refreshedToken, err := r.authClient.CustomTokenWithClaims(ctx, newToken.Subject, claims)
+	return "Subbed succesfully", nil
+}
+
+func (r *repositoryFirebase) CheckSubExpiration(userId string) error {
+	statement, err := r.db.Prepare(QueryGetSubExpirationDate)
 	if err != nil {
-		fmt.Println("Error creating custom token: " + err.Error())
-		return "", err
+		return err
+	}
+	defer statement.Close()
+
+	row := statement.QueryRow(userId)
+	var subExpirationDate string
+	err = row.Scan(&subExpirationDate)
+	if err != nil {
+		return err
 	}
 
-	return refreshedToken, nil
+	expirationDateParsed, err := time.Parse("2006-01-02 15:04:05.9999999 -0700 MST", subExpirationDate)
+	if err != nil {
+		ctx.JSON(500, "Error parsing expiration date from token claims:"+err.Error())
+	}
+
+	if !time.Now().Before(expirationDateParsed) {
+		return errors.New("sub expired")
+	}
+
+	return nil
 }

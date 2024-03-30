@@ -20,6 +20,40 @@ func NewDiceEventRepository(db *sql.DB) DiceEventRepository {
 	return &repository{db: db}
 }
 
+// GetBySessionId implements DiceEventRepository.
+func (r *repository) GetBySessionId(sessionid int) ([]domain.DiceEvent, error) {
+	rows, err := r.db.Query(QueryGetBySessionId, sessionid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var diceEvents []domain.DiceEvent
+	for rows.Next() {
+		var diceEvent domain.DiceEvent
+		if err := rows.Scan(
+			&diceEvent.DiceEventId,
+			&diceEvent.Stat,
+			&diceEvent.Difficulty,
+			&diceEvent.DiceRolled,
+			&diceEvent.DiceResult,
+			&diceEvent.EventProtagonist,
+			&diceEvent.Description,
+			&diceEvent.SessionId,
+			&diceEvent.TimeStamp,
+		); err != nil {
+			return nil, err
+		}
+		diceEvents = append(diceEvents, diceEvent)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return diceEvents, nil
+}
+
+
 func (r *repository) Create(diceEvent domain.DiceEvent) (domain.DiceEvent, error) {
 	statement, err := r.db.Prepare(QueryInsert)
 	if err != nil {

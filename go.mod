@@ -21,6 +21,8 @@ require (
 	google.golang.org/api v0.114.0
 )
 
+require github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+
 require (
 	cloud.google.com/go v0.110.0 // indirect
 	cloud.google.com/go/compute v1.19.1 // indirect
@@ -29,6 +31,7 @@ require (
 	cloud.google.com/go/iam v0.13.0 // indirect
 	cloud.google.com/go/longrunning v0.4.1 // indirect
 	cloud.google.com/go/storage v1.30.1 // indirect
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.1 // indirect
