@@ -307,14 +307,17 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 }
 
 func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
-
+	log.Println(1)
+	
 	token, _, err := new(jwt.Parser).ParseUnverified(cookieToken, jwt.MapClaims{})
 	if err != nil {
+		log.Println(2)
 		return domain.UserTokenClaims{}, err
 	}
-
+	
 	var tokenClaims domain.UserTokenClaims
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		log.Println(3)
 
 		uid := claims["user_id"].(string)
 		username := claims["name"].(string)
@@ -379,13 +382,30 @@ func (r *repositoryFirebase) BulkInsertString(users []domain.User) (string, erro
 	return insertSQL, nil
 }
 
-func (r *repositoryFirebase) SubscribeToPremium(id string, date string) error {
-	claims := map[string]interface{}{"subExpiration": date}
-
-	err := r.authClient.SetCustomUserClaims(ctx, id, claims)
+func (r *repositoryFirebase) SubscribeToPremium(cookie string, date string) error {
+	var id string
+	token, _, err := new(jwt.Parser).ParseUnverified(cookie, jwt.MapClaims{})
 	if err != nil {
-		fmt.Println("Error setting custom user claims: " + err.Error())
 		return err
+	}
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		uid := claims["user_id"].(string)
+		displayName := claims["displayName"].(string)
+		claims := map[string]interface{}{
+			"subExpiration": date,
+			"displayName": displayName,
+		}
+		
+		id = uid
+		log.Println("claims: " + claims["subExpiration"].(string))
+		log.Println("uid: " + id)
+	
+	
+		err = r.authClient.SetCustomUserClaims(ctx, id, claims)
+		if err != nil {
+			fmt.Println("Error setting custom user claims: " + err.Error())
+			return err
+		}
 	}
 	return nil
 }
