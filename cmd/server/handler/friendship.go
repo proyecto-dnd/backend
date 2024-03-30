@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/friendship"
@@ -33,12 +31,12 @@ func (h *FriendshipHandler) HandlerCreate() gin.HandlerFunc {
 		friend := ctx.Param("friend")
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 		userId := jwtClaimsInfo.Id
@@ -69,12 +67,12 @@ func (h *FriendshipHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempFriendship domain.Friendship
 		if err := ctx.BindJSON(&tempFriendship); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		_, err := h.service.Create(tempFriendship)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -85,18 +83,26 @@ func (h *FriendshipHandler) HandlerDelete() gin.HandlerFunc {
 func (h *FriendshipHandler) HandlerSearchFollowers() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		name := ctx.Param("name")
-		// MOSTRAR AMIGOS EN LOS QUE SE SIGAN MUTUAMENTE
 		var tempFriendship domain.Mutuals
 		tempFriendship.User2Name = name
-		if err := ctx.BindJSON(&tempFriendship); err != nil {
-			ctx.JSON(500, err)
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err.Error())
 			return
 		}
+		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err.Error())
+			return
+		}
+		tempFriendship.User1Id = jwtClaimsInfo.Id
+
 		followers, err := h.service.SearchFollowers(tempFriendship)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
+
 		ctx.JSON(200, followers)
 	}
 }
@@ -106,35 +112,46 @@ func (h *FriendshipHandler) HandlerGetAllFriends() gin.HandlerFunc {
 
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 
 		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 		userId := jwtClaimsInfo.Id
-		fmt.Println(jwtClaimsInfo)
 
 		friends, err := h.service.GetAllFriends(userId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
-		fmt.Println(friends)
 		ctx.JSON(200, friends)
 	}
 }
 
 func (h *FriendshipHandler) HandlerGetBySimilarName() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		name := ctx.Param("name")
-		users, err := h.service.GetBySimilarName(name)
+		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
+			return
+		}
+
+		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err.Error())
+			return
+		}
+		userId := jwtClaimsInfo.Id
+
+		name := ctx.Param("name")
+		users, err := h.service.GetBySimilarName(name, userId)
+		if err != nil {
+			ctx.JSON(400, err.Error())
 			return
 		}
 

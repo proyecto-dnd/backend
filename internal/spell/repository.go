@@ -127,10 +127,11 @@ func (r *spellMySqlRepository) GetById(id int) (domain.Spell, error) {
 func (r *spellMySqlRepository) Update(spell dto.SpellDto, id int) (domain.Spell, error) {
 	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {
+
 		return domain.Spell{}, ErrPrepareStatement
 	}
 	defer statement.Close()
-	_, err = statement.Exec(&spell.Name, &spell.Description, &spell.Range, &spell.Ritual, &spell.Duration, &spell.Concentration, &spell.CastingTime, &spell.Level, &spell.DamageType, &spell.Level, &spell.DamageType, &spell.DifficultyClass, &spell.Aoe, &spell.School)
+	_, err = statement.Exec(&spell.Name, &spell.Description, &spell.Range, &spell.Ritual, &spell.Duration, &spell.Concentration, &spell.CastingTime, &spell.Level, &spell.DamageType, &spell.DifficultyClass, &spell.Aoe, &spell.School, id)
 	if err != nil {
 		return domain.Spell{}, err
 	}
@@ -200,6 +201,39 @@ func (r *spellMySqlRepository) GetByCharacterDataId(characterId int) ([]domain.S
 			&spell.Aoe,
 			&spell.School); err != nil {
 			return nil, err
+		}
+		spells = append(spells, spell)
+	}
+
+	return spells, nil
+}
+
+func (r *spellMySqlRepository) GetByClassId(classId int) ([]domain.Spell, error) {
+	rows, err := r.db.Query(QueryGetByClassId, classId)
+
+	if err != nil {
+		return []domain.Spell{}, err
+	}
+	spells := []domain.Spell{}
+	for rows.Next() {
+		var spell domain.Spell
+		err := rows.Scan(
+			&spell.SpellId,
+			&spell.Name,
+			&spell.Description,
+			&spell.Range,
+			&spell.Ritual,
+			&spell.Duration,
+			&spell.Concentration,
+			&spell.CastingTime,
+			&spell.Level,
+			&spell.DamageType,
+			&spell.DifficultyClass,
+			&spell.Aoe,
+			&spell.School)
+
+		if err != nil {
+			return []domain.Spell{}, err
 		}
 		spells = append(spells, spell)
 	}

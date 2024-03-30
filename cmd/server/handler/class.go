@@ -29,13 +29,13 @@ func (h *ClassHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempClass dto.ClassDto
 		if err := ctx.BindJSON(&tempClass); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		createdClass, err := h.service.Create(tempClass)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -54,7 +54,7 @@ func (h *ClassHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		classList, err := h.service.GetAll()
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -76,13 +76,13 @@ func (h *ClassHandler) HandlerGetById() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		class, err := h.service.GetById(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -106,19 +106,19 @@ func (h *ClassHandler) HandlerUpdate() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		var tempClass dto.ClassDto
 		if err := ctx.BindJSON(&tempClass); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		updatedClass, err := h.service.Update(tempClass, intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -140,12 +140,12 @@ func (h *ClassHandler) HandlerDelete() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		if err = h.service.Delete(intId); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 

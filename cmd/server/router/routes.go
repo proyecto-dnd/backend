@@ -116,8 +116,8 @@ var (
 	raceXProficiencyService    raceXproficiency.RaceXProficiencyService
 	raceXProficiencyHandler    *handler.RaceXProficiencyHandler
 
-	characterXSpellRepository characterXspell.CharacterXSpellRepository
-	characterXSpellService    characterXspell.CharacterXSpellService
+	characterXSpellRepository characterXspell.RepositoryCharacterXSpell
+	characterXSpellService    characterXspell.ServiceCharacterXSpell
 	characterXSpellHandler    *handler.CharacterXSpellHandler
 
 	attackEventRepository attackEvent.AttackEventRepository
@@ -257,16 +257,12 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	classXSpellService = classXspell.NewClassXSpelService(classXSpellRepository)
 	classXSpellHandler = handler.NewClassXSpellHandler(&classXSpellService)
 	characterXSpellRepository = characterXspell.NewCharacterXSpellRepository(db)
-	characterXSpellRepository = characterXspell.NewCharacterXSpellService(characterXSpellRepository)
-	characterXSpellHandler = handler.NewCharacterXSpellHandler(characterXSpellService)
+	characterXSpellService = characterXspell.NewCharacterXSpellService(characterXSpellRepository)
+	characterXSpellHandler = handler.NewCharacterXSpellHandler(&characterXSpellService)
 
 	sessionRepository = session.NewSessionRepository(db)
 	sessionService = session.NewSessionService(sessionRepository)
 	sessionHandler = handler.NewSessionHandler(&sessionService)
-
-	campaignRepository = campaign.NewCampaignRepository(db)
-	campaignService = campaign.NewCampaignService(campaignRepository, sessionService)
-	campaignHandler = handler.NewCampaignHandler(&campaignService)
 
 	backgroundXProficiencyRepository = backgroundXproficiency.NewBackgroundXProficiencyRepository(db)
 	backgroundXProficiencyService = backgroundXproficiency.NewBackgroundXProficiencyService(backgroundXProficiencyRepository)
@@ -283,6 +279,10 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	attackEventRepository = attackEvent.NewAttackEventRepository(db)
 	attackEventService = attackEvent.NewAttackEventService(attackEventRepository, characterDataService)
 	attackEventHandler = handler.NewAttackEventHandler(&attackEventService)
+
+	campaignRepository = campaign.NewCampaignRepository(db)
+	campaignService = campaign.NewCampaignService(campaignRepository, sessionService, userCampaignService, characterDataService)
+	campaignHandler = handler.NewCampaignHandler(&campaignService, &userFirebaseService)
 
 	characterTradeRepository = charactertrade.NewCharacterTradeMySqlRepository(db)
 	characterTradeService = charactertrade.NewCharacterTradeService(characterTradeRepository)
@@ -460,10 +460,10 @@ func (r *router) buildUserCampaignRoutes() {
 func (r *router) buildFriendshipRoutes() {
 	friendshipGroup := r.routerGroup.Group("/friendship")
 	{
-		friendshipGroup.POST("", friendshipHandler.HandlerCreate())
+		friendshipGroup.POST("/:friend", friendshipHandler.HandlerCreate())
 		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends())
 		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerGetBySimilarName())
-		friendshipGroup.GET("/friends/:name", friendshipHandler.HandlerSearchFollowers())
+		friendshipGroup.GET("/find/:name", friendshipHandler.HandlerSearchFollowers())
 		friendshipGroup.DELETE("", friendshipHandler.HandlerDelete())
 	}
 }
@@ -487,6 +487,7 @@ func (r *router) buildSpellRoutes() {
 		spellGroup.GET("", spellHandler.HandlergetAll())
 		spellGroup.GET("/:id", spellHandler.HandlerGetById())
 		spellGroup.GET("/character/:id", spellHandler.HandlerGetByCharacterId())
+		spellGroup.GET("/class/:id", spellHandler.HandlerGetByClassId())
 		spellGroup.PUT("/:id", spellHandler.HandlerUpdate())
 		spellGroup.DELETE("/:id", spellHandler.HandlerDelete())
 	}
@@ -521,6 +522,7 @@ func (r *router) buildCharacterXSpellRoutes() {
 	{
 		characterXSpellGroup.POST("", characterXSpellHandler.HandlerCreate())
 		characterXSpellGroup.DELETE("/:id", characterXSpellHandler.HandlerDelete())
+		characterXSpellGroup.DELETE("/delete", characterXSpellHandler.HandlerDeleteParams())
 	}
 }
 

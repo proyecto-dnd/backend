@@ -5,4 +5,3 @@ type CharacterXSpell struct {
 	CharacterId      int `json:"character_id"`
 	SpellId          int `json:"spell_id"`
 }
-

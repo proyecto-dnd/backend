@@ -30,13 +30,13 @@ func (h *AttackEventHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempEvent domain.AttackEvent
 		if err := ctx.BindJSON(&tempEvent); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		createdEvent, err := h.service.CreateEvent(tempEvent)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -55,7 +55,7 @@ func (h *AttackEventHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		eventList, err := h.service.GetAllEvents()
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, eventList)
@@ -76,13 +76,13 @@ func (h *AttackEventHandler) HandlerGetById() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		tempEvent, err := h.service.GetEventById(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, tempEvent)
@@ -103,19 +103,18 @@ func (h *AttackEventHandler) HandlerGetBySessionId() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		eventList, err := h.service.GetEventsBySessionId(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, eventList)
 	}
 }
-
 
 // event godoc
 // @Summary Get event by protagonist id
@@ -131,13 +130,13 @@ func (h *AttackEventHandler) HandlerGetByProtagonistId() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		eventList, err := h.service.GetEventsByProtagonistId(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, eventList)
@@ -158,13 +157,13 @@ func (h *AttackEventHandler) HandlerGetByAffectedId() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		eventList, err := h.service.GetEventsByAffectedId(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, eventList)
@@ -187,7 +186,7 @@ func (h *AttackEventHandler) HandlerGetByProtagonistIdAndAffectedId() gin.Handle
 
 		intProtagonistId, err := strconv.Atoi(protagonistid)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -199,7 +198,7 @@ func (h *AttackEventHandler) HandlerGetByProtagonistIdAndAffectedId() gin.Handle
 
 		eventList, err := h.service.GetEventsByProtagonistIdAndAffectedId(intProtagonistId, intAffectedId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, eventList)
@@ -221,19 +220,19 @@ func (h *AttackEventHandler) HandlerUpdate() gin.HandlerFunc {
 		id := ctx.Param("id")
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		var tempEvent dto.CreateAttackEventDto
 		if err := ctx.BindJSON(&tempEvent); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		updatedEvent, err := h.service.UpdateEvent(tempEvent, intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, updatedEvent)
@@ -254,14 +253,13 @@ func (h *AttackEventHandler) HandlerDelete() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
-		
 
 		serviceErr := h.service.DeleteEvent(intId)
 		if serviceErr != nil {
-			ctx.JSON(500, serviceErr)
+			ctx.JSON(500, serviceErr.Error())
 			return
 		}
 

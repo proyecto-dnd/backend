@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"fmt"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/dto"
 	"github.com/proyecto-dnd/backend/internal/race"
-	"strconv"
 )
 
 type RaceHandler struct {
@@ -38,8 +38,8 @@ func (h *RaceHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		races, err := h.service.GetAllRaces()
 		if err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, races)
@@ -76,8 +76,7 @@ func (h *RaceHandler) HandlerUpdate() gin.HandlerFunc {
 
 		var tempRace dto.CreateRaceDto
 		if err := ctx.BindJSON(&tempRace); err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 

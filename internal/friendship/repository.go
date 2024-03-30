@@ -37,8 +37,18 @@ func NewFriendshipRepository(db *sql.DB, userRepository user.RepositoryUsers, ap
 func (r *repositoryFriendship) SearchFollowers(mutuals domain.Mutuals) ([]domain.UserResponse, error) {
 
 	usersListChan := make(chan []domain.UserResponse)
-	user1FriendsChan := make(chan []domain.Friendship)
-	tempFriendListChan := make(chan domain.UserResponse)
+	user1FriendsChan := make(chan []domain.FriendUserData)
+	tempFriendListChan := make(chan []domain.UserResponse)
+
+	go func() {
+		user1Friends, err := r.GetAllFriends(mutuals.User1Id)
+		if err != nil {
+			user1FriendsChan <- []domain.FriendUserData{}
+			return
+		}
+		user1FriendsChan <- user1Friends
+		close(user1FriendsChan)
+	}()
 
 	go func() {
 		usersList, err := r.userRepository.GetAll()
@@ -47,53 +57,37 @@ func (r *repositoryFriendship) SearchFollowers(mutuals domain.Mutuals) ([]domain
 			return
 		}
 		usersListChan <- usersList
+		close(usersListChan)
 	}()
-
 	go func() {
-		user1Friends, err := r.GetAllFriends(mutuals.User1Id)
-		if err != nil {
-			user1FriendsChan <- []domain.Friendship{}
-			return
-		}
-		user1FriendsChan <- user1Friends
-	}()
-
-	go func() {
-		usersList := <-usersListChan
-		userListByName := make([]domain.UserResponse, 0)
-		for _, user := range usersList {
+		var usersListByName []domain.UserResponse
+		for _, user := range <-usersListChan {
 			if strings.HasPrefix(strings.ToLower(user.Username), strings.ToLower(mutuals.User2Name)) {
-				userListByName = append(userListByName, user)
+				usersListByName = append(usersListByName, user)
 			}
 		}
-		user1Friends := <-user1FriendsChan
-		for _, friend := range user1Friends {
-			for _, user := range userListByName {
-				if friend.User2Id == user.Id {
-					tempFriendListChan <- user
+		filteredList := []domain.UserResponse{}
+		for _, user := range usersListByName {
+			isFriend := false
+			for _, friend := range <-user1FriendsChan {
+				if user.Id == friend.UserId {
+					isFriend = true
+					break
 				}
 			}
+			if !isFriend && user.Id != mutuals.User1Id {
+				filteredList = append(filteredList, user)
+			}
 		}
+
+		tempFriendListChan <- filteredList
 		close(tempFriendListChan)
+
 	}()
 
-	tempFriendList := []domain.UserResponse{}
-	for user := range tempFriendListChan {
-		tempFriendList = append(tempFriendList, user)
-	}
+	tempFriendList := <-tempFriendListChan
 
 	return tempFriendList, nil
-
-	// var tempFriendList []domain.UserResponse
-	// for _, friend := range user1Friends {
-	// 	for _, user := range userListByName {
-	// 		if friend.User2Id == user.Id {
-	// 			tempFriendList = append(tempFriendList, user)
-	// 		}
-	// 	}
-	// }
-
-	// return tempFriendList, nil
 }
 
 func (r *repositoryFriendship) Create(friendship domain.Friendship) (domain.Friendship, error) {
@@ -133,23 +127,23 @@ func (r *repositoryFriendship) Delete(friendship domain.Friendship) error {
 	return nil
 }
 
-func (r *repositoryFriendship) IsFriends(userId1 string, userId2 string) (bool, error) {
-	statement, err := r.db.Prepare(QueryCheckFriendship)
-	if err != nil {
-		return false, ErrPrepareStatement
-	}
-	defer statement.Close()
+// func (r *repositoryFriendship) IsFriends(userId1 string, userId2 string) (bool, error) {
+// 	statement, err := r.db.Prepare(QueryCheckFriendship)
+// 	if err != nil {
+// 		return false, ErrPrepareStatement
+// 	}
+// 	defer statement.Close()
 
-	var count int
-	err = statement.QueryRow(userId1, userId2, userId2, userId1).Scan(&count)
-	if err != nil {
-		return false, err
-	}
+// 	var count int
+// 	err = statement.QueryRow(userId1, userId2, userId2, userId1).Scan(&count)
+// 	if err != nil {
+// 		return false, err
+// 	}
 
-	return count > 0, nil
-}
+// 	return count > 0, nil
+// }
 
-func (r *repositoryFriendship) GetAllFriends(userId string) ([]domain.Friendship, error) {
+func (r *repositoryFriendship) GetAllFriends(userId string) ([]domain.FriendUserData, error) {
 	statement, err := r.db.Prepare(QueryGetFriends)
 	if err != nil {
 		return nil, ErrPrepareStatement
@@ -176,22 +170,201 @@ func (r *repositoryFriendship) GetAllFriends(userId string) ([]domain.Friendship
 			friendships = append(friendships, friend)
 		}
 	}
-
-	return friendships, nil
-}
-
-func (r *repositoryFriendship) GetBySimilarName(input string) ([]domain.UserResponse, error) {
-	usersList, err := r.userRepository.GetAll()
+	var friendshipList []domain.UserResponse
+	fullUserList, err := r.userRepository.GetAll()
 	if err != nil {
-		return []domain.UserResponse{}, err
+		return nil, err
 	}
-
-	usersListByName := make([]domain.UserResponse, 0)
-	for _, user := range usersList {
-		if strings.HasPrefix(strings.ToLower(user.Username), strings.ToLower(input)) {
-			usersListByName = append(usersListByName, user)
+	for _, friendship := range friendships {
+		for _, user := range fullUserList {
+			if friendship.User2Id == user.Id {
+				friendshipList = append(friendshipList, user)
+			}
 		}
 	}
 
-	return usersListByName, nil
+	friendshipsListrows, err := r.db.Query(QueryGetAllFriendships)
+	if err != nil {
+		return []domain.FriendUserData{}, err
+	}
+	defer friendshipsListrows.Close()
+
+	var friendshipsList []domain.Friendship
+	for friendshipsListrows.Next() {
+		var friendship domain.Friendship
+		err = friendshipsListrows.Scan(&friendship.User1Id, &friendship.User2Id)
+		if err != nil {
+			return []domain.FriendUserData{}, err
+		}
+		friendshipsList = append(friendshipsList, friendship)
+	}
+	var friendStatus domain.FriendUserData
+	var friends []domain.FriendUserData
+
+	for _, friend := range friendshipList {
+		if r.isReciprocated(friendshipsList, userId, friend.Id) == "reciprocated" {
+			friendStatus.UserId = friend.Id
+			friendStatus.Username = friend.Username
+			friendStatus.DisplayName = friend.DisplayName
+			friendStatus.Email = friend.Email
+			friendStatus.Image = friend.Image
+			friendStatus.Following = true
+			friendStatus.FollowsYou = true
+			friends = append(friends, friendStatus)
+			continue
+		} else if r.isReciprocated(friendshipsList, userId, friend.Id) == "follows you" {
+			friendStatus.UserId = friend.Id
+			friendStatus.Username = friend.Username
+			friendStatus.DisplayName = friend.DisplayName
+			friendStatus.Email = friend.Email
+			friendStatus.Image = friend.Image
+			friendStatus.Following = true
+			friendStatus.FollowsYou = false
+			friends = append(friends, friendStatus)
+			continue
+		} else if r.isReciprocated(friendshipsList, userId, friend.Id) == "you follow" {
+			friendStatus.UserId = friend.Id
+			friendStatus.Username = friend.Username
+			friendStatus.DisplayName = friend.DisplayName
+			friendStatus.Email = friend.Email
+			friendStatus.Image = friend.Image
+			friendStatus.Following = false
+			friendStatus.FollowsYou = true
+			friends = append(friends, friendStatus)
+			continue
+		} else if r.isReciprocated(friendshipsList, userId, friend.Id) == "unknowns" {
+			friendStatus.UserId = friend.Id
+			friendStatus.Username = friend.Username
+			friendStatus.DisplayName = friend.DisplayName
+			friendStatus.Email = friend.Email
+			friendStatus.Image = friend.Image
+			friendStatus.Following = false
+			friendStatus.FollowsYou = false
+			friends = append(friends, friendStatus)
+			continue
+		}
+	}
+
+	return friends, nil
 }
+
+func (r *repositoryFriendship) GetBySimilarName(input string, userId string) ([]domain.FriendUserData, error) {
+	usersList, err := r.userRepository.GetAll()
+	if err != nil {
+		return []domain.FriendUserData{}, err
+	}
+
+	// friendList, err := r.GetAllFriends(userId)
+	// if err != nil {
+	// 	return []domain.FriendUserData{}, err
+	// }
+
+	friendshipList, err := r.GetListFriendships()
+	if err != nil {
+		return []domain.FriendUserData{}, err
+	}
+
+	//filter the list of all users by people that is not in the friendlist
+	// listByName := []domain.UserResponse{}
+	foundUsersList := []domain.FriendUserData{}
+	var foundUser domain.FriendUserData
+
+	for _, user := range usersList {
+		if strings.HasPrefix(strings.ToLower(user.Username), strings.ToLower(input)) && user.Id != userId {
+			if r.isReciprocated(friendshipList, userId, user.Id) == "reciprocated" {
+				foundUser.UserId = user.Id
+				foundUser.Username = user.Username
+				foundUser.DisplayName = user.DisplayName
+				foundUser.Email = user.Email
+				foundUser.Image = user.Image
+				foundUser.Following = true
+				foundUser.FollowsYou = true
+				foundUsersList = append(foundUsersList, foundUser)
+				continue
+			} else if r.isReciprocated(friendshipList, user.Id, userId) == "follows you" {
+				foundUser.UserId = user.Id
+				foundUser.Username = user.Username
+				foundUser.DisplayName = user.DisplayName
+				foundUser.Email = user.Email
+				foundUser.Image = user.Image
+				foundUser.Following = false
+				foundUser.FollowsYou = true
+				foundUsersList = append(foundUsersList, foundUser)
+				continue
+			} else if r.isReciprocated(friendshipList, user.Id, userId) == "you follow" {
+				foundUser.UserId = user.Id
+				foundUser.Username = user.Username
+				foundUser.DisplayName = user.DisplayName
+				foundUser.Email = user.Email
+				foundUser.Image = user.Image
+				foundUser.Following = true
+				foundUser.FollowsYou = false
+				foundUsersList = append(foundUsersList, foundUser)
+				continue
+			} else if r.isReciprocated(friendshipList, userId, user.Id) == "unknowns" {
+				foundUser.UserId = user.Id
+				foundUser.Username = user.Username
+				foundUser.DisplayName = user.DisplayName
+				foundUser.Email = user.Email
+				foundUser.Image = user.Image
+				foundUser.Following = false
+				foundUser.FollowsYou = false
+				foundUsersList = append(foundUsersList, foundUser)
+				continue
+			}
+			break
+		}
+
+	}
+
+	//  START
+
+	return foundUsersList, nil
+}
+func (r *repositoryFriendship) isReciprocated(friendshipList []domain.Friendship, user1Id string, user2Id string) string {
+	var youBefriended string
+	var youAreBefriended string
+	for _, friendship := range friendshipList {
+		if friendship.User1Id == user1Id && friendship.User2Id == user2Id {
+			youBefriended = "yes"
+		}
+		if friendship.User1Id == user2Id && friendship.User2Id == user1Id {
+			youAreBefriended = "yes"
+		}
+	}
+	if youBefriended == "yes" && youAreBefriended == "yes" {
+		return "reciprocated"
+	} else if youAreBefriended == "yes" && youBefriended != "yes" {
+		return "you follow"
+	} else if youAreBefriended != "yes" && youBefriended == "yes" {
+		return "follows you"
+	} else if youAreBefriended != "yes" && youBefriended != "yes" {
+		return "unknowns"
+	}
+	return "unknowns"
+}
+
+func (r *repositoryFriendship) GetListFriendships() ([]domain.Friendship, error) {
+	friendshipsListrows, err := r.db.Query(QueryGetAllFriendships)
+	if err != nil {
+		return []domain.Friendship{}, err
+	}
+	defer friendshipsListrows.Close()
+
+	var friendshipsList []domain.Friendship
+	for friendshipsListrows.Next() {
+		var friendship domain.Friendship
+		err = friendshipsListrows.Scan(&friendship.User1Id, &friendship.User2Id)
+		if err != nil {
+			return []domain.Friendship{}, err
+		}
+		friendshipsList = append(friendshipsList, friendship)
+	}
+	return friendshipsList, nil
+}
+
+/*
+
+
+
+ */

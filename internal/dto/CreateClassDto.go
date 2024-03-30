@@ -8,5 +8,5 @@ type ClassDto struct {
 	ArmorProficiencies  string `json:"armor_proficiencies"`
 	WeaponProficiencies string `json:"weapon_proficiencies"`
 	ToolProficiencies   string `json:"tool_proficiencies"`
-	SpellcastingAbility []byte    `json:"spellcasting_ability"`
+	SpellcastingAbility string `json:"spellcasting_ability"`
 }

@@ -1,8 +1,8 @@
 package dto
 
 type CreateUserCampaignDto struct {
-	CampaignId     int    `json:"campaign_id"`
-	UserId         string `json:"user_id"`
-	IsDm           int    `json:"is_dm"`
-	IsOwner        int    `json:"is_owner"`
+	CampaignId  int    `json:"campaign_id"`
+	UserId      string `json:"user_id"`
+	CharacterId *int   `json:"character_id"`
+	IsOwner     int    `json:"is_owner"`
 }

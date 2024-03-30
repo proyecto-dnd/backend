@@ -49,9 +49,8 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.UserResponse, erro
 		Email(user.Email).
 		Password(user.Password).
 		DisplayName(user.Username).
-		Disabled(false)
-
-	fmt.Println(params)
+		Disabled(false).
+		PhotoURL("https://proyecto-dnd.vercel.app/user.png")
 
 	//firebase create
 	newUser, err := r.authClient.CreateUser(ctx, params)
@@ -68,7 +67,7 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.UserResponse, erro
 	}
 
 	//sql create
-	_, err = statement.Exec(newUser.UID, user.Username, user.Email, user.Password, user.DisplayName)
+	_, err = statement.Exec(newUser.UID, user.Username, user.Email, user.Password, user.DisplayName, "https://proyecto-dnd.vercel.app/user.png")
 	if err != nil {
 		fmt.Println("Error setting custom user claims.")
 		return domain.UserResponse{}, err
@@ -79,14 +78,16 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.UserResponse, erro
 	userTemp.Email = newUser.Email
 	userTemp.Id = newUser.UID
 	userTemp.DisplayName = user.DisplayName
+	// newUser.PasswordHash = user.Password
 
 	return userTemp, nil
 }
 func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 
-	// var user domain.User
+	// var user domain.UserResponse
 	var users []domain.UserResponse
 	// pager := iterator.NewPager(r.authClient.Users(ctx, ""), 100, "")
+
 	// for {
 	// 	var authUsers []*auth.ExportedUserRecord
 	// 	nextPageToken, err := pager.NextPage(&authUsers)
@@ -96,7 +97,7 @@ func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 	// 	for _, u := range authUsers {
 	// 		user.Username = u.DisplayName
 	// 		user.Email = u.Email
-	// 		user.Password = u.PasswordHash
+	// 		// user.Password = u.PasswordHash
 	// 		user.Id = u.UID
 	// 		users = append(users, user)
 	// 	}
@@ -104,6 +105,7 @@ func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 	// 		break
 	// 	}
 	// }
+
 	rows, err := r.db.Query(QueryGetAllUsers)
 	if err != nil {
 		return []domain.UserResponse{}, err
@@ -114,6 +116,7 @@ func (r *repositoryFirebase) GetAll() ([]domain.UserResponse, error) {
 		if err := rows.Scan(&user.Id, &user.Username, &user.Email, &user.DisplayName, &user.Image); err != nil {
 			return []domain.UserResponse{}, err
 		}
+
 		users = append(users, user)
 	}
 
@@ -145,12 +148,12 @@ func (r *repositoryFirebase) GetByName(name string) ([]domain.User, error) {
 
 func (r *repositoryFirebase) GetById(id string) (domain.UserResponse, error) {
 
-	u, err := r.authClient.GetUser(ctx, id)
+	_, err := r.authClient.GetUser(ctx, id)
 	if err != nil {
 		//TODO RETURN ERROR
 		log.Printf("error getting user %s: %v\n", id, err)
 	}
-	fmt.Println(u)
+
 	row, err := r.db.Query(QueryGetUserById, id)
 	if err != nil {
 		return domain.UserResponse{}, err
@@ -163,6 +166,7 @@ func (r *repositoryFirebase) GetById(id string) (domain.UserResponse, error) {
 			return domain.UserResponse{}, err
 		}
 	}
+	// fmt.Println(user)
 	// var user domain.User
 	// user.Username = u.DisplayName
 	// user.Email = u.Email
@@ -201,11 +205,26 @@ func (r *repositoryFirebase) Update(user domain.UserUpdate, id string) (domain.U
 	return user, nil
 }
 func (r *repositoryFirebase) Delete(id string) error {
+	// userList, err := r.GetAll()
+	// if err != nil {
+	// 	return err
+	// }
+	// //extract uid from userList
+
+	// var idList []string
+	// for _, u := range userList {
+	// 	id = u.Id
+	// 	idList = append(idList, id)
+	// }
+	// r.authClient.DeleteUsers(ctx, idList)
+
+	// fmt.Println("https://media1.tenor.com/m/LBWyQg647MoAAAAC/execute-order66-order66.gif")
 
 	err := r.authClient.DeleteUser(ctx, id)
 	if err != nil {
 		log.Printf("error deleting user: %v\n", err)
 	}
+
 	result, err := r.db.Exec(QueryDeleteUser, id)
 	if err != nil {
 		return err
@@ -288,26 +307,41 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 }
 
 func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
-
+	log.Println(1)
+	
 	token, _, err := new(jwt.Parser).ParseUnverified(cookieToken, jwt.MapClaims{})
 	if err != nil {
+		log.Println(2)
 		return domain.UserTokenClaims{}, err
 	}
-
+	
 	var tokenClaims domain.UserTokenClaims
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-
-		uid := claims["user_id"].(string)
-		username := claims["name"].(string)
-		email := claims["email"].(string)
-		displayName := claims["displayName"].(string)
-		subExpirationDate := claims["subExpiration"].(string)
-
-		tokenClaims.Id = uid
-		tokenClaims.Username = username
-		tokenClaims.Email = email
-		tokenClaims.DisplayName = displayName
-		tokenClaims.SubExpirationDate = subExpirationDate
+		if claims["user_id"] != nil {
+			tokenClaims.Id = claims["user_id"].(string)
+		} else {
+			tokenClaims.Id = claims["claims"].(map[string]interface{})["user_id"].(string)
+		}
+		if claims["name"] != nil {
+			tokenClaims.Username = claims["name"].(string)
+		} else {
+			tokenClaims.Username = claims["claims"].(map[string]interface{})["name"].(string)
+		}
+		if claims["email"] != nil {
+			tokenClaims.Email = claims["email"].(string)
+		} else {
+			tokenClaims.Email = claims["claims"].(map[string]interface{})["email"].(string)
+		}
+		if claims["displayName"] != nil {
+			tokenClaims.DisplayName = claims["displayName"].(string)
+		} else {
+			tokenClaims.DisplayName = claims["claims"].(map[string]interface{})["displayName"].(string)
+		}
+		if claims["subExpiration"] != nil {
+			tokenClaims.SubExpirationDate = claims["subExpiration"].(string)
+		} else {
+			tokenClaims.SubExpirationDate = claims["claims"].(map[string]interface{})["subExpiration"].(string)
+		}
 	}
 
 	return tokenClaims, nil
@@ -335,8 +369,6 @@ func (r *repositoryFirebase) TransferDataToSql(users []domain.User) (string, err
 		return "", errors.New("no rows affected")
 	}
 
-	// fmt.Println(rowsAffected)
-
 	return insertString, nil
 }
 
@@ -360,13 +392,61 @@ func (r *repositoryFirebase) BulkInsertString(users []domain.User) (string, erro
 	return insertSQL, nil
 }
 
-func (r *repositoryFirebase) SubscribeToPremium(id string, date string) error {
-	claims := map[string]interface{}{"subExpiration": date}
+func (r *repositoryFirebase) SubscribeToPremium(id string, date string) (string, error) {
 
-	err := r.authClient.SetCustomUserClaims(ctx, id, claims)
+	token, _, err := new(jwt.Parser).ParseUnverified(id, jwt.MapClaims{})
+	if err != nil {
+		return "", err
+	}
+
+	var tokenClaims domain.UserTokenClaims
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		if claims["user_id"] != nil {
+			tokenClaims.Id = claims["user_id"].(string)
+		} else {
+			tokenClaims.Id = claims["claims"].(map[string]interface{})["user_id"].(string)
+		}
+		if claims["name"] != nil {
+			tokenClaims.Username = claims["name"].(string)
+		} else {
+			tokenClaims.Username = claims["claims"].(map[string]interface{})["name"].(string)
+		}
+		if claims["email"] != nil {
+			tokenClaims.Email = claims["email"].(string)
+		} else {
+			tokenClaims.Email = claims["claims"].(map[string]interface{})["email"].(string)
+		}
+		if claims["displayName"] != nil {
+			tokenClaims.DisplayName = claims["displayName"].(string)
+		} else {
+			tokenClaims.DisplayName = claims["claims"].(map[string]interface{})["displayName"].(string)
+		}
+		if claims["subExpiration"] != nil {
+			tokenClaims.SubExpirationDate = claims["subExpiration"].(string)
+		} else {
+			tokenClaims.SubExpirationDate = claims["claims"].(map[string]interface{})["subExpiration"].(string)
+		}
+	}
+
+	// extract all the token claims form the token
+	claims := map[string]interface{}{"displayName": tokenClaims.DisplayName, "subExpiration": date, "user_id": tokenClaims.Id, "name": tokenClaims.Username, "email": tokenClaims.Email}
+
+	err = r.authClient.SetCustomUserClaims(ctx, tokenClaims.Id, claims)
 	if err != nil {
 		fmt.Println("Error setting custom user claims: " + err.Error())
-		return err
+		return "", err
 	}
-	return nil
+	newToken, err := r.authClient.VerifySessionCookieAndCheckRevoked(ctx, id)
+	if err != nil {
+		fmt.Println("Error verifying session cookie: " + err.Error())
+		return "", err
+	}
+
+	refreshedToken, err := r.authClient.CustomTokenWithClaims(ctx, newToken.Subject, claims)
+	if err != nil {
+		fmt.Println("Error creating custom token: " + err.Error())
+		return "", err
+	}
+
+	return refreshedToken, nil
 }

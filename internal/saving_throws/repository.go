@@ -88,7 +88,6 @@ func (r *repositorySqlSavingThrows) Update(savingThrowDto dto.SavingThrowDto, id
 	defer statement.Close()
 
 	_, err = statement.Exec(
-		id,
 		savingThrowDto.ClassId,
 		savingThrowDto.Str,
 		savingThrowDto.Dex,
@@ -96,6 +95,7 @@ func (r *repositorySqlSavingThrows) Update(savingThrowDto dto.SavingThrowDto, id
 		savingThrowDto.Con,
 		savingThrowDto.Wiz,
 		savingThrowDto.Cha,
+		id,
 	)
 
 	updatedSavingThrow := domain.SavingThrow{

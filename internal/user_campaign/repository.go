@@ -29,7 +29,7 @@ func (r *userCampaignMySqlRepository) Create(userCampaign domain.UserCampaign) (
 	result, err := statement.Exec(
 		userCampaign.CampaignId,
 		userCampaign.UserId,
-		userCampaign.IsDm,
+		userCampaign.CharacterId,
 		userCampaign.IsOwner,
 	)
 	if err != nil {
@@ -59,7 +59,7 @@ func (r *userCampaignMySqlRepository) GetAll() ([]domain.UserCampaign, error) {
 			&userCampaign.UserCampaignId,
 			&userCampaign.CampaignId,
 			&userCampaign.UserId,
-			&userCampaign.IsDm,
+			&userCampaign.CharacterId,
 			&userCampaign.IsOwner,
 		)
 		if err != nil {
@@ -77,7 +77,7 @@ func (r *userCampaignMySqlRepository) GetById(id int) (domain.UserCampaign, erro
 		&userCampaign.UserCampaignId,
 		&userCampaign.CampaignId,
 		&userCampaign.UserId,
-		&userCampaign.IsDm,
+		&userCampaign.CharacterId,
 		&userCampaign.IsOwner,
 	)
 	if err != nil {
@@ -102,7 +102,7 @@ func (r *userCampaignMySqlRepository) GetByCampaignId(id int) ([]domain.UserCamp
 			&userCampaign.UserCampaignId,
 			&userCampaign.CampaignId,
 			&userCampaign.UserId,
-			&userCampaign.IsDm,
+			&userCampaign.CharacterId,
 			&userCampaign.IsOwner,
 		)
 		if err != nil {
@@ -130,7 +130,7 @@ func (r *userCampaignMySqlRepository) GetByUserId(id string) ([]domain.UserCampa
 			&userCampaign.UserCampaignId,
 			&userCampaign.CampaignId,
 			&userCampaign.UserId,
-			&userCampaign.IsDm,
+			&userCampaign.CharacterId,
 			&userCampaign.IsOwner,
 		)
 		if err != nil {
