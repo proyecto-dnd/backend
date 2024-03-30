@@ -10,6 +10,12 @@ func NewDiceEventService(repository DiceEventRepository) DiceEventService {
 	return &service{repository: repository}
 }
 
+// GetBySessionId implements DiceEventService.
+func (s *service) GetBySessionId(sessionid int) ([]domain.DiceEvent, error) {
+	return s.repository.GetBySessionId(sessionid)
+}
+
+
 func (s *service) Create(diceEvent domain.DiceEvent) (domain.DiceEvent, error) {
 	return s.repository.Create(diceEvent)
 }

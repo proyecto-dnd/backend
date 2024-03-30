@@ -17,6 +17,7 @@ import (
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	classXspell "github.com/proyecto-dnd/backend/internal/classXSpell"
 	"github.com/proyecto-dnd/backend/internal/dice_event"
+	"github.com/proyecto-dnd/backend/internal/report"
 	tradeevent "github.com/proyecto-dnd/backend/internal/tradeEvent"
 	"github.com/proyecto-dnd/backend/internal/ws"
 
@@ -165,6 +166,9 @@ var (
 	diceEventRepository dice_event.DiceEventRepository
 	diceEventService    dice_event.DiceEventService
 	diceEventHandler    *handler.DiceEventHandler
+
+	reportGenerator *report.ReportGenerator
+	reportHandler   *handler.ReportHandler
 )
 
 type Router interface {
@@ -294,6 +298,9 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	diceEventService = dice_event.NewDiceEventService(diceEventRepository)
 	diceEventHandler = handler.NewDiceEventHandler(diceEventService)
 
+	reportGenerator = report.NewReportGenerator(tradeEventService, attackEventService, diceEventService)
+	reportHandler = handler.NewReportHandler(reportGenerator)
+
 	hub := ws.NewHub(tradeEventService, attackEventService, diceEventService)
 	go hub.Run()
 	return &router{
@@ -337,9 +344,10 @@ func (r *router) MapRoutes() {
 	r.buildTradeEventRoutes()
 	r.buildDiceEventRoutes()
 	r.buildSkillXCharacterDataRoutes()
-
 	r.buildWebsocketRoutes()
+	r.buildReportRoutes()
 	// TODO Add other builders here	and write their functions
+
 }
 
 func (r *router) setGroup() {
@@ -701,4 +709,9 @@ func (r *router) buildWebsocketRoutes() {
 	}
 }
 
-
+func (r *router) buildReportRoutes() {
+	reportGroup := r.routerGroup.Group("/report")
+	{
+		reportGroup.GET("/session/:id", reportHandler.HandlerGetSessionReport())
+	}
+}
