@@ -26,7 +26,21 @@ func (s *service) Delete(friendship domain.Friendship) error {
 }
 
 func (s *service) SearchFollowers(friendship domain.Mutuals) ([]domain.UserResponse, error) {
-	return s.repository.SearchFollowers(friendship)
+	users, err := s.repository.SearchFollowers(friendship)
+	if err != nil {
+		return []domain.UserResponse{}, err
+	}
+
+	if len(users) == 0 {
+		return []domain.UserResponse{}, nil
+	}
+
+	maxLength := 5
+	if len(users) < maxLength {
+		maxLength = len(users)
+	}
+	fiveResultsForUsers := users[:maxLength]
+	return fiveResultsForUsers, nil
 }
 
 func (s *service) GetAllFriends(userId string) ([]domain.FriendUserData, error) {
@@ -43,11 +57,11 @@ func (s *service) GetBySimilarName(input string, userId string) ([]domain.Friend
 		return []domain.FriendUserData{}, nil
 	}
 
-	maxLength := 5
+	maxLength := 10
 	if len(users) < maxLength {
 		maxLength = len(users)
 	}
-	fiveResultsforUsers := users[:maxLength]
+	tenResultsForUsers := users[:maxLength]
 
-	return fiveResultsforUsers, nil
+	return tenResultsForUsers, nil
 }

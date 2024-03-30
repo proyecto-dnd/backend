@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -61,9 +60,7 @@ func (h *UserHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userList, err := h.service.GetAll()
 		if err != nil {
-			// TEMP ERROR RESPONSE
-			fmt.Println(err)
-			ctx.JSON(400, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -95,11 +92,10 @@ func (h *UserHandler) HandlerGetById() gin.HandlerFunc {
 
 		userTemp, err := h.service.GetById(id)
 		if err != nil {
-			// TEMP ERROR RESPONSE
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
-		// TEMP SUCCESS RESPONSE
+
 		ctx.JSON(200, userTemp)
 	}
 }
@@ -121,13 +117,13 @@ func (h *UserHandler) HandlerUpdate() gin.HandlerFunc {
 		var userTemp domain.UserUpdate
 		if err := ctx.BindJSON(&userTemp); err != nil {
 			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		updatedUser, err := h.service.Update(userTemp, id)
 		if err != nil {
 			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		// TEMP SUCCESS RESPONSE
@@ -151,17 +147,17 @@ func (h *UserHandler) HandlerPatch() gin.HandlerFunc {
 
 		var userTemp domain.UserUpdate
 		if err := ctx.BindJSON(&userTemp); err != nil {
-			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+
+			ctx.JSON(500, err.Error())
 			return
 		}
 		patchedUser, err := h.service.Patch(userTemp, id)
 		if err != nil {
-			// TEMP ERROR RESPONSE
-			ctx.JSON(500, err)
+
+			ctx.JSON(500, err.Error())
 			return
 		}
-		// TEMP SUCCESS RESPONSE
+
 		ctx.JSON(200, patchedUser)
 	}
 }
@@ -180,13 +176,13 @@ func (h *UserHandler) HandlerDelete() gin.HandlerFunc {
 		fmt.Println(id)
 		err := h.service.Delete(id)
 		if err != nil {
-			// TEMP ERROR RESPONSE
-			ctx.JSON(400, err)
+
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		// TEMP SUCCESS RESPONSE
-		ctx.JSON(200, "SE BORRO TODO.")
+		ctx.JSON(200, "Deleted user with id: "+id)
 	}
 }
 
@@ -205,23 +201,19 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 
 		err := ctx.BindJSON(&tempUserInfo)
 		if err != nil {
-			// TEMP ERROR RESPONSE
-			log.Println("BINDING JSON: " + err.Error())
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		cookie, err := h.service.Login(tempUserInfo)
 		if err != nil {
-
-			log.Println("LOGIN SERVICE: " + err.Error())
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		host := ctx.Request.Host
 		domainParts := strings.Split(host, ":")
 		domain := domainParts[0]
-		ctx.SetCookie("Session", cookie, 3600, "/", domain, false, false)
+		ctx.SetCookie("Session", cookie, 36000, "/", domain, false, false)
 
 		ctx.JSON(200, "Setted Cookie")
 	}
@@ -232,13 +224,13 @@ func (h *UserHandler) HandlerGetJwtInfo() gin.HandlerFunc {
 
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 		// log.Println(cookie.Value)
 		jwtClaimsInfo, err := h.service.GetJwtInfo(cookie.Value)
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(400, err.Error())
 			return
 		}
 		// TEMP SUCCESS RESPONSE
@@ -253,22 +245,22 @@ func (h *UserHandler) HandlerSubPremium() gin.HandlerFunc {
 
 		months, err := strconv.Atoi(monthsParam)
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
-		err = h.service.SubscribeToPremium(cookie.Value, time.Now().AddDate(0, months, 0).String())
+		newToken, err := h.service.SubscribeToPremium(cookie.Value, time.Now().AddDate(0, months, 0).String())
 		if err != nil {
-			ctx.JSON(400, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
-
+		ctx.SetCookie("Session", newToken, 0, "/", "localhost", false, true)
 		ctx.JSON(200, "Subscribed to Premium")
 	}
 }

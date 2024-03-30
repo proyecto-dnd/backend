@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
+
 	"github.com/gin-gonic/gin"
-	"github.com/proyecto-dnd/backend/internal/user_campaign"
 	"github.com/proyecto-dnd/backend/internal/dto"
+	"github.com/proyecto-dnd/backend/internal/user_campaign"
 )
 
 type UserCampaignHandler struct {
@@ -54,8 +54,8 @@ func (h *UserCampaignHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userCampaignList, err := h.service.GetAllUserCampaigns()
 		if err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, userCampaignList)
@@ -76,13 +76,13 @@ func (h *UserCampaignHandler) HandlerGetById() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		tempUserCampaign, err := h.service.GetUserCampaignById(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -104,13 +104,13 @@ func (h *UserCampaignHandler) HandlerGetByCampaignId() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		tempUserCampaign, err := h.service.GetUserCampaignByCampaignId(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -132,7 +132,7 @@ func (h *UserCampaignHandler) HandlerGetByUserId() gin.HandlerFunc {
 
 		tempUserCampaign, err := h.service.GetUserCampaignByUserId(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -153,13 +153,13 @@ func (h *UserCampaignHandler) HandlerDelete() gin.HandlerFunc {
 		id := ctx.Param("id")
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		err = h.service.DeleteUserCampaign(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 

@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/friendship"
@@ -131,7 +129,6 @@ func (h *FriendshipHandler) HandlerGetAllFriends() gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println(friends)
 		ctx.JSON(200, friends)
 	}
 }

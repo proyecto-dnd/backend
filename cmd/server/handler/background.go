@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -21,13 +20,13 @@ func (h *BackgroundHandler) HandlerCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tempBackground dto.CreateBackgroundDto
 		if err := ctx.BindJSON(&tempBackground); err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		createdBackground, err := h.service.CreateBackground(tempBackground)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
@@ -39,8 +38,8 @@ func (h *BackgroundHandler) HandlerGetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		backgroundList, err := h.service.GetAllBackgrounds()
 		if err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, backgroundList)
@@ -53,13 +52,13 @@ func (h *BackgroundHandler) HandlerGetById() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		tempBackground, err := h.service.GetBackgroundByID(intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, tempBackground)
@@ -77,14 +76,14 @@ func (h *BackgroundHandler) HandlerUpdate() gin.HandlerFunc {
 
 		var tempBackground dto.CreateBackgroundDto
 		if err := ctx.BindJSON(&tempBackground); err != nil {
-			fmt.Println(err)
-			ctx.JSON(500, err)
+
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		updatedBackground, err := h.service.UpdateBackground(tempBackground, intId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, updatedBackground)
@@ -97,13 +96,13 @@ func (h *BackgroundHandler) HandlerDelete() gin.HandlerFunc {
 
 		intId, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		serviceErr := h.service.DeleteBackground(intId)
 		if serviceErr != nil {
-			ctx.JSON(500, serviceErr)
+			ctx.JSON(500, serviceErr.Error())
 			return
 		}
 

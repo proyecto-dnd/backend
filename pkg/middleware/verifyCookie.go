@@ -12,14 +12,18 @@ func VerifySessionCookie() gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(401, err)
 			return
 		}
+		
+		authClient := firebaseConnection.CreateFirebaseClient()	
+		
+		
 
-		authClient := firebaseConnection.CreateFirebaseClient()
-		_, err = authClient.VerifySessionCookieAndCheckRevoked(ctx, cookie)
+		_, err = authClient.VerifySessionCookieAndCheckRevoked(ctx, cookie)		
 		if err != nil {
 			ctx.AbortWithStatusJSON(498, err)
 			return
 		} else {
 			ctx.Next()
 		}
+		
 	}
 }

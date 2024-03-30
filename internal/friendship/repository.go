@@ -3,7 +3,6 @@ package friendship
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"strings"
 
@@ -245,7 +244,7 @@ func (r *repositoryFriendship) GetAllFriends(userId string) ([]domain.FriendUser
 			continue
 		}
 	}
-	fmt.Println(friends)
+
 	return friends, nil
 }
 
