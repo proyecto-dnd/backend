@@ -3,7 +3,6 @@ package report
 import (
 	"bytes"
 	"strconv"
-
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/proyecto-dnd/backend/internal/attackEvent"
 	"github.com/proyecto-dnd/backend/internal/dice_event"
@@ -26,51 +25,67 @@ func NewReportGenerator(tradeEventService tradeevent.ServiceTradeEvent, attackEv
 	}
 }
 
-func (r *ReportGenerator) GenerateSessionReport(id int) (bytes.Buffer, error) {
+func (r *ReportGenerator) GenerateSessionReport(id int) (*bytes.Buffer, error) {
 	excelFile := excelize.NewFile()
-	tradeSheetIndex := excelFile.NewSheet("Trade Events")
+	tradeSheetIndex := excelFile.NewSheet("Sheet1")
+	excelFile.SetSheetName("Sheet1", "Trade Events")
 	characterTradeSheetIndex := excelFile.NewSheet("Character X Trades")
 	attackEventSheetIndex := excelFile.NewSheet("Attack Event")
 	affectedByAttackEventSheetIndex := excelFile.NewSheet("Affected By Attack Event")
-	
+	diceEventSheetIndex := excelFile.NewSheet("Dice Event")
+
 	tradeEvents, err := r.tradeEventService.GetBySessionId(id)
 	if err != nil {
-		return bytes.Buffer{}, err
+		return &bytes.Buffer{}, err
 	}
 	attackEvents, err := r.attackEventService.GetEventsBySessionId(id)
 	if err != nil {
-		return bytes.Buffer{}, err
+		return &bytes.Buffer{}, err
 	}
-	// Todo add dice events
+	diceEvents, err := r.diceEventService.GetBySessionId(id)
+	if err != nil {
+		return &bytes.Buffer{}, err
+	}
 
 	generateCharacterTradeHeaders(excelFile)
+	excelFile.SetActiveSheet(characterTradeSheetIndex)
 	generateTradeEventHeaders(excelFile)
+	excelFile.SetActiveSheet(tradeSheetIndex)
+	characterTradeIndex := 0
 	for index1, tradeEvent := range tradeEvents {
-		for index2, characterTrade := range tradeEvent.TradingItems {
-			insertCharacterTradeRow(excelFile, characterTrade, index2)
-			excelFile.SetActiveSheet(characterTradeSheetIndex)
-
+		excelFile.SetActiveSheet(characterTradeSheetIndex)
+		for _, characterTrade := range tradeEvent.TradingItems {
+			insertCharacterTradeRow(excelFile, characterTrade, characterTradeIndex)
+			characterTradeIndex++
 		}
-		insertTradeEventRow(excelFile, tradeEvent, index1)
 		excelFile.SetActiveSheet(tradeSheetIndex)
+		insertTradeEventRow(excelFile, tradeEvent, index1)
 	}
 
 	generateAttackEventHeaders(excelFile)
 	generateAffectedByAttackEventHeaders(excelFile)
+	affectedCharactersIndex := 0
 	for index1, attackEvent := range attackEvents {
-		for index2, affectedByAttackEvent := range attackEvent.Affected {
-			insertAffectedByAttackEventRow(excelFile, affectedByAttackEvent, index2)
-			excelFile.SetActiveSheet(affectedByAttackEventSheetIndex)
+		excelFile.SetActiveSheet(affectedByAttackEventSheetIndex)
+		for _, affectedByAttackEvent := range attackEvent.Affected {
+			insertAffectedByAttackEventRow(excelFile, affectedByAttackEvent, affectedCharactersIndex)
+			affectedCharactersIndex++
 		}
-		insertAttackEventRow(excelFile, attackEvent, index1)
 		excelFile.SetActiveSheet(attackEventSheetIndex)
+		insertAttackEventRow(excelFile, attackEvent, index1)
 	}
 
-	
-	if err := excelFile.SaveAs("report.xlsx"); err != nil {
-		return bytes.Buffer{}, err
+	generateDiceEventHeaders(excelFile)
+	excelFile.SetActiveSheet(diceEventSheetIndex)
+	for i, diceEvent := range diceEvents{
+		insertDiceEventRow(excelFile, diceEvent, i)
 	}
-	return bytes.Buffer{}, nil
+
+	excelBytes, err := excelFile.WriteToBuffer()
+	if err != nil { // Should change to return buffer
+		return &bytes.Buffer{}, err
+	}
+	return excelBytes, nil
 }
 
 func generateCharacterTradeHeaders(excelFile *excelize.File) {
@@ -87,34 +102,44 @@ func generateCharacterTradeHeaders(excelFile *excelize.File) {
 }
 
 func insertCharacterTradeRow(excelFile *excelize.File, characterTrade domain.CharacterTrade, i int) {
-	excelFile.SetCellValue("Character X Trades", "A"+strconv.Itoa(i+1), characterTrade.CharacterTrade_Id)
-	excelFile.SetCellValue("Character X Trades", "B"+strconv.Itoa(i+1), characterTrade.TradeEvent_Id)
-	excelFile.SetCellValue("Character X Trades", "C"+strconv.Itoa(i+1), characterTrade.WeaponXCharacter)
-	excelFile.SetCellValue("Character X Trades", "D"+strconv.Itoa(i+1), characterTrade.ItemXCharacter)
-	excelFile.SetCellValue("Character X Trades", "E"+strconv.Itoa(i+1), characterTrade.ArmorXCharacter)
-	excelFile.SetCellValue("Character X Trades", "F"+strconv.Itoa(i+1), characterTrade.ItemOwner)
-	excelFile.SetCellValue("Character X Trades", "G"+strconv.Itoa(i+1), characterTrade.ItemReciever)
-	excelFile.SetCellValue("Character X Trades", "H"+strconv.Itoa(i+1), characterTrade.Quantity)
-	excelFile.SetCellValue("Character X Trades", "I"+strconv.Itoa(i+1), characterTrade.ItemName)
-	excelFile.SetCellValue("Character X Trades", "J"+strconv.Itoa(i+1), characterTrade.ItemType)
+	excelFile.SetCellValue("Character X Trades", "A"+strconv.Itoa(i+2), characterTrade.CharacterTrade_Id)
+	excelFile.SetCellValue("Character X Trades", "B"+strconv.Itoa(i+2), characterTrade.TradeEvent_Id)
+	if characterTrade.WeaponXCharacter != nil {
+		excelFile.SetCellValue("Character X Trades", "C"+strconv.Itoa(i+2), *characterTrade.WeaponXCharacter)
+	}
+	if characterTrade.ItemXCharacter != nil {
+		excelFile.SetCellValue("Character X Trades", "D"+strconv.Itoa(i+2), *characterTrade.ItemXCharacter)
+	}
+	if characterTrade.ArmorXCharacter != nil {
+		excelFile.SetCellValue("Character X Trades", "E"+strconv.Itoa(i+2), *characterTrade.ArmorXCharacter)
+	}
+	excelFile.SetCellValue("Character X Trades", "F"+strconv.Itoa(i+2), characterTrade.ItemOwner)
+	excelFile.SetCellValue("Character X Trades", "G"+strconv.Itoa(i+2), characterTrade.ItemReciever)
+	if characterTrade.Quantity != nil {
+		excelFile.SetCellValue("Character X Trades", "H"+strconv.Itoa(i+2), *characterTrade.Quantity)
+	}
+	excelFile.SetCellValue("Character X Trades", "I"+strconv.Itoa(i+2), characterTrade.ItemName)
+	excelFile.SetCellValue("Character X Trades", "J"+strconv.Itoa(i+2), characterTrade.ItemType)
 }
 
 func generateTradeEventHeaders(excelFile *excelize.File) {
-	excelFile.SetCellValue("Trade Event", "A1", "trade_event_id")
-	excelFile.SetCellValue("Trade Event", "B1", "session_id")
-	excelFile.SetCellValue("Trade Event", "C1", "sender")
-	excelFile.SetCellValue("Trade Event", "D1", "receiver")
-	excelFile.SetCellValue("Trade Event", "E1", "description")
-	excelFile.SetCellValue("Trade Event", "F1", "timestamp")
+	excelFile.SetCellValue("Trade Events", "A1", "trade_event_id")
+	excelFile.SetCellValue("Trade Events", "B1", "session_id")
+	excelFile.SetCellValue("Trade Events", "C1", "sender")
+	excelFile.SetCellValue("Trade Events", "D1", "receiver")
+	excelFile.SetCellValue("Trade Events", "E1", "description")
+	excelFile.SetCellValue("Trade Events", "F1", "timestamp")
 }
 
 func insertTradeEventRow(excelFile *excelize.File, tradeEvent domain.TradeEvent, i int) {
-	excelFile.SetCellValue("Trade Event", "A"+strconv.Itoa(i+1), tradeEvent.TradeEvent_Id)
-	excelFile.SetCellValue("Trade Event", "B"+strconv.Itoa(i+1), tradeEvent.Session_Id)
-	excelFile.SetCellValue("Trade Event", "C"+strconv.Itoa(i+1), tradeEvent.Sender)
-	excelFile.SetCellValue("Trade Event", "D"+strconv.Itoa(i+1), tradeEvent.Receiver)
-	excelFile.SetCellValue("Trade Event", "E"+strconv.Itoa(i+1), tradeEvent.Description)
-	excelFile.SetCellValue("Trade Event", "F"+strconv.Itoa(i+1), tradeEvent.Timestamp)
+	excelFile.SetCellValue("Trade Events", "A"+strconv.Itoa(i+2), tradeEvent.TradeEvent_Id)
+	excelFile.SetCellValue("Trade Events", "B"+strconv.Itoa(i+2), tradeEvent.Session_Id)
+	excelFile.SetCellValue("Trade Events", "C"+strconv.Itoa(i+2), tradeEvent.Sender)
+	excelFile.SetCellValue("Trade Events", "D"+strconv.Itoa(i+2), tradeEvent.Receiver)
+	excelFile.SetCellValue("Trade Events", "E"+strconv.Itoa(i+2), tradeEvent.Description)
+	if tradeEvent.Timestamp != nil {
+		excelFile.SetCellValue("Trade Events", "F"+strconv.Itoa(i+2), *tradeEvent.Timestamp)
+	}
 }
 
 func generateAttackEventHeaders(excelFile *excelize.File) {
@@ -140,28 +165,42 @@ func generateAttackEventHeaders(excelFile *excelize.File) {
 }
 
 func insertAttackEventRow(excelFile *excelize.File, attackEvent dto.ResponseEventDto, i int) {
-	excelFile.SetCellValue("Attack Event", "A"+strconv.Itoa(i+1), attackEvent.AttackEventId)
-	excelFile.SetCellValue("Attack Event", "B"+strconv.Itoa(i+1), attackEvent.Type)
-	excelFile.SetCellValue("Attack Event", "C"+strconv.Itoa(i+1), attackEvent.Environment)
-	excelFile.SetCellValue("Attack Event", "D"+strconv.Itoa(i+1), attackEvent.Session.SessionId)
-	excelFile.SetCellValue("Attack Event", "E"+strconv.Itoa(i+1), attackEvent.EventProtagonist.CharacterId)
-	excelFile.SetCellValue("Attack Event", "F"+strconv.Itoa(i+1), attackEvent.EventProtagonist.UserId)
-	excelFile.SetCellValue("Attack Event", "G"+strconv.Itoa(i+1), attackEvent.EventProtagonist.CampaignID)
-	excelFile.SetCellValue("Attack Event", "H"+strconv.Itoa(i+1), attackEvent.EventProtagonist.ImageUrl)
-	excelFile.SetCellValue("Attack Event", "I"+strconv.Itoa(i+1), attackEvent.EventProtagonist.Name)
-	excelFile.SetCellValue("Attack Event", "J"+strconv.Itoa(i+1), attackEvent.EventProtagonist.Race)
-	excelFile.SetCellValue("Attack Event", "K"+strconv.Itoa(i+1), attackEvent.EventProtagonist.Class)
-	excelFile.SetCellValue("Attack Event", "L"+strconv.Itoa(i+1), attackEvent.EventProtagonist.Level)
-	excelFile.SetCellValue("Attack Event", "M"+strconv.Itoa(i+1), attackEvent.EventProtagonist.HitPoints)
-	excelFile.SetCellValue("Attack Event", "N"+strconv.Itoa(i+1), attackEvent.EventResolution)
-	excelFile.SetCellValue("Attack Event", "O"+strconv.Itoa(i+1), attackEvent.Weapon)
-	excelFile.SetCellValue("Attack Event", "P"+strconv.Itoa(i+1), attackEvent.Spell)
-	excelFile.SetCellValue("Attack Event", "Q"+strconv.Itoa(i+1), attackEvent.DmgType)
-	excelFile.SetCellValue("Attack Event", "R"+strconv.Itoa(i+1), attackEvent.Description)
-	excelFile.SetCellValue("Attack Event", "S"+strconv.Itoa(i+1), attackEvent.TimeStamp)
+	excelFile.SetCellValue("Attack Event", "A"+strconv.Itoa(i+2), attackEvent.AttackEventId)
+	excelFile.SetCellValue("Attack Event", "B"+strconv.Itoa(i+2), attackEvent.Type)
+	excelFile.SetCellValue("Attack Event", "C"+strconv.Itoa(i+2), attackEvent.Environment)
+	excelFile.SetCellValue("Attack Event", "D"+strconv.Itoa(i+2), attackEvent.Session.SessionId)
+	excelFile.SetCellValue("Attack Event", "E"+strconv.Itoa(i+2), attackEvent.EventProtagonist.CharacterId)
+	if attackEvent.EventProtagonist.UserId != nil {
+	excelFile.SetCellValue("Attack Event", "F"+strconv.Itoa(i+2), *attackEvent.EventProtagonist.UserId)
+	}
+	if attackEvent.EventProtagonist.CampaignID != nil {
+	excelFile.SetCellValue("Attack Event", "G"+strconv.Itoa(i+2), *attackEvent.EventProtagonist.CampaignID)
+	}
+	excelFile.SetCellValue("Attack Event", "H"+strconv.Itoa(i+2), attackEvent.EventProtagonist.ImageUrl)
+	excelFile.SetCellValue("Attack Event", "I"+strconv.Itoa(i+2), attackEvent.EventProtagonist.Name)
+	excelFile.SetCellValue("Attack Event", "J"+strconv.Itoa(i+2), attackEvent.EventProtagonist.Race)
+	excelFile.SetCellValue("Attack Event", "K"+strconv.Itoa(i+2), attackEvent.EventProtagonist.Class)
+	excelFile.SetCellValue("Attack Event", "L"+strconv.Itoa(i+2), attackEvent.EventProtagonist.Level)
+	excelFile.SetCellValue("Attack Event", "M"+strconv.Itoa(i+2), attackEvent.EventProtagonist.HitPoints)
+	excelFile.SetCellValue("Attack Event", "N"+strconv.Itoa(i+2), attackEvent.EventResolution)
+	if attackEvent.Weapon != nil {
+		excelFile.SetCellValue("Attack Event", "O"+strconv.Itoa(i+2), *attackEvent.Weapon)
+	}
+	if attackEvent.Spell != nil {
+		excelFile.SetCellValue("Attack Event", "P"+strconv.Itoa(i+2), *attackEvent.Spell)
+	}
+	if attackEvent.DmgType != nil {
+		excelFile.SetCellValue("Attack Event", "Q"+strconv.Itoa(i+2), *attackEvent.DmgType)
+	}
+	if attackEvent.Description != nil {
+		excelFile.SetCellValue("Attack Event", "R"+strconv.Itoa(i+2), *attackEvent.Description)
+	}
+	if attackEvent.TimeStamp != nil {
+		excelFile.SetCellValue("Attack Event", "S"+strconv.Itoa(i+2), *attackEvent.TimeStamp)
+	}
 }
 
-func generateAffectedByAttackEventHeaders(excelFile *excelize.File){
+func generateAffectedByAttackEventHeaders(excelFile *excelize.File) {
 	excelFile.SetCellValue("Affected By Attack Event", "A1", "character_id")
 	excelFile.SetCellValue("Affected By Attack Event", "B1", "user_id")
 	excelFile.SetCellValue("Affected By Attack Event", "C1", "campaign_id")
@@ -174,13 +213,41 @@ func generateAffectedByAttackEventHeaders(excelFile *excelize.File){
 }
 
 func insertAffectedByAttackEventRow(excelFile *excelize.File, affectedByAttackEvent dto.CharacterCardDto, i int) {
-	excelFile.SetCellValue("Affected By Attack Event", "A"+strconv.Itoa(i+1), affectedByAttackEvent.CharacterId)
-	excelFile.SetCellValue("Affected By Attack Event", "B"+strconv.Itoa(i+1), affectedByAttackEvent.UserId)
-	excelFile.SetCellValue("Affected By Attack Event", "C"+strconv.Itoa(i+1), affectedByAttackEvent.CampaignID)
-	excelFile.SetCellValue("Affected By Attack Event", "D"+strconv.Itoa(i+1), affectedByAttackEvent.ImageUrl)
-	excelFile.SetCellValue("Affected By Attack Event", "E"+strconv.Itoa(i+1), affectedByAttackEvent.Name)
-	excelFile.SetCellValue("Affected By Attack Event", "F"+strconv.Itoa(i+1), affectedByAttackEvent.Race)
-	excelFile.SetCellValue("Affected By Attack Event", "G"+strconv.Itoa(i+1), affectedByAttackEvent.Class)
-	excelFile.SetCellValue("Affected By Attack Event", "H"+strconv.Itoa(i+1), affectedByAttackEvent.Level)
-	excelFile.SetCellValue("Affected By Attack Event", "I"+strconv.Itoa(i+1), affectedByAttackEvent.HitPoints)
+	excelFile.SetCellValue("Affected By Attack Event", "A"+strconv.Itoa(i+2), affectedByAttackEvent.CharacterId)	
+	if affectedByAttackEvent.CampaignID != nil {
+		excelFile.SetCellValue("Affected By Attack Event", "B"+strconv.Itoa(i+2), *affectedByAttackEvent.CampaignID)
+	}
+	if affectedByAttackEvent.UserId != nil {
+		excelFile.SetCellValue("Affected By Attack Event", "C"+strconv.Itoa(i+2), *affectedByAttackEvent.UserId)
+	}
+	excelFile.SetCellValue("Affected By Attack Event", "D"+strconv.Itoa(i+2), affectedByAttackEvent.ImageUrl)
+	excelFile.SetCellValue("Affected By Attack Event", "E"+strconv.Itoa(i+2), affectedByAttackEvent.Name)
+	excelFile.SetCellValue("Affected By Attack Event", "F"+strconv.Itoa(i+2), affectedByAttackEvent.Race)
+	excelFile.SetCellValue("Affected By Attack Event", "G"+strconv.Itoa(i+2), affectedByAttackEvent.Class)
+	excelFile.SetCellValue("Affected By Attack Event", "H"+strconv.Itoa(i+2), affectedByAttackEvent.Level)
+	excelFile.SetCellValue("Affected By Attack Event", "I"+strconv.Itoa(i+2), affectedByAttackEvent.HitPoints)
+}
+
+func generateDiceEventHeaders(excelFile *excelize.File) {
+	excelFile.SetCellValue("Dice Event", "A1", "dice_event_id")
+	excelFile.SetCellValue("Dice Event", "B1", "stat")
+	excelFile.SetCellValue("Dice Event", "C1", "difficulty")
+	excelFile.SetCellValue("Dice Event", "D1", "dice_rolled")
+	excelFile.SetCellValue("Dice Event", "E1", "dice_result")
+	excelFile.SetCellValue("Dice Event", "F1", "event_protagonist")
+	excelFile.SetCellValue("Dice Event", "G1", "description")
+	excelFile.SetCellValue("Dice Event", "H1", "session_id")
+	excelFile.SetCellValue("Dice Event", "I1", "time_stamp")
+}
+
+func insertDiceEventRow(excelFile *excelize.File, diceEvent domain.DiceEvent, i int) {
+	excelFile.SetCellValue("Dice Event", "A"+strconv.Itoa(i+2), diceEvent.DiceEventId)
+	excelFile.SetCellValue("Dice Event", "B"+strconv.Itoa(i+2), diceEvent.Stat)
+	excelFile.SetCellValue("Dice Event", "C"+strconv.Itoa(i+2), diceEvent.Difficulty)
+	excelFile.SetCellValue("Dice Event", "D"+strconv.Itoa(i+2), diceEvent.DiceRolled)
+	excelFile.SetCellValue("Dice Event", "E"+strconv.Itoa(i+2), diceEvent.DiceResult)
+	excelFile.SetCellValue("Dice Event", "F"+strconv.Itoa(i+2), diceEvent.EventProtagonist)
+	excelFile.SetCellValue("Dice Event", "G"+strconv.Itoa(i+2), diceEvent.Description)
+	excelFile.SetCellValue("Dice Event", "H"+strconv.Itoa(i+2), diceEvent.SessionId)
+	excelFile.SetCellValue("Dice Event", "I"+strconv.Itoa(i+2), diceEvent.TimeStamp)
 }

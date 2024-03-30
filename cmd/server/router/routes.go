@@ -168,6 +168,7 @@ var (
 	diceEventHandler    *handler.DiceEventHandler
 
 	reportGenerator *report.ReportGenerator
+	reportHandler   *handler.ReportHandler
 )
 
 type Router interface {
@@ -298,7 +299,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	diceEventHandler = handler.NewDiceEventHandler(diceEventService)
 
 	reportGenerator = report.NewReportGenerator(tradeEventService, attackEventService, diceEventService)
-	reportGenerator.GenerateSessionReport(1)
+	reportHandler = handler.NewReportHandler(reportGenerator)
 
 	hub := ws.NewHub(tradeEventService, attackEventService, diceEventService)
 	go hub.Run()
@@ -343,8 +344,8 @@ func (r *router) MapRoutes() {
 	r.buildTradeEventRoutes()
 	r.buildDiceEventRoutes()
 	r.buildSkillXCharacterDataRoutes()
-
 	r.buildWebsocketRoutes()
+	r.buildReportRoutes()
 	// TODO Add other builders here	and write their functions
 
 }
@@ -703,5 +704,12 @@ func (r *router) buildWebsocketRoutes() {
 	wsGroup := r.routerGroup.Group("/ws")
 	{
 		wsGroup.GET("/:session_id", r.hub.ServeWs)
+	}
+}
+
+func (r *router) buildReportRoutes() {
+	reportGroup := r.routerGroup.Group("/report")
+	{
+		reportGroup.GET("/session/:id", reportHandler.HandlerGetSessionReport())
 	}
 }
