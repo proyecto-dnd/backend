@@ -407,5 +407,6 @@ func (r *repositoryFirebase) SubscribeToPremium(cookie string, date string) erro
 			return err
 		}
 	}
+
 	return nil
 }

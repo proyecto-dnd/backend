@@ -82,6 +82,7 @@ func (r *campaignMySqlRepository) GetById(id int) (domain.Campaign, error) {
 }
 
 func (r *campaignMySqlRepository) GetCampaignsByUserId(id string) ([]domain.Campaign, error) {
+
 	rows, err := r.db.Query(QueryGetByUserId, id)
 	if err != nil {
 		return nil, err

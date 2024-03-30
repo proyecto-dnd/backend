@@ -277,7 +277,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	attackEventHandler = handler.NewAttackEventHandler(&attackEventService)
 
 	campaignRepository = campaign.NewCampaignRepository(db)
-	campaignService = campaign.NewCampaignService(campaignRepository, sessionService, userCampaignService, characterDataService)
+	campaignService = campaign.NewCampaignService(campaignRepository, sessionService, userCampaignService, characterDataService, userFirebaseService)
 	campaignHandler = handler.NewCampaignHandler(&campaignService, &userFirebaseService)
 
 	characterTradeRepository = charactertrade.NewCharacterTradeMySqlRepository(db)
@@ -387,7 +387,7 @@ func (r *router) buildCampaignRoutes() {
 		campaignGroup.POST("", campaignHandler.HandlerCreate())
 		campaignGroup.GET("", campaignHandler.HandlerGetAll())
 		campaignGroup.GET("/:id", campaignHandler.HandlerGetById())
-		campaignGroup.GET("/user/:id", campaignHandler.HandlerGetByUserId())
+		campaignGroup.GET("/user", campaignHandler.HandlerGetByUserId())
 		campaignGroup.PUT("/:id", campaignHandler.HandlerUpdate())
 		campaignGroup.DELETE("/:id", campaignHandler.HandlerDelete())
 	}
