@@ -29,18 +29,18 @@ func (s *service) SearchFollowers(friendship domain.Mutuals) ([]domain.UserRespo
 	return s.repository.SearchFollowers(friendship)
 }
 
-func (s *service) GetAllFriends(userId string) ([]domain.Friendship, error) {
+func (s *service) GetAllFriends(userId string) ([]domain.FriendUserData, error) {
 	return s.repository.GetAllFriends(userId)
 }
 
-func (s *service) GetBySimilarName(input string) ([]domain.UserResponse, error) {
-	users, err := s.repository.GetBySimilarName(input)
+func (s *service) GetBySimilarName(input string, userId string) ([]domain.FriendUserData, error) {
+	users, err := s.repository.GetBySimilarName(input, userId)
 	if err != nil {
-		return []domain.UserResponse{}, err
+		return []domain.FriendUserData{}, err
 	}
 
 	if len(users) == 0 {
-		return []domain.UserResponse{}, nil
+		return []domain.FriendUserData{}, nil
 	}
 
 	maxLength := 5
