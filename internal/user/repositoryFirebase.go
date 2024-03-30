@@ -307,12 +307,14 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 }
 
 func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
-
+	log.Println(1)
+	
 	token, _, err := new(jwt.Parser).ParseUnverified(cookieToken, jwt.MapClaims{})
 	if err != nil {
+		log.Println(2)
 		return domain.UserTokenClaims{}, err
 	}
-
+	
 	var tokenClaims domain.UserTokenClaims
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		if claims["user_id"] != nil {
