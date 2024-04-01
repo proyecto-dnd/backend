@@ -449,6 +449,7 @@ func (r *router) buildUserCampaignRoutes() {
 	userCampaignGroup := r.routerGroup.Group("/user_campaign")
 	{
 		userCampaignGroup.POST("", userCampaignHandler.HandlerCreate())
+		userCampaignGroup.POST("/friends/:id", userCampaignHandler.HandlerAddFriendsToCampaign())
 		userCampaignGroup.GET("", userCampaignHandler.HandlerGetAll())
 		userCampaignGroup.GET("/:id", userCampaignHandler.HandlerGetById())
 		userCampaignGroup.GET("/campaign/:id", userCampaignHandler.HandlerGetByCampaignId())

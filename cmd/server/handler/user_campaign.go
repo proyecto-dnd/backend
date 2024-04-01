@@ -166,3 +166,29 @@ func (h *UserCampaignHandler) HandlerDelete() gin.HandlerFunc {
 		ctx.JSON(200, "User Campaign deleted")
 	}
 }
+
+func (h *UserCampaignHandler) HandlerAddFriendsToCampaign() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+
+		var userIds []string
+		if err := ctx.BindJSON(&userIds); err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+
+		err = h.service.AddFriendsToUserCampaign(userIds, intId)
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+
+		ctx.JSON(201, "Friends added successfully")
+	}
+}

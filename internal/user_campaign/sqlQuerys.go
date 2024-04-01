@@ -25,4 +25,13 @@ var (
 	QueryDelete = `
 		DELETE FROM user_campaign WHERE user_campaign = ?;
 	`
+
+	QueryDeleteByCampaignID = `
+		DELETE FROM user_campaign WHERE campaign_id = ?;
+		`
+
+	QueryCreateMultipleUserCampaign = `
+	INSERT INTO user_campaign (campaign_id, user_id, character_id, is_owner)
+	VALUES
+	`
 )

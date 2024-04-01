@@ -2,8 +2,8 @@ package session
 
 var (
 	QueryCreateSession = `
-		INSERT INTO session (start, end, description, campaign_id, current_enviroment)
-		VALUES (?, ?, ?, ?);
+		INSERT INTO session (start, end, description, campaign_id, current_environment)
+		VALUES (?, ?, ?, ?, ?);
 	`
 
 	QueryGetAll = `

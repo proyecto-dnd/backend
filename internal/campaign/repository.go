@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
@@ -140,10 +141,12 @@ func (r *campaignMySqlRepository) Update(campaign domain.Campaign, id int) (doma
 func (r *campaignMySqlRepository) Delete(id int) error {
 	statement, err := r.db.Prepare(QueryDelete)
 	if err != nil {
+		log.Println(1, err)
 		return ErrPrepareStatement
 	}
 	defer statement.Close()
 
 	_, err = statement.Exec(id)
+	log.Println(2, err)
 	return err
 }

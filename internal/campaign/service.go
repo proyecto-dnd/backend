@@ -254,5 +254,9 @@ func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto
 }
 
 func (s *service) DeleteCampaign(id int) error {
+	err := s.userCampaignService.DeleteUserCampaignByCampaignId(id)
+	if err != nil {
+		return err
+	}
 	return s.campaignRepository.Delete(id)
 }

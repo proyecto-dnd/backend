@@ -73,3 +73,16 @@ func (s *service) DeleteUserCampaign(id int) error {
 
 	return nil
 }
+
+func (s *service) DeleteUserCampaignByCampaignId(id int) error {
+	err := s.userCampaignRepository.DeleteUserCampaignByCampaignId(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *service) AddFriendsToUserCampaign(userIds []string, campaignId int) (error) {
+	return s.userCampaignRepository.AddFriendsToUserCampaign(userIds, campaignId)
+}
