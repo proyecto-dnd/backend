@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/pkg/email"
 	"google.golang.org/api/iterator"
 )
 
@@ -62,6 +63,17 @@ func (r *repositoryFirebase) Create(user domain.User) (domain.UserResponse, erro
 	if err != nil {
 		fmt.Println("Error setting custom user claims.")
 		return domain.UserResponse{}, err
+	}
+
+	//email verification
+	emailVerificationLink, err := r.authClient.EmailVerificationLink(ctx, user.Email)
+	if err != nil {
+		log.Printf("Error creating email verification link: %v", err)
+	}
+
+	err = email.SendEmailVerificationLink(user.Email, emailVerificationLink)
+	if err != nil {
+		log.Printf("Error sending email verification link: %v", err)
 	}
 
 	//sql create
@@ -307,7 +319,7 @@ func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error
 func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenClaims, error) {
 
 	token, _, err := new(jwt.Parser).ParseUnverified(cookieToken, jwt.MapClaims{})
-	if err != nil {		
+	if err != nil {
 		return domain.UserTokenClaims{}, err
 	}
 

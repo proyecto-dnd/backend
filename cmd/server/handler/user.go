@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/user"
+	"github.com/proyecto-dnd/backend/pkg/email"
 )
 
 type UserHandler struct {
@@ -284,5 +285,16 @@ func (h *UserHandler) HandlerCheckSubscriptionExpDate() gin.HandlerFunc {
 		}
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, "Still subed to Premium")
+	}
+}
+
+func (h *UserHandler) HandlerTryEmail() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		err := email.SendEmailVerificationLink("dthmax2@gmail.com", "http://google.com.ar")
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+		ctx.JSON(200, "Email sent")
 	}
 }

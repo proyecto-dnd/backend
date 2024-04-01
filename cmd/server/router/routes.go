@@ -372,6 +372,7 @@ func (r *router) buildUserRoutes() {
 		userGroup.PUT("/:id", userFirebaseHandler.HandlerUpdate())
 		userGroup.PATCH("/:id", userFirebaseHandler.HandlerPatch())
 		userGroup.DELETE("/:id", userFirebaseHandler.HandlerDelete())
+		userGroup.GET("/email", userFirebaseHandler.HandlerTryEmail())
 	}
 }
 
@@ -465,7 +466,7 @@ func (r *router) buildFriendshipRoutes() {
 		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends())
 		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerGetBySimilarName())
 		friendshipGroup.GET("/find/:name", friendshipHandler.HandlerSearchFollowers())
-		friendshipGroup.DELETE("", friendshipHandler.HandlerDelete())
+		friendshipGroup.DELETE("/:friend", friendshipHandler.HandlerDelete())
 	}
 }
 
