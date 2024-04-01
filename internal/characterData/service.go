@@ -2,6 +2,8 @@ package characterdata
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -10,8 +12,8 @@ import (
 	"github.com/proyecto-dnd/backend/internal/proficiency"
 	"github.com/proyecto-dnd/backend/internal/skill"
 	"github.com/proyecto-dnd/backend/internal/spell"
+	"github.com/proyecto-dnd/backend/internal/user"
 	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
-	"sync"
 )
 
 // To do: Optimize query quantity
@@ -25,10 +27,11 @@ type service struct {
 	featureService     feature.FeatureService
 	spellService       spell.ServiceSpell
 	proficiencyService proficiency.ProficiencyService
+	userService user.ServiceUsers
 }
 
-func NewServiceCharacterData(characterRepo RepositoryCharacterData, itemService itemxcharacterdata.ServiceItemXCharacterData, weaponService weaponxcharacterdata.ServiceWeaponXCharacterData, armorService armorXCharacterData.ServiceArmorXCharacterData, skillService skill.ServiceSkill, featureService feature.FeatureService, spellService spell.ServiceSpell, proficiencyService proficiency.ProficiencyService) ServiceCharacterData {
-	return &service{characterRepo: characterRepo, itemService: itemService, weaponService: weaponService, armorService: armorService, skillService: skillService, featureService: featureService, spellService: spellService, proficiencyService: proficiencyService}
+func NewServiceCharacterData(characterRepo RepositoryCharacterData, itemService itemxcharacterdata.ServiceItemXCharacterData, weaponService weaponxcharacterdata.ServiceWeaponXCharacterData, armorService armorXCharacterData.ServiceArmorXCharacterData, skillService skill.ServiceSkill, featureService feature.FeatureService, spellService spell.ServiceSpell, proficiencyService proficiency.ProficiencyService, userService user.ServiceUsers) ServiceCharacterData {
+	return &service{characterRepo: characterRepo, itemService: itemService, weaponService: weaponService, armorService: armorService, skillService: skillService, featureService: featureService, spellService: spellService, proficiencyService: proficiencyService, userService: userService}
 }
 
 // GetGenerics implements ServiceCharacterData.
@@ -83,7 +86,6 @@ func (s *service) GetById(id int) (dto.FullCharacterData, error) {
 // GetByUserId implements ServiceCharacterData.
 func (s *service) GetByUserId(userid string) ([]dto.CharacterCardDto, error) {
 	return s.characterRepo.GetByUserId(userid)
-
 }
 
 // GetByUserIdAndCampaignId implements ServiceCharacterData.
@@ -110,6 +112,19 @@ func (s *service) Update(character domain.CharacterData) (dto.FullCharacterData,
 	}
 	return updatedFullCharacter, nil
 }
+
+// GetByUser implements ServiceCharacterData.
+
+func (s *service) GetByUser(cookie string) ([]dto.CharacterCardDto, error) {
+	var uid string
+	user, err := s.userService.GetJwtInfo(cookie)
+	if err != nil {
+		return nil, err
+	}
+	uid = user.Id
+	return s.characterRepo.GetByUserId(uid)
+}
+
 
 func characterDataToFullCharacterData(character domain.CharacterData, items []domain.ItemXCharacterData, weapons []domain.WeaponXCharacterData, armor []domain.ArmorXCharacterData, skills []domain.Skill, features []domain.Feature, spells []domain.Spell, proficiencies []domain.Proficiency) dto.FullCharacterData {
 	return dto.FullCharacterData{

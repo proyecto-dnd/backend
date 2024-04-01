@@ -273,7 +273,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterFeatureHandler = handler.NewCharacterFeatureHandler(&characterFeatureService)
 
 	characterDataRepository = characterdata.NewCharacterDataRepository(db)
-	characterDataService = characterdata.NewServiceCharacterData(characterDataRepository, itemXCharacterDataService, weaponXCharacterDataService, armorXCharacterDataService, skillService, featureService, spellService, proficiencyService)
+	characterDataService = characterdata.NewServiceCharacterData(characterDataRepository, itemXCharacterDataService, weaponXCharacterDataService, armorXCharacterDataService, skillService, featureService, spellService, proficiencyService, userFirebaseService)
 	characterDataHandler = handler.NewCharacterHandler(&characterDataService)
 
 	attackEventRepository = attackEvent.NewAttackEventRepository(db)
@@ -631,6 +631,7 @@ func (r *router) buildCharacterDataRoutes() {
 		characterDataGroup.GET("/:id", characterDataHandler.HandlerGetById())
 		characterDataGroup.GET("/event/:eventid", characterDataHandler.HandlerGetByAttackEventId())
 		characterDataGroup.GET("/generic", characterDataHandler.HandlerGetGenerics())
+		characterDataGroup.GET("/user", characterDataHandler.HandlerGetByUser())
 		characterDataGroup.PUT("/:id", characterDataHandler.HandlerUpdate())
 		characterDataGroup.DELETE("/:id", characterDataHandler.HandlerDelete())
 	}

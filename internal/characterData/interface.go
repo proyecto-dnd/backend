@@ -23,6 +23,7 @@ type ServiceCharacterData interface {
 	GetAll()([]dto.CharacterCardDto, error)
 	GetById(id int)(dto.FullCharacterData, error)
 	GetByUserId(userid string)([]dto.CharacterCardDto, error)
+	GetByUser(cookie string)([]dto.CharacterCardDto, error)
 	GetByUserIdAndCampaignId(userid string, campaignid int)([]dto.CharacterCardDto, error)
 	GetGenerics()([]dto.CharacterCardDto, error)
 	GetByCampaignId(campaignid int)([]dto.CharacterCardDto, error)
