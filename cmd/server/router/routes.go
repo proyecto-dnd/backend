@@ -230,7 +230,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterXProficiencyService = characterXproficiency.NewCharacterXProficiencyService(characterXProficiencyRepository)
 	characterXProficiencyHandler = handler.NewCharacterXProficiencyHandler(characterXProficiencyService)
 	userCampaignRepository = user_campaign.NewUserCampaignRepository(db)
-	userCampaignService = user_campaign.NewUserCampaignService(userCampaignRepository)
+	userCampaignService = user_campaign.NewUserCampaignService(userCampaignRepository, userFirebaseService)
 	userCampaignHandler = handler.NewUserCampaignHandler(&userCampaignService)
 	friendshipRepository = friendship.NewFriendshipRepository(db, userFirebaseRepository, firebaseApp)
 	friendshipService = friendship.NewFriendshipService(friendshipRepository)
@@ -450,6 +450,7 @@ func (r *router) buildUserCampaignRoutes() {
 	{
 		userCampaignGroup.POST("", userCampaignHandler.HandlerCreate())
 		userCampaignGroup.POST("/friends/:id", userCampaignHandler.HandlerAddFriendsToCampaign())
+		userCampaignGroup.PUT("/addCharacter", userCampaignHandler.HandlerAddCharacterToCampaign())
 		userCampaignGroup.GET("", userCampaignHandler.HandlerGetAll())
 		userCampaignGroup.GET("/:id", userCampaignHandler.HandlerGetById())
 		userCampaignGroup.GET("/campaign/:id", userCampaignHandler.HandlerGetByCampaignId())

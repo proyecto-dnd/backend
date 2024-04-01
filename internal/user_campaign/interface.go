@@ -14,6 +14,7 @@ type UserCampaignHandler interface {
 	HandlerGetByUserId() gin.HandlerFunc
 	HandlerDelete() gin.HandlerFunc
 	HandlerAddFriendsToCampaign() gin.HandlerFunc
+	HandlerAddCharacterToCampaign() gin.HandlerFunc
 }
 
 type UserCampaignService interface {
@@ -25,6 +26,7 @@ type UserCampaignService interface {
 	DeleteUserCampaign(id int) error
 	DeleteUserCampaignByCampaignId(id int) error
 	AddFriendsToUserCampaign(userIds []string, campaignId int) error
+	AddCharacterToCampaign(characterId int, campaignId int, cookie string) error
 }
 
 type UserCampaignRepository interface {
@@ -36,4 +38,5 @@ type UserCampaignRepository interface {
 	Delete(id int)error
 	DeleteUserCampaignByCampaignId(id int) error
 	AddFriendsToUserCampaign(userIds []string, campaignId int) error
+	AddCharacterToCampaign(characterId int, campaignId int, userId string) error
 }

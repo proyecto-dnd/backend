@@ -3,14 +3,16 @@ package user_campaign
 import (
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
+	"github.com/proyecto-dnd/backend/internal/user"
 )
 
 type service struct {
 	userCampaignRepository UserCampaignRepository
+	userService user.ServiceUsers
 }
 
-func NewUserCampaignService(userCampaignRepository UserCampaignRepository) UserCampaignService {
-	return &service{userCampaignRepository: userCampaignRepository}
+func NewUserCampaignService(userCampaignRepository UserCampaignRepository, userService user.ServiceUsers) UserCampaignService {
+	return &service{userCampaignRepository: userCampaignRepository, userService: userService}
 }
 
 func (s *service) CreateUserCampaign(userCampaignDto dto.CreateUserCampaignDto) (domain.UserCampaign, error) {
@@ -85,4 +87,15 @@ func (s *service) DeleteUserCampaignByCampaignId(id int) error {
 
 func (s *service) AddFriendsToUserCampaign(userIds []string, campaignId int) (error) {
 	return s.userCampaignRepository.AddFriendsToUserCampaign(userIds, campaignId)
+}
+
+func (s *service) AddCharacterToCampaign(characterId int, campaignId int, cookie string) (error) {
+	var uid string
+	user, err := s.userService.GetJwtInfo(cookie)
+	if err != nil {
+		return err
+	}
+	uid = user.Id
+
+	return s.userCampaignRepository.AddCharacterToCampaign(characterId, campaignId, uid)
 }

@@ -197,3 +197,29 @@ func (r *userCampaignMySqlRepository) AddFriendsToUserCampaign(userIds []string,
 
 	return nil
 }
+
+func (r *userCampaignMySqlRepository) AddCharacterToCampaign(characterId int, campaignId int, userId string) (error) {
+	statement, err := r.db.Prepare(QueryUpdateCharacterCampaign)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(campaignId, characterId)
+	if err != nil {
+		return  err
+	}
+
+	statement, err = r.db.Prepare(QueryUpdateUserCharacter)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(characterId, userId, campaignId)
+	if err != nil {
+		return  err
+	}
+
+	return nil
+}
