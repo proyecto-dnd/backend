@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -244,18 +245,21 @@ func (h *UserHandler) HandlerSubPremium() gin.HandlerFunc {
 
 		months, err := strconv.Atoi(monthsParam)
 		if err != nil {
+			log.Println(1, err)
 			ctx.JSON(500, err.Error())
 			return
 		}
 
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
+			log.Println(2, err)
 			ctx.JSON(500, err.Error())
 			return
 		}
 		// arreglar para sumar a la fecha guardada en la base checkeando que la fecha de hoy sea posterior al vencimiento de la suscripcion
 		_, err = h.service.SubscribeToPremium(cookie.Value, time.Now().AddDate(0, months, 0).String())
 		if err != nil {
+			log.Println(3, err)
 			ctx.JSON(500, err.Error())
 			return
 		}

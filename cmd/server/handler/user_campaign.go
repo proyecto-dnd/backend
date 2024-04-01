@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -164,5 +165,59 @@ func (h *UserCampaignHandler) HandlerDelete() gin.HandlerFunc {
 		}
 
 		ctx.JSON(200, "User Campaign deleted")
+	}
+}
+
+func (h *UserCampaignHandler) HandlerAddFriendsToCampaign() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+
+		var userIds []string
+		if err := ctx.BindJSON(&userIds); err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+
+		err = h.service.AddFriendsToUserCampaign(userIds, intId)
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+
+		ctx.JSON(201, "Friends added successfully")
+	}
+}
+
+func (h *UserCampaignHandler) HandlerAddCharacterToCampaign() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			log.Println(1, err.Error())
+			ctx.JSON(400, err.Error())
+			return
+		}
+		
+		var body dto.AddCharacterToCampaignDto 
+		if err := ctx.BindJSON(&body); err != nil {
+			log.Println(2, err.Error())
+			ctx.JSON(500, err.Error())
+			return
+		}
+		
+		
+		err = h.service.AddCharacterToCampaign(body.CharacterId, body.CampaignId, cookie.Value)
+		if err != nil {
+			log.Println(3, err.Error())
+			ctx.JSON(500, err.Error())
+			return
+		}
+
+		ctx.JSON(200, "Character added successfully")
 	}
 }

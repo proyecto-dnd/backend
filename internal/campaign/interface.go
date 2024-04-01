@@ -19,7 +19,7 @@ type CampaignService interface {
 	CreateCampaign(dto.CreateCampaignDto, string) (domain.Campaign, error)
 	GetAllCampaigns() ([]domain.Campaign, error)
 	GetCampaignByID(id int) (dto.ResponseCampaignDto, error)
-	GetCampaignsByUserId(id string) ([]dto.ResponseCampaignDto, error)
+	GetCampaignsByUserId(cookie string) ([]dto.ResponseCampaignDto, error)
 	UpdateCampaign(Campaign dto.CreateCampaignDto, id int) (dto.ResponseCampaignDto, error)
 	DeleteCampaign(id int) error
 }

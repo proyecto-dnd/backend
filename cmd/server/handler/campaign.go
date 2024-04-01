@@ -113,9 +113,13 @@ func (h *CampaignHandler) HandlerGetById() gin.HandlerFunc {
 // @Router /campaign/user/{id} [get]
 func (h *CampaignHandler) HandlerGetByUserId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
 
-		tempCampaign, err := h.service.GetCampaignsByUserId(id)
+		tempCampaign, err := h.service.GetCampaignsByUserId(cookie.Value)
 		if err != nil {
 			ctx.JSON(500, err.Error())
 			return
@@ -186,3 +190,4 @@ func (h *CampaignHandler) HandlerDelete() gin.HandlerFunc {
 		ctx.JSON(200, "Deleted Campaign with id "+id)
 	}
 }
+

@@ -19,11 +19,11 @@ var (
 	FROM character_data left join race on character_data.race_id = race.race_id left join class on character_data.class_id = class.class_id left join background on character_data.background_id = background.background_id WHERE character_data.character_id = ?;`
 
 	QueryGetByUserId = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id, character_data.img_url,
+	character_data.name,
 	race.name,
 	class.name,
-	character_data.name,
-	character_data.hitpoints,
-	character_data.level
+	character_data.level,
+	character_data.hitpoints
 	FROM character_data left join race on character_data.race_id = race.race_id left join class on character_data.class_id = class.class_id WHERE character_data.user_id = ?;`
 
 	QueryGetByUserIdAndCampaignId = `SELECT character_data.character_id, character_data.user_id, character_data.campaign_id, character_data.img_url,
@@ -47,8 +47,8 @@ var (
 	character_data.name,
 	race.name,
 	class.name,
-	character_data.level
-	character_data.hitpoints,
+	character_data.level,
+	character_data.hitpoints
 	FROM character_data left join race on character_data.race_id = race.race_id left join class on character_data.class_id = class.class_id WHERE character_data.campaign_id = ?;`
 
 	QueryGetByAttackEventId = `

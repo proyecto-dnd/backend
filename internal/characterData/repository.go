@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -226,8 +225,6 @@ func (r *CharacterDataMySqlRepository) GetByUserIdAndCampaignId(userid string, c
 	if err := rows.Err(); err != nil {
 		return []dto.CharacterCardDto{}, err
 	}
-
-	log.Println(characterDtoList)
 
 	return characterDtoList, nil
 }
