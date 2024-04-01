@@ -9,6 +9,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/armor"
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/attackEvent"
+	"github.com/proyecto-dnd/backend/internal/background"
 	backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
@@ -167,6 +168,10 @@ var (
 	diceEventService    dice_event.DiceEventService
 	diceEventHandler    *handler.DiceEventHandler
 
+	backgroundRepository background.BackgroundRepository
+	backgroundService background.BackgroundService
+	backgroundHandler *handler.BackgroundHandler
+
 	reportGenerator *report.ReportGenerator
 	reportHandler   *handler.ReportHandler
 )
@@ -267,6 +272,9 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	backgroundXProficiencyRepository = backgroundXproficiency.NewBackgroundXProficiencyRepository(db)
 	backgroundXProficiencyService = backgroundXproficiency.NewBackgroundXProficiencyService(backgroundXProficiencyRepository)
 	backgroundXProficiencyHandler = handler.NewBackgroundXProficiencyHandler(backgroundXProficiencyService)
+	backgroundRepository = background.NewBackgroundRepository(db)
+	backgroundService = background.NewBackgroundService(backgroundRepository)
+	backgroundHandler = handler.NewBackgroundHandler(backgroundService)
 
 	characterFeatureRepository = character_feature.NewCharacterFeatureRepository(db)
 	characterFeatureService = character_feature.NewCharacterFeatureService(characterFeatureRepository)
@@ -346,6 +354,7 @@ func (r *router) MapRoutes() {
 	r.buildSkillXCharacterDataRoutes()
 	r.buildWebsocketRoutes()
 	r.buildReportRoutes()
+	r.buildBackgroundRoutes()
 	// TODO Add other builders here	and write their functions
 
 }
@@ -434,6 +443,16 @@ func (r *router) buildProficiencyRoutes() {
 		proficiencyGroup.GET("/character/:characterId", proficiencyHandler.HandlerGetByCharacterId())
 		proficiencyGroup.PUT("/:id", proficiencyHandler.HandlerUpdate())
 		proficiencyGroup.DELETE("/:id", proficiencyHandler.HandlerDelete())
+	}
+}
+
+
+
+func (r *router) buildBackgroundRoutes() {
+	backgroundGroup := r.routerGroup.Group("/background") 
+	{
+		backgroundGroup.GET("", backgroundHandler.HandlerGetAll())
+		backgroundGroup.GET("/:id", backgroundHandler.HandlerGetById())
 	}
 }
 
