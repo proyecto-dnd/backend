@@ -20,6 +20,21 @@ func NewCharacterXProficiencyRepository(db *sql.DB) CharacterXProficiencyReposit
 	return &characterXProficiencyRepository{db: db}
 }
 
+// DeleteByCharacterDataId implements CharacterXProficiencyRepository.
+func (r *characterXProficiencyRepository) DeleteByCharacterDataId(id int) error {
+	statement, err := r.db.Prepare(QueryDeleteByCharacterId)
+	if err != nil {
+		return ErrPrepareStatement
+	}
+	defer statement.Close()
+	_, err = statement.Exec(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
 func (r *characterXProficiencyRepository) Create(characterXProficiency domain.CharacterXProficiency) (domain.CharacterXProficiency, error) {
 	statement, err := r.db.Prepare(QueryInsert)
 	if err != nil {

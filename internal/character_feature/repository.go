@@ -19,6 +19,23 @@ func NewCharacterFeatureRepository(db *sql.DB) CharacterFeatureRepository {
 	return &characterFeatureRepository{db: db}
 }
 
+// DeleteByCharacterDataId implements CharacterFeatureRepository.
+func (r *characterFeatureRepository) DeleteByCharacterDataId(idCharacter int) error {
+	statement, err := r.db.Prepare(QueryDeleteByCharacterId)
+	if err != nil {
+		return ErrPrepareStatement
+	}
+
+	defer statement.Close()
+	_, err = statement.Exec(idCharacter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+
 func (r *characterFeatureRepository) Create(characterFeature domain.CharacterFeature) (domain.CharacterFeature, error) {
 	statement, err := r.db.Prepare(QueryCreateCharacterFeature)
 	if err != nil {

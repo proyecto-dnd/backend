@@ -12,6 +12,12 @@ func NewCharacterXSpellService(characterXSpellRepository RepositoryCharacterXSpe
 	return &service{characterXSpellRepository: characterXSpellRepository}
 }
 
+// DeleteByCharacterDataId implements ServiceCharacterXSpell.
+func (s *service) DeleteByCharacterDataId(id int) error {
+	return s.characterXSpellRepository.DeleteByCharacterDataId(id)
+}
+
+
 func (s *service) Create(characterXSpell domain.CharacterXSpell) (domain.CharacterXSpell, error) {
 	return s.characterXSpellRepository.Create(characterXSpell)
 }

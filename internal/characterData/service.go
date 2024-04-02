@@ -3,15 +3,19 @@ package characterdata
 import (
 	"fmt"
 	"sync"
-
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
+	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
+	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
+	"github.com/proyecto-dnd/backend/internal/character_feature"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 	"github.com/proyecto-dnd/backend/internal/feature"
 	"github.com/proyecto-dnd/backend/internal/itemXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/proficiency"
 	"github.com/proyecto-dnd/backend/internal/skill"
+	skillxcharacterdata "github.com/proyecto-dnd/backend/internal/skillXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/spell"
+	tradeevent "github.com/proyecto-dnd/backend/internal/tradeEvent"
 	"github.com/proyecto-dnd/backend/internal/user"
 	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
 )
@@ -19,19 +23,24 @@ import (
 // To do: Optimize query quantity
 
 type service struct {
-	characterRepo      RepositoryCharacterData
-	itemService        itemxcharacterdata.ServiceItemXCharacterData
-	weaponService      weaponxcharacterdata.ServiceWeaponXCharacterData
-	armorService       armorXCharacterData.ServiceArmorXCharacterData
-	skillService       skill.ServiceSkill
-	featureService     feature.FeatureService
-	spellService       spell.ServiceSpell
-	proficiencyService proficiency.ProficiencyService
+	characterRepo                RepositoryCharacterData
+	itemService                  itemxcharacterdata.ServiceItemXCharacterData
+	weaponService                weaponxcharacterdata.ServiceWeaponXCharacterData
+	armorService                 armorXCharacterData.ServiceArmorXCharacterData
+	skillService                 skill.ServiceSkill
+	skillXCharacterService       skillxcharacterdata.ServiceSkillXCharacter
+	featureService               feature.FeatureService
+	featureXCharacterService     character_feature.CharacterFeatureService
+	spellService                 spell.ServiceSpell
+	spellXCharacterService       characterXspell.ServiceCharacterXSpell
+	proficiencyService           proficiency.ProficiencyService
+	proficiencyXCharacterService characterXproficiency.CharacterXProficiencyService
+	tradeEventService tradeevent.ServiceTradeEvent
 	userService user.ServiceUsers
 }
 
-func NewServiceCharacterData(characterRepo RepositoryCharacterData, itemService itemxcharacterdata.ServiceItemXCharacterData, weaponService weaponxcharacterdata.ServiceWeaponXCharacterData, armorService armorXCharacterData.ServiceArmorXCharacterData, skillService skill.ServiceSkill, featureService feature.FeatureService, spellService spell.ServiceSpell, proficiencyService proficiency.ProficiencyService, userService user.ServiceUsers) ServiceCharacterData {
-	return &service{characterRepo: characterRepo, itemService: itemService, weaponService: weaponService, armorService: armorService, skillService: skillService, featureService: featureService, spellService: spellService, proficiencyService: proficiencyService, userService: userService}
+func NewServiceCharacterData(characterRepo RepositoryCharacterData, itemService itemxcharacterdata.ServiceItemXCharacterData, weaponService weaponxcharacterdata.ServiceWeaponXCharacterData, armorService armorXCharacterData.ServiceArmorXCharacterData, skillService skill.ServiceSkill, skillXCharacterService skillxcharacterdata.ServiceSkillXCharacter, featureService feature.FeatureService, featureXCharacterService character_feature.CharacterFeatureService, spellService spell.ServiceSpell, spellXCharacterService characterXspell.ServiceCharacterXSpell, proficiencyService proficiency.ProficiencyService, proficiencyXCharacterService characterXproficiency.CharacterXProficiencyService, tradeEventService tradeevent.ServiceTradeEvent, userService user.ServiceUsers) ServiceCharacterData {
+	return &service{characterRepo: characterRepo, itemService: itemService, weaponService: weaponService, armorService: armorService, skillService: skillService, skillXCharacterService: skillXCharacterService, featureService: featureService, featureXCharacterService: featureXCharacterService, spellService: spellService, spellXCharacterService: spellXCharacterService, proficiencyService: proficiencyService, proficiencyXCharacterService: proficiencyXCharacterService, tradeEventService: tradeEventService, userService: userService}
 }
 
 // GetGenerics implements ServiceCharacterData.
@@ -54,6 +63,108 @@ func (s *service) Create(character domain.CharacterData) (dto.FullCharacterData,
 
 // Delete implements ServiceCharacterData.
 func (s *service) Delete(id int) error {
+	errChan := make(chan error, 7)
+	maxWorkers := make(chan bool, 3)
+	var wg sync.WaitGroup
+	wg.Add(8)
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+			wg.Done()
+		}()
+		err := s.itemService.DeleteByCharacterDataId(id)
+
+		errChan <- err
+	}()
+
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+			wg.Done()
+		}()
+		err := s.weaponService.DeleteByCharacterDataId(id)
+		errChan <- err
+
+	}()
+
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+			wg.Done()
+		}()
+		err := s.featureXCharacterService.DeleteByCharacterDataId(id)
+		errChan <- err
+	}()
+
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+			wg.Done()
+		}()
+		err := s.spellXCharacterService.DeleteByCharacterDataId(id)
+		errChan <- err
+	}()
+
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+
+			wg.Done()
+		}()
+		err := s.proficiencyXCharacterService.DeleteByCharacterDataId(id)
+		errChan <- err
+	}()
+
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+
+			wg.Done()
+		}()
+		err := s.skillXCharacterService.DeleteByCharacterDataId(id)
+
+		errChan <- err
+
+	}()
+
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+
+			wg.Done()
+		}()
+		err := s.armorService.DeleteByCharacterDataIdArmor(id)
+		errChan <- err
+	}()
+
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+
+			wg.Done()
+		}()
+		err := s.tradeEventService.DeleteBySenderOrReciever(id)
+		errChan <- err
+	}()
+
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan {
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 	return s.characterRepo.Delete(id)
 
 }
@@ -168,7 +279,7 @@ func characterDataToFullCharacterData(character domain.CharacterData, items []do
 
 // TO DO: Finish Armor and skill implementation
 func (s *service) fetchAndConvertToFullCharacterData(character *domain.CharacterData) (dto.FullCharacterData, error) {
-	errChan := make(chan error, 5)
+	errChan := make(chan error, 7)
 	itemChan := make(chan []domain.ItemXCharacterData, 1)
 	weaponChan := make(chan []domain.WeaponXCharacterData, 1)
 	armorChan := make(chan []domain.ArmorXCharacterData, 1)

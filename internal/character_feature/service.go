@@ -6,12 +6,23 @@ import (
 )
 
 type service struct {
-	repo              CharacterFeatureRepository
+	repo CharacterFeatureRepository
 }
 
 func NewCharacterFeatureService(repo CharacterFeatureRepository) CharacterFeatureService {
 	return &service{repo: repo}
 }
+
+// DeleteByCharacterDataId implements CharacterFeatureService.
+func (s *service) DeleteByCharacterDataId(idCharacter int) error {
+	err := s.repo.DeleteByCharacterDataId(idCharacter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 
 func (s *service) CreateCharacterFeature(characterFeatureDto dto.CreateCharacterFeatureDto) (domain.CharacterFeature, error) {
 	characterFeatureDomain := domain.CharacterFeature{

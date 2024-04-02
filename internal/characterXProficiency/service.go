@@ -10,6 +10,12 @@ func NewCharacterXProficiencyService(repository CharacterXProficiencyRepository)
 	return &service{repository: repository}
 }
 
+// DeleteByCharacterDataId implements CharacterXProficiencyService.
+func (s *service) DeleteByCharacterDataId(id int) error {
+	return s.repository.DeleteByCharacterDataId(id)
+}
+
+
 func (s *service) Create(characterXProficiency domain.CharacterXProficiency) (domain.CharacterXProficiency, error) {
 	createdCharacterXProficiency, err := s.repository.Create(characterXProficiency)
 	if err != nil {

@@ -2,23 +2,35 @@ package attackEvent
 
 import (
 	"time"
-
-	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
 type service struct {
 	repo              AttackEventRepository
-	charactersService characterdata.ServiceCharacterData
 }
 
-func NewAttackEventService(repo AttackEventRepository, characterService characterdata.ServiceCharacterData) AttackEventService {
-	return &service{repo: repo, charactersService: characterService}
+func NewAttackEventService(repo AttackEventRepository) AttackEventService {
+	return &service{repo: repo}
 }
+
+// DeleteByProtagonistAndAffectedId implements AttackEventService.
+func (s *service) DeleteByProtagonistAndAffectedId(protagonistId int, affectedId int) error {
+	attackEvents, err := s.GetEventsByProtagonistIdAndAffectedId(protagonistId, affectedId)
+	if err != nil {
+		return err
+	}
+	for _, event := range attackEvents {
+		err := s.repo.Delete(event.AttackEventId)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 
 func (s *service) CreateEvent(attackEvent domain.AttackEvent) (domain.AttackEvent, error) {
-
 
 	// eventDomain := domain.AttackEvent{
 	// 	Type:               eventDto.Type,
@@ -75,7 +87,7 @@ func (s *service) GetEventById(id int) (dto.ResponseEventDto, error) {
 		HitPoints:   event.HitPoints,
 	}
 
-	affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+	affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 	if err != nil {
 		return dto.ResponseEventDto{}, err
 	}
@@ -128,7 +140,7 @@ func (s *service) GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, e
 				HitPoints:   event.HitPoints,
 			}
 
-			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 			if err != nil {
 				errors <- err
 				return
@@ -164,7 +176,6 @@ func (s *service) GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, e
 
 	return eventsToReturn, nil
 }
-
 
 func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEventDto, error) {
 	events, err := s.repo.GetByProtagonistId(protagonistid)
@@ -196,7 +207,7 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 				HitPoints:   event.HitPoints,
 			}
 
-			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 			if err != nil {
 				errors <- err
 				return
@@ -232,7 +243,6 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 
 	return eventsToReturn, nil
 }
-
 
 func (s *service) GetEventsByAffectedId(affectedid int) ([]dto.ResponseEventDto, error) {
 	events, err := s.repo.GetByAffectedId(affectedid)
@@ -264,7 +274,7 @@ func (s *service) GetEventsByAffectedId(affectedid int) ([]dto.ResponseEventDto,
 				HitPoints:   event.HitPoints,
 			}
 
-			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 			if err != nil {
 				errors <- err
 				return
@@ -300,7 +310,6 @@ func (s *service) GetEventsByAffectedId(affectedid int) ([]dto.ResponseEventDto,
 
 	return eventsToReturn, nil
 }
-
 
 func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedid int) ([]dto.ResponseEventDto, error) {
 	events, err := s.repo.GetByProtagonistIdAndAffectedId(protagonistid, affectedid)
@@ -332,7 +341,7 @@ func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedi
 				HitPoints:   event.HitPoints,
 			}
 
-			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 			if err != nil {
 				errors <- err
 				return
@@ -368,7 +377,6 @@ func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedi
 
 	return eventsToReturn, nil
 }
-
 
 func (s *service) UpdateEvent(eventDto dto.CreateAttackEventDto, id int) (domain.AttackEvent, error) {
 
