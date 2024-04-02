@@ -343,29 +343,39 @@ func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenCla
 		} else {
 			tokenClaims.Id = claims["claims"].(map[string]interface{})["user_id"].(string)
 		}
-		if claims["name"] != nil {
-			tokenClaims.Username = claims["name"].(string)
-		} else {
-			tokenClaims.Username = claims["claims"].(map[string]interface{})["name"].(string)
-		}
-		if claims["email"] != nil {
-			tokenClaims.Email = claims["email"].(string)
-		} else {
-			tokenClaims.Email = claims["claims"].(map[string]interface{})["email"].(string)
-		}
-		if claims["displayName"] != nil {
-			tokenClaims.DisplayName = claims["displayName"].(string)
-		} else {
-			tokenClaims.DisplayName = claims["claims"].(map[string]interface{})["displayName"].(string)
-		}
-		if claims["subExpiration"] != nil {
-			tokenClaims.SubExpirationDate = claims["subExpiration"].(string)
-		} else {
-			tokenClaims.SubExpirationDate = claims["claims"].(map[string]interface{})["subExpiration"].(string)
-		}
+		// if claims["name"] != nil {
+		// 	tokenClaims.Username = claims["name"].(string)
+		// } else {
+		// 	tokenClaims.Username = claims["claims"].(map[string]interface{})["name"].(string)
+		// }
+		// if claims["email"] != nil {
+		// 	tokenClaims.Email = claims["email"].(string)
+		// } else {
+		// 	tokenClaims.Email = claims["claims"].(map[string]interface{})["email"].(string)
+		// }
+		// if claims["displayName"] != nil {
+		// 	tokenClaims.DisplayName = claims["displayName"].(string)
+		// } else {
+		// 	tokenClaims.DisplayName = claims["claims"].(map[string]interface{})["displayName"].(string)
+		// }
+		// if claims["subExpiration"] != nil {
+		// 	tokenClaims.SubExpirationDate = claims["subExpiration"].(string)
+		// } else {
+		// 	tokenClaims.SubExpirationDate = claims["claims"].(map[string]interface{})["subExpiration"].(string)
+		// }
 	}
-
-	return tokenClaims, nil
+	userData, err := r.GetById(tokenClaims.Id)
+	if err != nil {
+		return domain.UserTokenClaims{}, err
+	}
+	var tokenInfo domain.UserTokenClaims
+	tokenInfo.Id = userData.Id
+	tokenInfo.Username = userData.Username
+	tokenInfo.Email = userData.Email
+	tokenInfo.DisplayName = userData.DisplayName
+	tokenInfo.SubExpirationDate = tokenClaims.SubExpirationDate
+	tokenInfo.Image = *userData.Image
+	return tokenInfo, nil
 }
 
 func (r *repositoryFirebase) TransferDataToSql(users []domain.User) (string, error) {

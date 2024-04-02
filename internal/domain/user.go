@@ -33,4 +33,5 @@ type UserTokenClaims struct {
 	Username          string `json:"username"`
 	DisplayName       string `json:"displayName"`
 	SubExpirationDate string `json:"subExpiration"`
+	Image             string `json:"image"`
 }
