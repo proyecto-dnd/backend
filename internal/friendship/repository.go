@@ -279,7 +279,7 @@ func (r *repositoryFriendship) GetBySimilarName(input string, userId string) ([]
 				foundUser.Image = user.Image
 				foundUser.Following = true
 				foundUser.FollowsYou = true
-				foundUsersList = append(foundUsersList, foundUser)
+				// foundUsersList = append(foundUsersList, foundUser)
 				continue
 			} else if r.isReciprocated(friendshipList, user.Id, userId) == "follows you" {
 				foundUser.UserId = user.Id
@@ -299,7 +299,7 @@ func (r *repositoryFriendship) GetBySimilarName(input string, userId string) ([]
 				foundUser.Image = user.Image
 				foundUser.Following = true
 				foundUser.FollowsYou = false
-				foundUsersList = append(foundUsersList, foundUser)
+				// foundUsersList = append(foundUsersList, foundUser)
 				continue
 			} else if r.isReciprocated(friendshipList, userId, user.Id) == "unknowns" {
 				foundUser.UserId = user.Id

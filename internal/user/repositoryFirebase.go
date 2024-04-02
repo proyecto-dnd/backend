@@ -256,13 +256,12 @@ func (r *repositoryFirebase) Patch(user domain.UserUpdate, id string) (domain.Us
 	var args []interface{}
 
 	if user.Username != "" {
-		fieldsToUpdate = append(fieldsToUpdate, "display_name = ?")
+		fieldsToUpdate = append(fieldsToUpdate, "name = ?")
 		args = append(args, user.Username)
 		_, err := r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).DisplayName(user.Username))
 		if err != nil {
 			return domain.UserResponse{}, err
 		}
-
 	}
 	if user.Email != "" {
 		fieldsToUpdate = append(fieldsToUpdate, "email = ?")
@@ -385,7 +384,6 @@ func (r *repositoryFirebase) TransferDataToSql(users []domain.User) (string, err
 	if err != nil {
 		return "", err
 	}
-	// fmt.Println(insertString)
 
 	result, err := r.db.Exec(insertString)
 	if err != nil {
