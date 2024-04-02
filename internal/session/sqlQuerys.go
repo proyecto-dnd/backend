@@ -20,7 +20,7 @@ var (
 
 	QueryUpdate = `
 		UPDATE session
-		SET start = ?, end = ?, description = ?, campaign_id = ? current_enviroment = ?
+		SET start = ?, end = ?, description = ?, campaign_id = ?, current_environment = ?
 		WHERE session_id = ?;
 	`
 
