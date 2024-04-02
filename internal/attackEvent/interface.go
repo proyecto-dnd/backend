@@ -38,6 +38,7 @@ type AttackEventRepository interface {
 	GetBySessionId(sessionid int) ([]dto.RepositoryResponseAttackEvent, error)
 	GetByProtagonistId(protagonistid int) ([]dto.RepositoryResponseAttackEvent, error)
 	GetByAffectedId(affectedid int) ([]dto.RepositoryResponseAttackEvent, error)
+	GetCharacterDataByAttackEventId (id int) ([]dto.CharacterCardDto, error)
 	GetByProtagonistIdAndAffectedId(protagonistid int, affectedid int) ([]dto.RepositoryResponseAttackEvent, error)
 	Update(event domain.AttackEvent, id int) (domain.AttackEvent, error)
 	Delete(id int) error

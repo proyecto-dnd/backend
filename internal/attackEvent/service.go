@@ -2,19 +2,16 @@ package attackEvent
 
 import (
 	"time"
-
-	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
 type service struct {
 	repo              AttackEventRepository
-	charactersService characterdata.ServiceCharacterData
 }
 
-func NewAttackEventService(repo AttackEventRepository, characterService characterdata.ServiceCharacterData) AttackEventService {
-	return &service{repo: repo, charactersService: characterService}
+func NewAttackEventService(repo AttackEventRepository) AttackEventService {
+	return &service{repo: repo}
 }
 
 // DeleteByProtagonistAndAffectedId implements AttackEventService.
@@ -90,7 +87,7 @@ func (s *service) GetEventById(id int) (dto.ResponseEventDto, error) {
 		HitPoints:   event.HitPoints,
 	}
 
-	affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+	affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 	if err != nil {
 		return dto.ResponseEventDto{}, err
 	}
@@ -143,7 +140,7 @@ func (s *service) GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, e
 				HitPoints:   event.HitPoints,
 			}
 
-			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 			if err != nil {
 				errors <- err
 				return
@@ -210,7 +207,7 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 				HitPoints:   event.HitPoints,
 			}
 
-			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 			if err != nil {
 				errors <- err
 				return
@@ -277,7 +274,7 @@ func (s *service) GetEventsByAffectedId(affectedid int) ([]dto.ResponseEventDto,
 				HitPoints:   event.HitPoints,
 			}
 
-			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 			if err != nil {
 				errors <- err
 				return
@@ -344,7 +341,7 @@ func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedi
 				HitPoints:   event.HitPoints,
 			}
 
-			affected, err := s.charactersService.GetByAttackEventId(event.AttackEventId)
+			affected, err := s.repo.GetCharacterDataByAttackEventId(event.AttackEventId)
 			if err != nil {
 				errors <- err
 				return

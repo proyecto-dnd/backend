@@ -155,6 +155,24 @@ func (r *attackEventMySqlRepository) GetByProtagonistIdAndAffectedId(protagonist
 	return events, nil
 }
 
+func (r* attackEventMySqlRepository) GetCharacterDataByAttackEventId(id int) ([]dto.CharacterCardDto, error) {
+	rows, err := r.db.Query(QueryGetCharacterDataByAttackEventId, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var characters []dto.CharacterCardDto
+	for rows.Next() {
+		var character dto.CharacterCardDto
+		if err := rows.Scan(&character.CharacterId, &character.UserId, &character.CampaignID, &character.ImageUrl, &character.Name, &character.Race, &character.Name, &character.Level, &character.HitPoints); err != nil {
+			return nil, err
+		}
+		characters = append(characters, character)
+	}
+	return characters, nil
+}
+
 func (r *attackEventMySqlRepository) Update(event domain.AttackEvent, id int) (domain.AttackEvent, error) {
 	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {

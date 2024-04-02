@@ -291,7 +291,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterDataHandler = handler.NewCharacterHandler(&characterDataService)
 
 	attackEventRepository = attackEvent.NewAttackEventRepository(db)
-	attackEventService = attackEvent.NewAttackEventService(attackEventRepository, characterDataService)
+	attackEventService = attackEvent.NewAttackEventService(attackEventRepository)
 	attackEventHandler = handler.NewAttackEventHandler(&attackEventService)
 
 	campaignRepository = campaign.NewCampaignRepository(db)
