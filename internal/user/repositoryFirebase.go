@@ -293,22 +293,17 @@ func (r *repositoryFirebase) Patch(user domain.UserUpdate, id string) (domain.Us
 		return domain.UserResponse{}, ErrEmpty
 	}
 
-	queryString := "UPDATE user SET " + strings.Join(fieldsToUpdate, ", ") + " WHERE user_id = ?"
+	queryString := "UPDATE user SET " + strings.Join(fieldsToUpdate, ", ") + " WHERE uid = ?"
 	args = append(args, id)
-	fmt.Println("queryString: ", queryString)
-	statement, err := r.db.Prepare(queryString)
+
+	fmt.Println(queryString)
+
+	patchStatement, err := r.db.Exec(queryString, args...)
 	if err != nil {
 		return domain.UserResponse{}, err
 	}
-	defer statement.Close()
 
-	fmt.Println("args: ", args)
-
-	result, err := statement.Exec(args...)
-	if err != nil {
-		return domain.UserResponse{}, err
-	}
-	_, err = result.RowsAffected()
+	_, err = patchStatement.RowsAffected()
 	if err != nil {
 		return domain.UserResponse{}, err
 	}
