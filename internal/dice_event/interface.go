@@ -9,6 +9,7 @@ type DiceEventRepository interface {
 	GetBySessionId(sessionid int) ([]domain.DiceEvent, error)
 	Update(diceEvent domain.DiceEvent, id int) (domain.DiceEvent, error)
 	Delete(id int) error
+	DeleteByProtagonistId(id int) error
 }
 
 type DiceEventService interface {
@@ -18,4 +19,5 @@ type DiceEventService interface {
 	GetBySessionId(sessionid int) ([]domain.DiceEvent, error)
 	Update(diceEvent domain.DiceEvent, id int) (domain.DiceEvent, error)
 	Delete(id int) error
+	DeleteByProtagonistId(id int) error
 }

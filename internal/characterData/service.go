@@ -3,10 +3,13 @@ package characterdata
 import (
 	"fmt"
 	"sync"
+
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
+	"github.com/proyecto-dnd/backend/internal/attackEvent"
 	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
 	"github.com/proyecto-dnd/backend/internal/character_feature"
+	"github.com/proyecto-dnd/backend/internal/dice_event"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 	"github.com/proyecto-dnd/backend/internal/feature"
@@ -35,12 +38,14 @@ type service struct {
 	spellXCharacterService       characterXspell.ServiceCharacterXSpell
 	proficiencyService           proficiency.ProficiencyService
 	proficiencyXCharacterService characterXproficiency.CharacterXProficiencyService
-	tradeEventService tradeevent.ServiceTradeEvent
-	userService user.ServiceUsers
+	tradeEventService            tradeevent.ServiceTradeEvent
+	attackEventService           attackEvent.AttackEventService
+	diceEventService             dice_event.DiceEventService
+	userService                  user.ServiceUsers
 }
 
-func NewServiceCharacterData(characterRepo RepositoryCharacterData, itemService itemxcharacterdata.ServiceItemXCharacterData, weaponService weaponxcharacterdata.ServiceWeaponXCharacterData, armorService armorXCharacterData.ServiceArmorXCharacterData, skillService skill.ServiceSkill, skillXCharacterService skillxcharacterdata.ServiceSkillXCharacter, featureService feature.FeatureService, featureXCharacterService character_feature.CharacterFeatureService, spellService spell.ServiceSpell, spellXCharacterService characterXspell.ServiceCharacterXSpell, proficiencyService proficiency.ProficiencyService, proficiencyXCharacterService characterXproficiency.CharacterXProficiencyService, tradeEventService tradeevent.ServiceTradeEvent, userService user.ServiceUsers) ServiceCharacterData {
-	return &service{characterRepo: characterRepo, itemService: itemService, weaponService: weaponService, armorService: armorService, skillService: skillService, skillXCharacterService: skillXCharacterService, featureService: featureService, featureXCharacterService: featureXCharacterService, spellService: spellService, spellXCharacterService: spellXCharacterService, proficiencyService: proficiencyService, proficiencyXCharacterService: proficiencyXCharacterService, tradeEventService: tradeEventService, userService: userService}
+func NewServiceCharacterData(characterRepo RepositoryCharacterData, itemService itemxcharacterdata.ServiceItemXCharacterData, weaponService weaponxcharacterdata.ServiceWeaponXCharacterData, armorService armorXCharacterData.ServiceArmorXCharacterData, skillService skill.ServiceSkill, skillXCharacterService skillxcharacterdata.ServiceSkillXCharacter, featureService feature.FeatureService, featureXCharacterService character_feature.CharacterFeatureService, spellService spell.ServiceSpell, spellXCharacterService characterXspell.ServiceCharacterXSpell, proficiencyService proficiency.ProficiencyService, proficiencyXCharacterService characterXproficiency.CharacterXProficiencyService, tradeEventService tradeevent.ServiceTradeEvent, attackEventService attackEvent.AttackEventService, diceEventService dice_event.DiceEventService, userService user.ServiceUsers) ServiceCharacterData {
+	return &service{characterRepo: characterRepo, itemService: itemService, weaponService: weaponService, armorService: armorService, skillService: skillService, skillXCharacterService: skillXCharacterService, featureService: featureService, featureXCharacterService: featureXCharacterService, spellService: spellService, spellXCharacterService: spellXCharacterService, proficiencyService: proficiencyService, proficiencyXCharacterService: proficiencyXCharacterService, tradeEventService: tradeEventService, attackEventService: attackEventService, diceEventService: diceEventService, userService: userService}
 }
 
 // GetGenerics implements ServiceCharacterData.
@@ -63,10 +68,10 @@ func (s *service) Create(character domain.CharacterData) (dto.FullCharacterData,
 
 // Delete implements ServiceCharacterData.
 func (s *service) Delete(id int) error {
-	errChan := make(chan error, 7)
+	errChan := make(chan error, 10)
 	maxWorkers := make(chan bool, 3)
 	var wg sync.WaitGroup
-	wg.Add(8)
+	wg.Add(10)
 	go func() {
 		maxWorkers <- true
 		defer func() {
@@ -113,7 +118,6 @@ func (s *service) Delete(id int) error {
 		maxWorkers <- true
 		defer func() {
 			<-maxWorkers
-
 			wg.Done()
 		}()
 		err := s.proficiencyXCharacterService.DeleteByCharacterDataId(id)
@@ -124,7 +128,6 @@ func (s *service) Delete(id int) error {
 		maxWorkers <- true
 		defer func() {
 			<-maxWorkers
-
 			wg.Done()
 		}()
 		err := s.skillXCharacterService.DeleteByCharacterDataId(id)
@@ -137,7 +140,6 @@ func (s *service) Delete(id int) error {
 		maxWorkers <- true
 		defer func() {
 			<-maxWorkers
-
 			wg.Done()
 		}()
 		err := s.armorService.DeleteByCharacterDataIdArmor(id)
@@ -148,10 +150,29 @@ func (s *service) Delete(id int) error {
 		maxWorkers <- true
 		defer func() {
 			<-maxWorkers
-
 			wg.Done()
 		}()
 		err := s.tradeEventService.DeleteBySenderOrReciever(id)
+		errChan <- err
+	}()
+
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+			wg.Done()
+		}()
+		err := s.attackEventService.DeleteByProtagonistAndAffectedId(id, id)
+		errChan <- err
+	}()
+
+	go func() {
+		maxWorkers <- true
+		defer func() {
+			<-maxWorkers
+			wg.Done()
+		}()
+		err := s.diceEventService.DeleteByProtagonistId(id)
 		errChan <- err
 	}()
 
@@ -236,7 +257,6 @@ func (s *service) GetByUser(cookie string) ([]dto.CharacterCardDto, error) {
 	return s.characterRepo.GetByUserId(uid)
 }
 
-
 func characterDataToFullCharacterData(character domain.CharacterData, items []domain.ItemXCharacterData, weapons []domain.WeaponXCharacterData, armor []domain.ArmorXCharacterData, skills []domain.Skill, features []domain.Feature, spells []domain.Spell, proficiencies []domain.Proficiency) dto.FullCharacterData {
 	return dto.FullCharacterData{
 		Character_Id:  character.Character_Id,
@@ -290,7 +310,7 @@ func (s *service) fetchAndConvertToFullCharacterData(character *domain.Character
 
 	maxWorkers := make(chan bool, 3)
 	var wg sync.WaitGroup
-	wg.Add(7) //TO DO change to 7 when armor and skills are working
+	wg.Add(7)
 
 	go func() {
 		maxWorkers <- true
@@ -300,7 +320,6 @@ func (s *service) fetchAndConvertToFullCharacterData(character *domain.Character
 			wg.Done()
 		}()
 		items, err := s.itemService.GetByCharacterDataId(character.Character_Id)
-
 		errChan <- err
 		itemChan <- items
 	}()
@@ -349,7 +368,6 @@ func (s *service) fetchAndConvertToFullCharacterData(character *domain.Character
 			wg.Done()
 		}()
 		proficiencies, err := s.proficiencyService.GetByCharacterDataId(character.Character_Id)
-
 		errChan <- err
 		proficiencyChan <- proficiencies
 	}()
@@ -362,7 +380,6 @@ func (s *service) fetchAndConvertToFullCharacterData(character *domain.Character
 			wg.Done()
 		}()
 		skills, err := s.skillService.GetByCharacterId(character.Character_Id)
-
 		errChan <- err
 		skillChan <- skills
 	}()
@@ -375,7 +392,6 @@ func (s *service) fetchAndConvertToFullCharacterData(character *domain.Character
 			wg.Done()
 		}()
 		armors, err := s.armorService.GetByCharacterDataIdArmor(character.Character_Id)
-
 		errChan <- err
 		armorChan <- armors
 	}()

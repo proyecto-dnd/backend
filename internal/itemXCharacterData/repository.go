@@ -67,6 +67,7 @@ func (r *itemXCharacterDataSqlRepository) Create(itemXCharacterData domain.ItemX
 			itemXCharacterData.Quantity+tempItemXCharacterData.Quantity,
 			tempItemXCharacterData.Character_Item_Id,
 		)
+		itemXCharacterData.Character_Item_Id = tempItemXCharacterData.Character_Item_Id
 		itemXCharacterData.Quantity = itemXCharacterData.Quantity + tempItemXCharacterData.Quantity
 		if err != nil {
 			return domain.ItemXCharacterData{}, err

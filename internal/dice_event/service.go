@@ -10,11 +10,16 @@ func NewDiceEventService(repository DiceEventRepository) DiceEventService {
 	return &service{repository: repository}
 }
 
+// DeleteByProtagonistId implements DiceEventService.
+func (s *service) DeleteByProtagonistId(id int) error {
+	return s.repository.DeleteByProtagonistId(id)
+}
+
+
 // GetBySessionId implements DiceEventService.
 func (s *service) GetBySessionId(sessionid int) ([]domain.DiceEvent, error) {
 	return s.repository.GetBySessionId(sessionid)
 }
-
 
 func (s *service) Create(diceEvent domain.DiceEvent) (domain.DiceEvent, error) {
 	return s.repository.Create(diceEvent)

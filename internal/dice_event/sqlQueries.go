@@ -7,4 +7,5 @@ var (
 	QueryGetBySessionId = `SELECT * from dice_event where session_id = ?;`
 	QueryUpdate  = `UPDATE dice_event SET stat = ?, difficulty = ?, dice_rolled = ?, dice_result = ?, event_protagonist = ?, description = ?, session_id = ? WHERE dice_event_id = ?;`
 	QueryDelete  = `DELETE FROM dice_event WHERE dice_event_id = ?;`
+	QueryDeleteByProtagonistId  = `DELETE FROM dice_event WHERE event_protagonist = ?;`
 )
