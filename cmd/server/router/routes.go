@@ -285,14 +285,19 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	tradeEventRepository = tradeevent.NewTradeEventMySqlRepository(db)
 	tradeEventService = tradeevent.NewTradeEventService(tradeEventRepository, characterTradeService, weaponXCharacterDataService, armorXCharacterDataService, itemXCharacterDataService)
 	tradeEventHandler = handler.NewTradeEventHandler(&tradeEventService)
-
-	characterDataRepository = characterdata.NewCharacterDataRepository(db)
-	characterDataService = characterdata.NewServiceCharacterData(characterDataRepository, itemXCharacterDataService, weaponXCharacterDataService, armorXCharacterDataService, skillService, skillXCharacterDataService, featureService, featureXCharacterDataService, spellService, characterXSpellService, proficiencyService, characterXProficiencyService, tradeEventService, userFirebaseService)
-	characterDataHandler = handler.NewCharacterHandler(&characterDataService)
-
+	
 	attackEventRepository = attackEvent.NewAttackEventRepository(db)
 	attackEventService = attackEvent.NewAttackEventService(attackEventRepository)
 	attackEventHandler = handler.NewAttackEventHandler(&attackEventService)
+	
+	diceEventRepository = dice_event.NewDiceEventRepository(db)
+	diceEventService = dice_event.NewDiceEventService(diceEventRepository)
+	diceEventHandler = handler.NewDiceEventHandler(diceEventService)
+	
+	characterDataRepository = characterdata.NewCharacterDataRepository(db)
+	characterDataService = characterdata.NewServiceCharacterData(characterDataRepository, itemXCharacterDataService, weaponXCharacterDataService, armorXCharacterDataService, skillService, skillXCharacterDataService, featureService, featureXCharacterDataService, spellService, characterXSpellService, proficiencyService, characterXProficiencyService, tradeEventService,attackEventService, diceEventService, userFirebaseService)
+	characterDataHandler = handler.NewCharacterHandler(&characterDataService)
+
 
 	campaignRepository = campaign.NewCampaignRepository(db)
 	campaignService = campaign.NewCampaignService(campaignRepository, sessionService, userCampaignService, characterDataService, userFirebaseService)
@@ -302,11 +307,8 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterXAttackEventService = characterXAttackEvent.NewCharacterXAttackEventService(characterXAttackEventRepository)
 	characterXAttackEventHandler = handler.NewCharacterXAttackEventHandler(characterXAttackEventService)
 
-	diceEventRepository = dice_event.NewDiceEventRepository(db)
-	diceEventService = dice_event.NewDiceEventService(diceEventRepository)
-	diceEventHandler = handler.NewDiceEventHandler(diceEventService)
 
-	reportGenerator = report.NewReportGenerator(tradeEventService, attackEventService, diceEventService)
+	reportGenerator = report.NewReportGenerator(tradeEventService, attackEventService, diceEventService, characterDataService)
 	reportHandler = handler.NewReportHandler(reportGenerator)
 
 	hub := ws.NewHub(tradeEventService, attackEventService, diceEventService)
@@ -734,5 +736,6 @@ func (r *router) buildReportRoutes() {
 	reportGroup := r.routerGroup.Group("/report")
 	{
 		reportGroup.GET("/session/:id", reportHandler.HandlerGetSessionReport())
+		reportGroup.GET("/character/campaign/:id", reportHandler.HandlerGetCharacterCampaignReport())
 	}
 }

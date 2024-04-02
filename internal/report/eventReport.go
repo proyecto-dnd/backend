@@ -3,8 +3,10 @@ package report
 import (
 	"bytes"
 	"strconv"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/proyecto-dnd/backend/internal/attackEvent"
+	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/dice_event"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
@@ -15,17 +17,19 @@ type ReportGenerator struct {
 	tradeEventService  tradeevent.ServiceTradeEvent
 	attackEventService attackEvent.AttackEventService
 	diceEventService   dice_event.DiceEventService
+	characterDataService characterdata.ServiceCharacterData
 }
 
-func NewReportGenerator(tradeEventService tradeevent.ServiceTradeEvent, attackEventService attackEvent.AttackEventService, diceEventService dice_event.DiceEventService) *ReportGenerator {
+func NewReportGenerator(tradeEventService tradeevent.ServiceTradeEvent, attackEventService attackEvent.AttackEventService, diceEventService dice_event.DiceEventService, characterDataService characterdata.ServiceCharacterData) *ReportGenerator {
 	return &ReportGenerator{
 		tradeEventService:  tradeEventService,
 		attackEventService: attackEventService,
 		diceEventService:   diceEventService,
+		characterDataService: characterDataService,
 	}
 }
 
-func (r *ReportGenerator) GenerateSessionReport(id int) (*bytes.Buffer, error) {
+func (r *ReportGenerator) GenerateEventSessionReport(id int) (*bytes.Buffer, error) {
 	excelFile := excelize.NewFile()
 	tradeSheetIndex := excelFile.NewSheet("Sheet1")
 	excelFile.SetSheetName("Sheet1", "Trade Events")
@@ -251,3 +255,4 @@ func insertDiceEventRow(excelFile *excelize.File, diceEvent domain.DiceEvent, i 
 	excelFile.SetCellValue("Dice Event", "H"+strconv.Itoa(i+2), diceEvent.SessionId)
 	excelFile.SetCellValue("Dice Event", "I"+strconv.Itoa(i+2), diceEvent.TimeStamp)
 }
+

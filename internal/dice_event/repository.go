@@ -20,6 +20,19 @@ func NewDiceEventRepository(db *sql.DB) DiceEventRepository {
 	return &repository{db: db}
 }
 
+// DeleteByProtagonistId implements DiceEventRepository.
+func (r *repository) DeleteByProtagonistId(id int) error {
+	statement, err := r.db.Prepare(QueryDeleteByProtagonistId)
+	if err != nil {
+		return ErrPrepareStatement
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(id)
+	return err
+}
+
+
 // GetBySessionId implements DiceEventRepository.
 func (r *repository) GetBySessionId(sessionid int) ([]domain.DiceEvent, error) {
 	rows, err := r.db.Query(QueryGetBySessionId, sessionid)
@@ -52,7 +65,6 @@ func (r *repository) GetBySessionId(sessionid int) ([]domain.DiceEvent, error) {
 
 	return diceEvents, nil
 }
-
 
 func (r *repository) Create(diceEvent domain.DiceEvent) (domain.DiceEvent, error) {
 	statement, err := r.db.Prepare(QueryInsert)
