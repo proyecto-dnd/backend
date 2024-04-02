@@ -297,3 +297,25 @@ func (h *UserHandler) HandlerCheckSubscriptionExpDate() gin.HandlerFunc {
 		ctx.JSON(200, "Still subed to Premium")
 	}
 }
+
+func (h *UserHandler) HandlerSendEmailVerification() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err.Error())
+			return
+		}
+
+		jwtClaimsInfo, err := h.service.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err.Error())
+			return
+		}
+		err = h.service.SendVerificationEmail(jwtClaimsInfo.Email)
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+		ctx.JSON(200, "Email sent")
+	}
+}

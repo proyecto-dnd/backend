@@ -94,3 +94,7 @@ func (s *service) SubscribeToPremium(id string, date string) (string, error) {
 func (s *service) CheckSubExpiration(userId string) error {
 	return s.repositoryFirebase.CheckSubExpiration(userId)
 }
+
+func (s *service) SendVerificationEmail(emailAddress string) error {
+	return s.repositoryFirebase.SendVerificationEmail(emailAddress)
+}

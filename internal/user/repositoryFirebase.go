@@ -367,6 +367,10 @@ func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenCla
 	if err != nil {
 		return domain.UserTokenClaims{}, err
 	}
+	userAuthData, err := r.authClient.GetUser(ctx, tokenClaims.Id)
+	if err != nil {
+		return domain.UserTokenClaims{}, err
+	}
 	var tokenInfo domain.UserTokenClaims
 	tokenInfo.Id = userData.Id
 	tokenInfo.Username = userData.Username
@@ -374,6 +378,7 @@ func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenCla
 	tokenInfo.DisplayName = userData.DisplayName
 	tokenInfo.SubExpirationDate = userData.SubExpirationDate
 	tokenInfo.Image = *userData.Image
+	tokenInfo.EmailVerified = userAuthData.EmailVerified
 	return tokenInfo, nil
 }
 
@@ -531,5 +536,20 @@ func (r *repositoryFirebase) CheckSubExpiration(userId string) error {
 		return errors.New("sub expired")
 	}
 
+	return nil
+}
+
+func (r *repositoryFirebase) SendVerificationEmail(emailAddress string) error {
+	emailVerificationLink, err := r.authClient.EmailVerificationLink(ctx, emailAddress)
+	if err != nil {
+		log.Printf("Error creating email verification link: %v", err)
+		return err
+	}
+
+	err = email.SendEmailVerificationLink(emailAddress, emailVerificationLink)
+	if err != nil {
+		log.Printf("Error sending email verification link: %v", err)
+		return err
+	}
 	return nil
 }

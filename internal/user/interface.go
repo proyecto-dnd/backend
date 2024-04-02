@@ -16,6 +16,7 @@ type RepositoryUsers interface {
 	TransferDataToSql(users []domain.User) (string, error)
 	SubscribeToPremium(id string, date string) (string, error)
 	CheckSubExpiration(userId string) error
+	SendVerificationEmail(emailAddress string) error
 }
 
 type ServiceUsers interface {
@@ -30,4 +31,5 @@ type ServiceUsers interface {
 	TransferDataToSql(users []domain.User) (string, error)
 	SubscribeToPremium(id string, date string) (string, error)
 	CheckSubExpiration(userId string) error
+	SendVerificationEmail(emailAddress string) error
 }

@@ -34,6 +34,7 @@ type UserTokenClaims struct {
 	DisplayName       string `json:"displayName"`
 	SubExpirationDate string `json:"subExpiration"`
 	Image             string `json:"image"`
+	EmailVerified     bool   `json:"emailVerified"`
 }
 
 type UserResponseFull struct {
