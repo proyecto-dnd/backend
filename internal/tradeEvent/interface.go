@@ -18,4 +18,5 @@ type ServiceTradeEvent interface {
 	GetByReceiver(receiver int) ([]domain.TradeEvent, error)
 	GetBySenderOrReciever(id int) ([]domain.TradeEvent, error)
 	Delete(id int) (error)
+	DeleteBySenderOrReciever(id int) (error)
 }

@@ -17,8 +17,23 @@ func NewAttackEventService(repo AttackEventRepository, characterService characte
 	return &service{repo: repo, charactersService: characterService}
 }
 
-func (s *service) CreateEvent(attackEvent domain.AttackEvent) (domain.AttackEvent, error) {
+// DeleteByProtagonistAndAffectedId implements AttackEventService.
+func (s *service) DeleteByProtagonistAndAffectedId(protagonistId int, affectedId int) error {
+	attackEvents, err := s.GetEventsByProtagonistIdAndAffectedId(protagonistId, affectedId)
+	if err != nil {
+		return err
+	}
+	for _, event := range attackEvents {
+		err := s.repo.Delete(event.AttackEventId)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
+
+func (s *service) CreateEvent(attackEvent domain.AttackEvent) (domain.AttackEvent, error) {
 
 	// eventDomain := domain.AttackEvent{
 	// 	Type:               eventDto.Type,
@@ -165,7 +180,6 @@ func (s *service) GetEventsBySessionId(sessionid int) ([]dto.ResponseEventDto, e
 	return eventsToReturn, nil
 }
 
-
 func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEventDto, error) {
 	events, err := s.repo.GetByProtagonistId(protagonistid)
 	if err != nil {
@@ -232,7 +246,6 @@ func (s *service) GetEventsByProtagonistId(protagonistid int) ([]dto.ResponseEve
 
 	return eventsToReturn, nil
 }
-
 
 func (s *service) GetEventsByAffectedId(affectedid int) ([]dto.ResponseEventDto, error) {
 	events, err := s.repo.GetByAffectedId(affectedid)
@@ -301,7 +314,6 @@ func (s *service) GetEventsByAffectedId(affectedid int) ([]dto.ResponseEventDto,
 	return eventsToReturn, nil
 }
 
-
 func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedid int) ([]dto.ResponseEventDto, error) {
 	events, err := s.repo.GetByProtagonistIdAndAffectedId(protagonistid, affectedid)
 	if err != nil {
@@ -368,7 +380,6 @@ func (s *service) GetEventsByProtagonistIdAndAffectedId(protagonistid, affectedi
 
 	return eventsToReturn, nil
 }
-
 
 func (s *service) UpdateEvent(eventDto dto.CreateAttackEventDto, id int) (domain.AttackEvent, error) {
 

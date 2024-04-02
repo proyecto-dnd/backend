@@ -20,6 +20,7 @@ type CharacterFeatureService interface {
 	GetCharacterFeatureByFeatureId(id int) ([]domain.CharacterFeature, error)
 	GetCharacterFeatureByCharacterId(id int) ([]domain.CharacterFeature, error)
 	DeleteCharacterFeature(idFeature int, idCharacter int) error
+	DeleteByCharacterDataId(idCharacter int) error
 }
 
 type CharacterFeatureRepository interface {
@@ -28,4 +29,5 @@ type CharacterFeatureRepository interface {
 	GetByFeatureId(id int)([]domain.CharacterFeature, error)
 	GetByCharacterId(id int)([]domain.CharacterFeature, error)
 	Delete(idFeature int, idCharacter int)error
+	DeleteByCharacterDataId(idCharacter int)error
 }

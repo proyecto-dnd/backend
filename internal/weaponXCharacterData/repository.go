@@ -9,7 +9,7 @@ import (
 var (
 	ErrPrepareStatement    = errors.New("error preparing statement")
 	ErrGettingLastInsertId = errors.New("error getting last insert id")
-	ErrNotFound            = errors.New("item not found")
+	ErrNotFound            = errors.New("weapon not found")
 )
 
 type weaponXCharacterDataSqlRepository struct {
