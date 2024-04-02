@@ -3,9 +3,6 @@ package characterdata
 import (
 	"fmt"
 	"sync"
-
-	"sync"
-
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
 	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
