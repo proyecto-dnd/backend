@@ -166,3 +166,19 @@ func (h *FeatureHandler) HandlerDelete() gin.HandlerFunc {
 		ctx.JSON(200, "Feature deleted")
 	}
 }
+
+func(h *FeatureHandler) HandlerDeleteByQueries() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, err := strconv.Atoi(ctx.Query("id"))
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		err = h.service.DeleteFeature(id)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, "Feature deleted")
+	}
+}

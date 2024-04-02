@@ -257,17 +257,27 @@ func (r *repositoryFirebase) Patch(user domain.UserUpdate, id string) (domain.Us
 	if user.Username != "" {
 		fieldsToUpdate = append(fieldsToUpdate, "display_name = ?")
 		args = append(args, user.Username)
-		r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).DisplayName(user.Username))
+		_, err := r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).DisplayName(user.Username))
+		if err != nil {
+			return domain.UserResponse{}, err
+		}
+
 	}
 	if user.Email != "" {
 		fieldsToUpdate = append(fieldsToUpdate, "email = ?")
 		args = append(args, user.Email)
-		r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).Email(user.Email))
+		_, err := r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).Email(user.Email))
+		if err != nil {
+			return domain.UserResponse{}, err
+		}
 	}
 	if user.Password != "" {
 		fieldsToUpdate = append(fieldsToUpdate, "password = ?")
 		args = append(args, user.Password)
-		r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).Password(user.Password))
+		_, err := r.authClient.UpdateUser(ctx, id, (&auth.UserToUpdate{}).Password(user.Password))
+		if err != nil {
+			return domain.UserResponse{}, err
+		}
 	}
 	if user.Image != nil && *user.Image != "" {
 		fieldsToUpdate = append(fieldsToUpdate, "image = ?")
@@ -284,8 +294,12 @@ func (r *repositoryFirebase) Patch(user domain.UserUpdate, id string) (domain.Us
 
 	queryString := "UPDATE user SET " + strings.Join(fieldsToUpdate, ", ") + " WHERE user_id = ?"
 	args = append(args, id)
-
-	result, err := r.db.Exec(queryString, args...)
+	statement, err := r.db.Prepare(queryString)
+	if err != nil {
+		return domain.UserResponse{}, err
+	}
+	defer statement.Close()
+	result, err := statement.Exec(args...)
 	if err != nil {
 		return domain.UserResponse{}, err
 	}

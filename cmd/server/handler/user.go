@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -9,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/user"
-	"github.com/proyecto-dnd/backend/pkg/email"
 )
 
 type UserHandler struct {
@@ -144,7 +142,18 @@ func (h *UserHandler) HandlerUpdate() gin.HandlerFunc {
 // @Router /user/{id} [patch]
 func (h *UserHandler) HandlerPatch() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err.Error())
+			return
+		}
+
+		jwtClaimsInfo, err := h.service.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err.Error())
+			return
+		}
+		userId := jwtClaimsInfo.Id
 
 		var userTemp domain.UserUpdate
 		if err := ctx.BindJSON(&userTemp); err != nil {
@@ -152,7 +161,7 @@ func (h *UserHandler) HandlerPatch() gin.HandlerFunc {
 			ctx.JSON(500, err.Error())
 			return
 		}
-		patchedUser, err := h.service.Patch(userTemp, id)
+		patchedUser, err := h.service.Patch(userTemp, userId)
 		if err != nil {
 
 			ctx.JSON(500, err.Error())
@@ -245,21 +254,18 @@ func (h *UserHandler) HandlerSubPremium() gin.HandlerFunc {
 
 		months, err := strconv.Atoi(monthsParam)
 		if err != nil {
-			log.Println(1, err)
 			ctx.JSON(500, err.Error())
 			return
 		}
 
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
-			log.Println(2, err)
 			ctx.JSON(500, err.Error())
 			return
 		}
 		// arreglar para sumar a la fecha guardada en la base checkeando que la fecha de hoy sea posterior al vencimiento de la suscripcion
 		_, err = h.service.SubscribeToPremium(cookie.Value, time.Now().AddDate(0, months, 0).String())
 		if err != nil {
-			log.Println(3, err)
 			ctx.JSON(500, err.Error())
 			return
 		}
@@ -289,16 +295,5 @@ func (h *UserHandler) HandlerCheckSubscriptionExpDate() gin.HandlerFunc {
 		}
 		// TEMP SUCCESS RESPONSE
 		ctx.JSON(200, "Still subed to Premium")
-	}
-}
-
-func (h *UserHandler) HandlerTryEmail() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		err := email.SendEmailVerificationLink("dthmax2@gmail.com", "http://google.com.ar")
-		if err != nil {
-			ctx.JSON(500, err.Error())
-			return
-		}
-		ctx.JSON(200, "Email sent")
 	}
 }

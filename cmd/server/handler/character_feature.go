@@ -99,6 +99,7 @@ func (h *CharacterFeature) HandlerGetByFeatureId() gin.HandlerFunc {
 // @Router /character_feature/character/{id} [get]
 func (h *CharacterFeature) HandlerGetByCharacterId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
 		id := ctx.Param("id")
 
 		intId, err := strconv.Atoi(id)
@@ -145,5 +146,26 @@ func (h *CharacterFeature) HandlerDelete() gin.HandlerFunc {
 		}
 
 		ctx.JSON(204, nil)
+	}
+}
+
+func (h *CharacterFeature) HandlerDeleteQueries() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		idCharacter, err := strconv.Atoi(ctx.Query("idCharacter"))
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+		idFeature, err := strconv.Atoi(ctx.Query("idFeature"))
+		if err != nil {
+			ctx.JSON(400, err)
+			return
+		}
+		err = h.service.DeleteCharacterFeature(idFeature, idCharacter)
+		if err != nil {
+			ctx.JSON(500, err)
+			return
+		}
+		ctx.JSON(200, "The row with idCharacter = "+strconv.Itoa(idCharacter)+" and idFeature = "+strconv.Itoa(idFeature)+" was deleted")
 	}
 }

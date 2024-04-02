@@ -169,8 +169,8 @@ var (
 	diceEventHandler    *handler.DiceEventHandler
 
 	backgroundRepository background.BackgroundRepository
-	backgroundService background.BackgroundService
-	backgroundHandler *handler.BackgroundHandler
+	backgroundService    background.BackgroundService
+	backgroundHandler    *handler.BackgroundHandler
 
 	reportGenerator *report.ReportGenerator
 	reportHandler   *handler.ReportHandler
@@ -379,9 +379,8 @@ func (r *router) buildUserRoutes() {
 		userGroup.GET("/checkSub", userFirebaseHandler.HandlerCheckSubscriptionExpDate())
 		userGroup.GET("/jwt", userFirebaseHandler.HandlerGetJwtInfo())
 		userGroup.PUT("/:id", userFirebaseHandler.HandlerUpdate())
-		userGroup.PATCH("/:id", userFirebaseHandler.HandlerPatch())
+		userGroup.PATCH("/", userFirebaseHandler.HandlerPatch())
 		userGroup.DELETE("/:id", userFirebaseHandler.HandlerDelete())
-		userGroup.GET("/email", userFirebaseHandler.HandlerTryEmail())
 	}
 }
 
@@ -447,10 +446,8 @@ func (r *router) buildProficiencyRoutes() {
 	}
 }
 
-
-
 func (r *router) buildBackgroundRoutes() {
-	backgroundGroup := r.routerGroup.Group("/background") 
+	backgroundGroup := r.routerGroup.Group("/background")
 	{
 		backgroundGroup.GET("", backgroundHandler.HandlerGetAll())
 		backgroundGroup.GET("/:id", backgroundHandler.HandlerGetById())
@@ -556,7 +553,7 @@ func (r *router) buildCharacterFeatureRoutes() {
 		characterFeatureGroup.GET("", characterFeatureHandler.HandlerGetAll())
 		characterFeatureGroup.GET("/feature/:id", characterFeatureHandler.HandlerGetByFeatureId())
 		characterFeatureGroup.GET("/character/:id", characterFeatureHandler.HandlerGetByCharacterId())
-		characterFeatureGroup.DELETE("/:id", characterFeatureHandler.HandlerDelete())
+		characterFeatureGroup.DELETE("/", characterFeatureHandler.HandlerDeleteQueries())
 	}
 }
 
