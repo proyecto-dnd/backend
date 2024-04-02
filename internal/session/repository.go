@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -100,6 +102,7 @@ func (r *sessionMySqlRepository) GetByCampaignId(id int) ([]domain.Session, erro
 func (r *sessionMySqlRepository) Update(session domain.Session, id int) (domain.Session, error) {
 	statement, err := r.db.Prepare(QueryUpdate)
 	if err != nil {
+		log.Println(err)
 		return domain.Session{}, ErrPrepareStatement
 	}
 	defer statement.Close()
