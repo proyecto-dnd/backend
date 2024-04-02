@@ -67,7 +67,7 @@ func (r *repositoryMysqlRepository) GetAll() ([]domain.Class, error) {
 	defer rows.Close()
 
 	var classes []domain.Class
-	
+
 	for rows.Next() {
 		var class domain.Class
 		if err := rows.Scan(&class.ClassId, &class.Name, &class.Description, &class.ProficiencyBonus, &class.HitDice, &class.ArmorProficiencies, &class.WeaponProficiencies, &class.ToolProficiencies, &class.SpellcastingAbility); err != nil {
@@ -80,7 +80,7 @@ func (r *repositoryMysqlRepository) GetAll() ([]domain.Class, error) {
 
 func (r *repositoryMysqlRepository) GetById(id int) (domain.Class, error) {
 	var class domain.Class
-	if err := r.db.QueryRow(QueryGetById, id).Scan(&class.ClassId, &class.Description, &class.ProficiencyBonus, &class.HitDice, &class.ArmorProficiencies, &class.WeaponProficiencies, &class.ToolProficiencies, &class.SpellcastingAbility); err != nil {
+	if err := r.db.QueryRow(QueryGetById, id).Scan(&class.ClassId, &class.Name, &class.Description, &class.ProficiencyBonus, &class.HitDice, &class.ArmorProficiencies, &class.WeaponProficiencies, &class.ToolProficiencies, &class.SpellcastingAbility); err != nil {
 		return domain.Class{}, err
 	}
 	return class, nil
@@ -93,7 +93,7 @@ func (r *repositoryMysqlRepository) Update(classDto dto.ClassDto, id int) (domai
 	}
 	defer statement.Close()
 
-	_, err = statement.Exec(classDto.Name, classDto.Description, classDto.ProficiencyBonus, classDto.HitDice, classDto.ArmorProficiencies, classDto.WeaponProficiencies, classDto.ToolProficiencies, classDto.SpellcastingAbility)
+	_, err = statement.Exec(classDto.Name, classDto.Description, classDto.ProficiencyBonus, classDto.HitDice, classDto.ArmorProficiencies, classDto.WeaponProficiencies, classDto.ToolProficiencies, classDto.SpellcastingAbility, id)
 	if err != nil {
 		return domain.Class{}, nil
 	}

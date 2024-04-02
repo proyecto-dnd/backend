@@ -18,8 +18,9 @@ import (
 )
 
 var (
-	ctx      = &gin.Context{}
-	ErrEmpty = errors.New("empty list")
+	ctx         = &gin.Context{}
+	ErrEmpty    = errors.New("empty list")
+	ErrNotFound = errors.New("user not found")
 )
 
 type repositoryFirebase struct {
@@ -294,11 +295,15 @@ func (r *repositoryFirebase) Patch(user domain.UserUpdate, id string) (domain.Us
 
 	queryString := "UPDATE user SET " + strings.Join(fieldsToUpdate, ", ") + " WHERE user_id = ?"
 	args = append(args, id)
+	fmt.Println("queryString: ", queryString)
 	statement, err := r.db.Prepare(queryString)
 	if err != nil {
 		return domain.UserResponse{}, err
 	}
 	defer statement.Close()
+
+	fmt.Println("args: ", args)
+
 	result, err := statement.Exec(args...)
 	if err != nil {
 		return domain.UserResponse{}, err
@@ -308,13 +313,12 @@ func (r *repositoryFirebase) Patch(user domain.UserUpdate, id string) (domain.Us
 		return domain.UserResponse{}, err
 	}
 
-	return domain.UserResponse{
-		Id:          id,
-		Username:    user.Username,
-		Email:       user.Email,
-		Image:       user.Image,
-		DisplayName: user.DisplayName,
-	}, nil
+	patchedUser, err := r.GetById(id)
+	if err != nil {
+		return domain.UserResponse{}, err
+	}
+
+	return patchedUser, nil
 }
 
 func (r *repositoryFirebase) Login(userInfo domain.UserLoginInfo) (string, error) {
