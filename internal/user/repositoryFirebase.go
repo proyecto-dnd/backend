@@ -364,7 +364,7 @@ func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenCla
 		// 	tokenClaims.SubExpirationDate = claims["claims"].(map[string]interface{})["subExpiration"].(string)
 		// }
 	}
-	userData, err := r.GetById(tokenClaims.Id)
+	userData, err := r.getFullDataById(tokenClaims.Id)
 	if err != nil {
 		return domain.UserTokenClaims{}, err
 	}
@@ -373,7 +373,7 @@ func (r *repositoryFirebase) GetJwtInfo(cookieToken string) (domain.UserTokenCla
 	tokenInfo.Username = userData.Username
 	tokenInfo.Email = userData.Email
 	tokenInfo.DisplayName = userData.DisplayName
-	tokenInfo.SubExpirationDate = tokenClaims.SubExpirationDate
+	tokenInfo.SubExpirationDate = userData.SubExpirationDate
 	tokenInfo.Image = *userData.Image
 	return tokenInfo, nil
 }
@@ -495,6 +495,21 @@ func (r *repositoryFirebase) SubscribeToPremium(id string, date string) (string,
 	return "Subbed succesfully", nil
 }
 
+func (r *repositoryFirebase) getFullDataById(id string) (domain.UserResponseFull, error) {
+	statement, err := r.db.Prepare(QueryGetFullData)
+	if err != nil {
+		return domain.UserResponseFull{}, err
+	}
+	defer statement.Close()
+
+	row := statement.QueryRow(id)
+	var userResponseFull domain.UserResponseFull
+	err = row.Scan(&userResponseFull.Id, &userResponseFull.Username, &userResponseFull.Email, &userResponseFull.DisplayName, &userResponseFull.Image, &userResponseFull.SubExpirationDate)
+	if err != nil {
+		return domain.UserResponseFull{}, err
+	}
+	return userResponseFull, nil
+}
 func (r *repositoryFirebase) CheckSubExpiration(userId string) error {
 	statement, err := r.db.Prepare(QueryGetSubExpirationDate)
 	if err != nil {

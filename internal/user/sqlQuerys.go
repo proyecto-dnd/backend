@@ -8,4 +8,5 @@ var (
 	QueryDeleteUser              = `DELETE FROM user WHERE uid = ?`
 	QueryGetSubExpirationDate    = `SELECT sub_expiration FROM user WHERE uid = ?`
 	QueryUpdateSubExpirationDate = `UPDATE user SET sub_expiration = ? WHERE uid = ?`
+	QueryGetFullData             = `SELECT uid, name, email, display_name, image, sub_expiration FROM user WHERE uid = ?`
 )

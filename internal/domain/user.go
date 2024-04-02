@@ -35,3 +35,12 @@ type UserTokenClaims struct {
 	SubExpirationDate string `json:"subExpiration"`
 	Image             string `json:"image"`
 }
+
+type UserResponseFull struct {
+	Id                string  `json:"id"`
+	Username          string  `json:"name"`
+	Email             string  `json:"email"`
+	DisplayName       string  `json:"displayName"`
+	Image             *string `json:"image"`
+	SubExpirationDate string  `json:"subExpiration"`
+}
