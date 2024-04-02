@@ -28,6 +28,7 @@ type AttackEventService interface {
 	GetEventsByProtagonistIdAndAffectedId(protagonistId int, affectedId int) ([]dto.ResponseEventDto, error)
 	UpdateEvent(event dto.CreateAttackEventDto, id int) (domain.AttackEvent, error)
 	DeleteEvent(id int) error
+	DeleteByProtagonistAndAffectedId(protagonistId int, affectedId int) error
 }
 
 type AttackEventRepository interface {

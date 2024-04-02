@@ -23,4 +23,8 @@ var (
 	QueryDelete = `
 		DELETE FROM character_feature WHERE feature_id = ? AND character_id = ?;
 	`
+
+	QueryDeleteByCharacterId = `
+		DELETE FROM character_feature WHERE character_id = ?;
+	`
 )

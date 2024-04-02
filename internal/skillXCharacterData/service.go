@@ -12,6 +12,12 @@ func NewSkillXCharacterService(repository RepositorySkillXCharacter) ServiceSkil
 	return &service{repository: repository}
 }
 
+// DeleteByCharacterDataId implements ServiceSkillXCharacter.
+func (s *service) DeleteByCharacterDataId(id int) error {
+	return s.repository.DeleteByCharacterDataId(id)
+}
+
+
 func (s *service) Create(skillXCharacterData domain.SkillXCharacterData) (domain.SkillXCharacterData, error) {
 	newSkillXCharacter, err := s.repository.Create(skillXCharacterData)
 	if err != nil {

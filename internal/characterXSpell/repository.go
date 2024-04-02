@@ -11,7 +11,7 @@ import (
 var (
 	ErrPrepareStatement    = errors.New("error preparing statement")
 	ErrGettingLastInsertId = errors.New("error getting last insert id")
-	ErrNotFound            = errors.New("characters not found")
+	ErrNotFound            = errors.New("spells not found")
 )
 
 type CharacterXSpellRepository struct {
@@ -21,6 +21,22 @@ type CharacterXSpellRepository struct {
 func NewCharacterXSpellRepository(db *sql.DB) RepositoryCharacterXSpell {
 	return &CharacterXSpellRepository{db: db}
 }
+
+// DeleteByCharacterDataId implements RepositoryCharacterXSpell.
+func (r *CharacterXSpellRepository) DeleteByCharacterDataId(id int) error {
+	statement, err := r.db.Prepare(QueryDeleteByCharacterId)
+	if err != nil {
+		return ErrPrepareStatement
+	}
+	defer statement.Close()
+	_, err = statement.Exec(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 
 func (r *CharacterXSpellRepository) Create(characterXSpell domain.CharacterXSpell) (domain.CharacterXSpell, error) {
 	statement, err := r.db.Prepare(QueryInsert)

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
 	"github.com/proyecto-dnd/backend/internal/domain"

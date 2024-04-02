@@ -56,7 +56,7 @@ var (
 		LEFT JOIN character_attack_event cae ON cd.character_id = cae.character_id
 		INNER JOIN attack_event ae ON cae.event_id = ae.event_id AND ae.event_protagonist_id = cd.character_id
 		INNER JOIN session s ON ae.session_id = s.session_id
-		WHERE cae.character_id = ? AND ae.event_protagonist_id = ?;
+		WHERE cae.character_id = ? OR ae.event_protagonist_id = ?;
 	`
 
 	QueryUpdate = `

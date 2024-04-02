@@ -280,8 +280,14 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterFeatureService = character_feature.NewCharacterFeatureService(characterFeatureRepository)
 	characterFeatureHandler = handler.NewCharacterFeatureHandler(&characterFeatureService)
 
+	characterTradeRepository = charactertrade.NewCharacterTradeMySqlRepository(db)
+	characterTradeService = charactertrade.NewCharacterTradeService(characterTradeRepository)
+	tradeEventRepository = tradeevent.NewTradeEventMySqlRepository(db)
+	tradeEventService = tradeevent.NewTradeEventService(tradeEventRepository, characterTradeService, weaponXCharacterDataService, armorXCharacterDataService, itemXCharacterDataService)
+	tradeEventHandler = handler.NewTradeEventHandler(&tradeEventService)
+
 	characterDataRepository = characterdata.NewCharacterDataRepository(db)
-	characterDataService = characterdata.NewServiceCharacterData(characterDataRepository, itemXCharacterDataService, weaponXCharacterDataService, armorXCharacterDataService, skillService, featureService, spellService, proficiencyService, userFirebaseService)
+	characterDataService = characterdata.NewServiceCharacterData(characterDataRepository, itemXCharacterDataService, weaponXCharacterDataService, armorXCharacterDataService, skillService, skillXCharacterDataService, featureService, featureXCharacterDataService, spellService, characterXSpellService, proficiencyService, characterXProficiencyService, tradeEventService, userFirebaseService)
 	characterDataHandler = handler.NewCharacterHandler(&characterDataService)
 
 	attackEventRepository = attackEvent.NewAttackEventRepository(db)
@@ -291,12 +297,6 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	campaignRepository = campaign.NewCampaignRepository(db)
 	campaignService = campaign.NewCampaignService(campaignRepository, sessionService, userCampaignService, characterDataService, userFirebaseService)
 	campaignHandler = handler.NewCampaignHandler(&campaignService, &userFirebaseService)
-
-	characterTradeRepository = charactertrade.NewCharacterTradeMySqlRepository(db)
-	characterTradeService = charactertrade.NewCharacterTradeService(characterTradeRepository)
-	tradeEventRepository = tradeevent.NewTradeEventMySqlRepository(db)
-	tradeEventService = tradeevent.NewTradeEventService(tradeEventRepository, characterTradeService, weaponXCharacterDataService, armorXCharacterDataService, itemXCharacterDataService)
-	tradeEventHandler = handler.NewTradeEventHandler(&tradeEventService)
 
 	characterXAttackEventRepository = characterXAttackEvent.NewCharacterXAttackEventRepository(db)
 	characterXAttackEventService = characterXAttackEvent.NewCharacterXAttackEventService(characterXAttackEventRepository)
