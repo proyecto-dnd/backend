@@ -2,6 +2,7 @@ package handler
 
 import (
 	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/dto"
 	"github.com/proyecto-dnd/backend/internal/feature"
@@ -72,13 +73,13 @@ func (h *FeatureHandler) HandlerGetAllFeaturesByCharacterId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		characterId, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 
 		featureList, err := h.service.GetAllFeaturesByCharacterId(characterId)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, featureList)

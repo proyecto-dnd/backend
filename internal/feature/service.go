@@ -14,12 +14,12 @@ func NewFeatureService(repo FeatureRepository) FeatureService {
 }
 
 func (s *service) CreateFeature(featureDto dto.CreateFeatureDto) (domain.Feature, error) {
-	featureDomain := domain.Feature{
-		Name:        featureDto.Name,
-		Description: featureDto.Description,
-	}
+	// featureDomain := domain.Feature{
+	// 	Name:        featureDto.Name,
+	// 	Description: featureDto.Description,
+	// }
 
-	createdFeature, err := s.repo.Create(featureDomain)
+	createdFeature, err := s.repo.Create(featureDto)
 	if err != nil {
 		return domain.Feature{}, err
 	}

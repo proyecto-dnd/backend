@@ -25,7 +25,7 @@ type FeatureService interface {
 }
 
 type FeatureRepository interface {
-	Create(feature domain.Feature) (domain.Feature, error)
+	Create(feature dto.CreateFeatureDto) (domain.Feature, error)
 	GetAll() ([]domain.Feature, error)
 	GetAllByCharacterId(characterId int) ([]domain.Feature, error)
 	GetById(id int) (domain.Feature, error)

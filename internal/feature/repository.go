@@ -3,7 +3,9 @@ package feature
 import (
 	"database/sql"
 	"errors"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
+	"github.com/proyecto-dnd/backend/internal/dto"
 )
 
 var (
@@ -19,7 +21,11 @@ func NewFeatureRepository(db *sql.DB) FeatureRepository {
 	return &featureMySqlRepository{db: db}
 }
 
-func (r *featureMySqlRepository) Create(feature domain.Feature) (domain.Feature, error) {
+func (r *featureMySqlRepository) Create(feature dto.CreateFeatureDto) (domain.Feature, error) {
+	var newFeature domain.Feature
+	newFeature.Name = feature.Name
+	newFeature.Description = feature.Description
+
 	statement, err := r.db.Prepare(QueryCreateFeature)
 	if err != nil {
 		return domain.Feature{}, ErrPrepareStatement
@@ -27,8 +33,8 @@ func (r *featureMySqlRepository) Create(feature domain.Feature) (domain.Feature,
 	
 	defer statement.Close()
 	result, err := statement.Exec(
-		feature.Name,
-		feature.Description,
+		newFeature.Name,
+		newFeature.Description,
 	)
 	if err != nil {
 		return domain.Feature{}, err
@@ -38,9 +44,19 @@ func (r *featureMySqlRepository) Create(feature domain.Feature) (domain.Feature,
 	if err != nil {
 		return domain.Feature{}, ErrGettingLastInsertId
 	}
-	feature.FeatureId = int(lastId)
+	newFeature.FeatureId = int(lastId)
+
+	statement, err = r.db.Prepare(QueryCreateCharacterFeature)
+	if err != nil {
+		return domain.Feature{}, ErrPrepareStatement
+	}
+	defer statement.Close()
+	result, err = statement.Exec(feature.CharacterId, lastId)
+	if err != nil {
+		return domain.Feature{}, err
+	}
 	
-	return feature, nil
+	return newFeature, nil
 }
 
 func (r *featureMySqlRepository) GetAll() ([]domain.Feature, error) {

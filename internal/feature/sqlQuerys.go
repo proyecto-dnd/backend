@@ -6,6 +6,11 @@ var (
 		VALUES (?, ?)
 	`
 
+	QueryCreateCharacterFeature = `
+		INSERT INTO character_feature (character_id, feature_id)
+		VALUES (?, ?)
+	`
+
 	QueryGetAll = `
 		SELECT * FROM feature;
 	`

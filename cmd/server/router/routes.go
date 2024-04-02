@@ -495,7 +495,7 @@ func (r *router) buildFeatureRoutes() {
 	{
 		featureGroup.POST("", featureHandler.HandlerCreate())
 		featureGroup.GET("", featureHandler.HandlerGetAll())
-		featureGroup.GET("/character/:characterId", featureHandler.HandlerGetAllFeaturesByCharacterId())
+		featureGroup.GET("/character/:id", featureHandler.HandlerGetAllFeaturesByCharacterId())
 		featureGroup.GET("/:id", featureHandler.HandlerGetById())
 		featureGroup.PUT("/:id", featureHandler.HandlerUpdate())
 		featureGroup.DELETE("/:id", featureHandler.HandlerDelete())
