@@ -3,6 +3,7 @@ package user_campaign
 import (
 	"database/sql"
 	"errors"
+
 	"github.com/proyecto-dnd/backend/internal/domain"
 )
 
@@ -152,6 +153,72 @@ func (r *userCampaignMySqlRepository) Delete(id int) error {
 	_, err = statement.Exec(id)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (r *userCampaignMySqlRepository) DeleteUserCampaignByCampaignId(id int) error {
+	statement, err := r.db.Prepare(QueryDeleteByCampaignID)
+	if err != nil {
+		return ErrPrepareStatement
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *userCampaignMySqlRepository) AddFriendsToUserCampaign(userIds []string, campaignId int) (error) {
+	sqlQuery := QueryCreateMultipleUserCampaign
+	vals := []interface{}{}
+
+	for _, userId  := range userIds {
+		sqlQuery += "(?, ?, ?, ?),"
+		vals = append(vals, campaignId, userId, nil, 0)
+	}
+	
+	sqlQuery = sqlQuery[0:len(sqlQuery) - 1]
+
+	statement, err := r.db.Prepare(sqlQuery)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(vals...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *userCampaignMySqlRepository) AddCharacterToCampaign(characterId int, campaignId int, userId string) (error) {
+	statement, err := r.db.Prepare(QueryUpdateCharacterCampaign)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(campaignId, characterId)
+	if err != nil {
+		return  err
+	}
+
+	statement, err = r.db.Prepare(QueryUpdateUserCharacter)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(characterId, userId, campaignId)
+	if err != nil {
+		return  err
 	}
 
 	return nil

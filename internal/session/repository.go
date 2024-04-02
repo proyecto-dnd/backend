@@ -33,6 +33,7 @@ func (r *sessionMySqlRepository) Create(session domain.Session) (domain.Session,
 		session.End,
 		session.Description,
 		session.CampaignId,
+		session.CurrentEnviroment,
 	)
 	if err != nil {
 		return domain.Session{}, err

@@ -7,6 +7,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/dto"
 	"github.com/proyecto-dnd/backend/internal/session"
+	"github.com/proyecto-dnd/backend/internal/user"
 	"github.com/proyecto-dnd/backend/internal/user_campaign"
 )
 
@@ -15,10 +16,11 @@ type service struct {
 	sessionService       session.SessionService
 	userCampaignService  user_campaign.UserCampaignService
 	characterDataService characterdata.ServiceCharacterData
+	userService          user.ServiceUsers
 }
 
-func NewCampaignService(campaignRepository CampaignRepository, sessionService session.SessionService, userCampaignService user_campaign.UserCampaignService, characterDataService characterdata.ServiceCharacterData) CampaignService {
-	return &service{campaignRepository: campaignRepository, sessionService: sessionService, userCampaignService: userCampaignService, characterDataService: characterDataService}
+func NewCampaignService(campaignRepository CampaignRepository, sessionService session.SessionService, userCampaignService user_campaign.UserCampaignService, characterDataService characterdata.ServiceCharacterData, userService user.ServiceUsers) CampaignService {
+	return &service{campaignRepository: campaignRepository, sessionService: sessionService, userCampaignService: userCampaignService, characterDataService: characterDataService, userService: userService}
 }
 
 func (s *service) CreateCampaign(campaignDto dto.CreateCampaignDto, userId string) (domain.Campaign, error) {
@@ -103,14 +105,14 @@ func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
 			wg.Done()
 		}()
 		sessions, err := s.sessionService.GetSessionsByCampaignId(campaign.CampaignId)
-	
+
 		if err != nil {
 			errChan <- err
 			return
 		}
 		sessionsChan <- sessions
 	}()
-	
+
 	go func() {
 		maxWorkers <- true
 		defer func() {
@@ -124,22 +126,22 @@ func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
 		}
 		usersChan <- users
 	}()
-	
+
 	wg.Wait()
 	close(errChan)
-	
+
 	for err := range errChan {
 		if err != nil {
 			return dto.ResponseCampaignDto{}, err
 		}
 	}
-		
+
 	var usersWithCharacters []dto.UserCharacterCampaignDto
 
 	for _, user := range <-usersChan {
 
 		userCharacter, err := s.characterDataService.GetByUserIdAndCampaignId(user.Id, campaign.CampaignId)
-		
+
 		if err != nil {
 			return dto.ResponseCampaignDto{}, err
 		}
@@ -148,7 +150,7 @@ func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
 		if len(userCharacter) > 0 {
 			character = &userCharacter[0]
 		}
-	
+
 		userWithCharacter := dto.UserCharacterCampaignDto{
 			Id:          user.Id,
 			Username:    user.Username,
@@ -176,8 +178,17 @@ func (s *service) GetCampaignByID(id int) (dto.ResponseCampaignDto, error) {
 	return responseCampaign, nil
 }
 
-func (s *service) GetCampaignsByUserId(id string) ([]dto.ResponseCampaignDto, error) {
-	campaigns, err := s.campaignRepository.GetCampaignsByUserId(id)
+func (s *service) GetCampaignsByUserId(cookie string) ([]dto.ResponseCampaignDto, error) {
+	var uid string
+
+	user, err := s.userService.GetJwtInfo(cookie)
+	if err != nil {
+		return nil, err
+	}
+
+	uid = user.Id
+
+	campaigns, err := s.campaignRepository.GetCampaignsByUserId(uid)
 	if err != nil {
 		return nil, err
 	}
@@ -243,5 +254,9 @@ func (s *service) UpdateCampaign(campaignDto dto.CreateCampaignDto, id int) (dto
 }
 
 func (s *service) DeleteCampaign(id int) error {
+	err := s.userCampaignService.DeleteUserCampaignByCampaignId(id)
+	if err != nil {
+		return err
+	}
 	return s.campaignRepository.Delete(id)
 }

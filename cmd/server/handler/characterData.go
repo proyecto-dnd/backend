@@ -95,7 +95,7 @@ func (h *CharacterHandler) HandlerGetByCampaignIdAndUserId() gin.HandlerFunc {
 
 		characters, err := h.service.GetByUserIdAndCampaignId(userid, campaignid)
 		if err != nil {
-			ctx.JSON(500, err)
+			ctx.JSON(500, err.Error())
 			return
 		}
 		ctx.JSON(200, characters)
@@ -166,5 +166,22 @@ func (h *CharacterHandler) HandlerUpdate() gin.HandlerFunc {
 			return
 		}
 		ctx.JSON(201, createdCharacterData)
+	}
+}
+
+
+func (h *CharacterHandler) HandlerGetByUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err.Error())
+			return
+		}
+		characters, err := h.service.GetByUser(cookie.Value)
+		if err != nil {
+			ctx.JSON(404, err.Error())
+			return
+		}
+		ctx.JSON(200, characters)
 	}
 }

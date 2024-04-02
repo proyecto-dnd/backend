@@ -65,17 +65,28 @@ func (h *FriendshipHandler) HandlerCreate() gin.HandlerFunc {
 // @Router /friendship [delete]
 func (h *FriendshipHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var tempFriendship domain.Friendship
-		if err := ctx.BindJSON(&tempFriendship); err != nil {
-			ctx.JSON(500, err.Error())
+
+		friend := ctx.Param("friend")
+		cookie, err := ctx.Request.Cookie("Session")
+		if err != nil {
+			ctx.JSON(400, err.Error())
 			return
 		}
-		_, err := h.service.Create(tempFriendship)
+		jwtClaimsInfo, err := h.userService.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err.Error())
+			return
+		}
+		userId := jwtClaimsInfo.Id
+		var tempFriendship domain.Friendship
+		tempFriendship.User1Id = userId
+		tempFriendship.User2Id = friend
+
+		err = h.service.Delete(tempFriendship)
 		if err != nil {
 			ctx.JSON(500, err.Error())
 			return
 		}
-
 		ctx.JSON(200, "Deleted succesfully friendship with user1_id: "+tempFriendship.User1Id+" and user2_id: "+tempFriendship.User2Id)
 	}
 }

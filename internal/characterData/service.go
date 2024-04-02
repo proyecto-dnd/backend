@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"sync"
+
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
 	characterXproficiency "github.com/proyecto-dnd/backend/internal/characterXProficiency"
 	characterXspell "github.com/proyecto-dnd/backend/internal/characterXSpell"
@@ -17,6 +19,7 @@ import (
 	skillxcharacterdata "github.com/proyecto-dnd/backend/internal/skillXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/spell"
 	tradeevent "github.com/proyecto-dnd/backend/internal/tradeEvent"
+	"github.com/proyecto-dnd/backend/internal/user"
 	weaponxcharacterdata "github.com/proyecto-dnd/backend/internal/weaponXCharacterData"
 )
 
@@ -36,10 +39,11 @@ type service struct {
 	proficiencyService           proficiency.ProficiencyService
 	proficiencyXCharacterService characterXproficiency.CharacterXProficiencyService
 	tradeEventService tradeevent.ServiceTradeEvent
+	userService user.ServiceUsers
 }
 
-func NewServiceCharacterData(characterRepo RepositoryCharacterData, itemService itemxcharacterdata.ServiceItemXCharacterData, weaponService weaponxcharacterdata.ServiceWeaponXCharacterData, armorService armorXCharacterData.ServiceArmorXCharacterData, skillService skill.ServiceSkill, skillXCharacterService skillxcharacterdata.ServiceSkillXCharacter, featureService feature.FeatureService, featureXCharacterService character_feature.CharacterFeatureService, spellService spell.ServiceSpell, spellXCharacterService characterXspell.ServiceCharacterXSpell, proficiencyService proficiency.ProficiencyService, proficiencyXCharacterService characterXproficiency.CharacterXProficiencyService, tradeEventService tradeevent.ServiceTradeEvent) ServiceCharacterData {
-	return &service{characterRepo: characterRepo, itemService: itemService, weaponService: weaponService, armorService: armorService, skillService: skillService, skillXCharacterService: skillXCharacterService, featureService: featureService, featureXCharacterService: featureXCharacterService, spellService: spellService, spellXCharacterService: spellXCharacterService, proficiencyService: proficiencyService, proficiencyXCharacterService: proficiencyXCharacterService, tradeEventService: tradeEventService}
+func NewServiceCharacterData(characterRepo RepositoryCharacterData, itemService itemxcharacterdata.ServiceItemXCharacterData, weaponService weaponxcharacterdata.ServiceWeaponXCharacterData, armorService armorXCharacterData.ServiceArmorXCharacterData, skillService skill.ServiceSkill, skillXCharacterService skillxcharacterdata.ServiceSkillXCharacter, featureService feature.FeatureService, featureXCharacterService character_feature.CharacterFeatureService, spellService spell.ServiceSpell, spellXCharacterService characterXspell.ServiceCharacterXSpell, proficiencyService proficiency.ProficiencyService, proficiencyXCharacterService characterXproficiency.CharacterXProficiencyService, tradeEventService tradeevent.ServiceTradeEvent, userService user.ServiceUsers) ServiceCharacterData {
+	return &service{characterRepo: characterRepo, itemService: itemService, weaponService: weaponService, armorService: armorService, skillService: skillService, skillXCharacterService: skillXCharacterService, featureService: featureService, featureXCharacterService: featureXCharacterService, spellService: spellService, spellXCharacterService: spellXCharacterService, proficiencyService: proficiencyService, proficiencyXCharacterService: proficiencyXCharacterService, tradeEventService: tradeEventService, userService: userService}
 }
 
 // GetGenerics implements ServiceCharacterData.
@@ -196,7 +200,6 @@ func (s *service) GetById(id int) (dto.FullCharacterData, error) {
 // GetByUserId implements ServiceCharacterData.
 func (s *service) GetByUserId(userid string) ([]dto.CharacterCardDto, error) {
 	return s.characterRepo.GetByUserId(userid)
-
 }
 
 // GetByUserIdAndCampaignId implements ServiceCharacterData.
@@ -223,6 +226,19 @@ func (s *service) Update(character domain.CharacterData) (dto.FullCharacterData,
 	}
 	return updatedFullCharacter, nil
 }
+
+// GetByUser implements ServiceCharacterData.
+
+func (s *service) GetByUser(cookie string) ([]dto.CharacterCardDto, error) {
+	var uid string
+	user, err := s.userService.GetJwtInfo(cookie)
+	if err != nil {
+		return nil, err
+	}
+	uid = user.Id
+	return s.characterRepo.GetByUserId(uid)
+}
+
 
 func characterDataToFullCharacterData(character domain.CharacterData, items []domain.ItemXCharacterData, weapons []domain.WeaponXCharacterData, armor []domain.ArmorXCharacterData, skills []domain.Skill, features []domain.Feature, spells []domain.Spell, proficiencies []domain.Proficiency) dto.FullCharacterData {
 	return dto.FullCharacterData{

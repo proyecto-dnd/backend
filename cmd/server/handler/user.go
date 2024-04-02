@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/proyecto-dnd/backend/internal/domain"
 	"github.com/proyecto-dnd/backend/internal/user"
+	"github.com/proyecto-dnd/backend/pkg/email"
 )
 
 type UserHandler struct {
@@ -173,7 +174,6 @@ func (h *UserHandler) HandlerPatch() gin.HandlerFunc {
 func (h *UserHandler) HandlerDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
-		fmt.Println(id)
 		err := h.service.Delete(id)
 		if err != nil {
 
@@ -213,7 +213,7 @@ func (h *UserHandler) HandlerLogin() gin.HandlerFunc {
 		host := ctx.Request.Host
 		domainParts := strings.Split(host, ":")
 		domain := domainParts[0]
-		ctx.SetCookie("Session", cookie, 36000, "/", domain, false, false)
+		ctx.SetCookie("Session", cookie, 36000, "/", domain, false, true)
 
 		ctx.JSON(200, "Setted Cookie")
 	}
@@ -245,22 +245,60 @@ func (h *UserHandler) HandlerSubPremium() gin.HandlerFunc {
 
 		months, err := strconv.Atoi(monthsParam)
 		if err != nil {
+			log.Println(1, err)
 			ctx.JSON(500, err.Error())
 			return
 		}
 
 		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
+			log.Println(2, err)
+			ctx.JSON(500, err.Error())
+			return
+		}
+		// arreglar para sumar a la fecha guardada en la base checkeando que la fecha de hoy sea posterior al vencimiento de la suscripcion
+		_, err = h.service.SubscribeToPremium(cookie.Value, time.Now().AddDate(0, months, 0).String())
+		if err != nil {
+			log.Println(3, err)
 			ctx.JSON(500, err.Error())
 			return
 		}
 
-		newToken, err := h.service.SubscribeToPremium(cookie.Value, time.Now().AddDate(0, months, 0).String())
+		// ctx.SetCookie("Session", newToken, 360000, "/", "localhost", false, true)
+		ctx.JSON(200, "Subscribed to Premium")
+	}
+}
+
+func (h *UserHandler) HandlerCheckSubscriptionExpDate() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		cookie, err := ctx.Request.Cookie("Session")
 		if err != nil {
 			ctx.JSON(500, err.Error())
 			return
 		}
-		ctx.SetCookie("Session", newToken, 0, "/", "localhost", false, true)
-		ctx.JSON(200, "Subscribed to Premium")
+		jwtClaimsInfo, err := h.service.GetJwtInfo(cookie.Value)
+		if err != nil {
+			ctx.JSON(400, err.Error())
+			return
+		}
+
+		err = h.service.CheckSubExpiration(jwtClaimsInfo.Id)
+		if err != nil {
+			ctx.JSON(403, err.Error())
+			return
+		}
+		// TEMP SUCCESS RESPONSE
+		ctx.JSON(200, "Still subed to Premium")
+	}
+}
+
+func (h *UserHandler) HandlerTryEmail() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		err := email.SendEmailVerificationLink("dthmax2@gmail.com", "http://google.com.ar")
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+		ctx.JSON(200, "Email sent")
 	}
 }

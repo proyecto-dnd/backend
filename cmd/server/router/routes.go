@@ -9,6 +9,7 @@ import (
 	"github.com/proyecto-dnd/backend/internal/armor"
 	"github.com/proyecto-dnd/backend/internal/armorXCharacterData"
 	"github.com/proyecto-dnd/backend/internal/attackEvent"
+	"github.com/proyecto-dnd/backend/internal/background"
 	backgroundXproficiency "github.com/proyecto-dnd/backend/internal/backgroundXProficiency"
 	"github.com/proyecto-dnd/backend/internal/campaign"
 	characterdata "github.com/proyecto-dnd/backend/internal/characterData"
@@ -167,6 +168,10 @@ var (
 	diceEventService    dice_event.DiceEventService
 	diceEventHandler    *handler.DiceEventHandler
 
+	backgroundRepository background.BackgroundRepository
+	backgroundService background.BackgroundService
+	backgroundHandler *handler.BackgroundHandler
+
 	reportGenerator *report.ReportGenerator
 	reportHandler   *handler.ReportHandler
 )
@@ -230,7 +235,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	characterXProficiencyService = characterXproficiency.NewCharacterXProficiencyService(characterXProficiencyRepository)
 	characterXProficiencyHandler = handler.NewCharacterXProficiencyHandler(characterXProficiencyService)
 	userCampaignRepository = user_campaign.NewUserCampaignRepository(db)
-	userCampaignService = user_campaign.NewUserCampaignService(userCampaignRepository)
+	userCampaignService = user_campaign.NewUserCampaignService(userCampaignRepository, userFirebaseService)
 	userCampaignHandler = handler.NewUserCampaignHandler(&userCampaignService)
 	friendshipRepository = friendship.NewFriendshipRepository(db, userFirebaseRepository, firebaseApp)
 	friendshipService = friendship.NewFriendshipService(friendshipRepository)
@@ -267,6 +272,9 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	backgroundXProficiencyRepository = backgroundXproficiency.NewBackgroundXProficiencyRepository(db)
 	backgroundXProficiencyService = backgroundXproficiency.NewBackgroundXProficiencyService(backgroundXProficiencyRepository)
 	backgroundXProficiencyHandler = handler.NewBackgroundXProficiencyHandler(backgroundXProficiencyService)
+	backgroundRepository = background.NewBackgroundRepository(db)
+	backgroundService = background.NewBackgroundService(backgroundRepository)
+	backgroundHandler = handler.NewBackgroundHandler(backgroundService)
 
 	characterFeatureRepository = character_feature.NewCharacterFeatureRepository(db)
 	characterFeatureService = character_feature.NewCharacterFeatureService(characterFeatureRepository)
@@ -279,7 +287,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	tradeEventHandler = handler.NewTradeEventHandler(&tradeEventService)
 
 	characterDataRepository = characterdata.NewCharacterDataRepository(db)
-	characterDataService = characterdata.NewServiceCharacterData(characterDataRepository, itemXCharacterDataService, weaponXCharacterDataService, armorXCharacterDataService, skillService, skillXCharacterDataService, featureService, featureXCharacterDataService, spellService, characterXSpellService, proficiencyService, characterXProficiencyService, tradeEventService)
+	characterDataService = characterdata.NewServiceCharacterData(characterDataRepository, itemXCharacterDataService, weaponXCharacterDataService, armorXCharacterDataService, skillService, featureService, spellService, proficiencyService, userFirebaseService)
 	characterDataHandler = handler.NewCharacterHandler(&characterDataService)
 
 	attackEventRepository = attackEvent.NewAttackEventRepository(db)
@@ -287,7 +295,7 @@ func NewRouter(engine *gin.Engine, db *sql.DB, firebaseApp *firebase.App) Router
 	attackEventHandler = handler.NewAttackEventHandler(&attackEventService)
 
 	campaignRepository = campaign.NewCampaignRepository(db)
-	campaignService = campaign.NewCampaignService(campaignRepository, sessionService, userCampaignService, characterDataService)
+	campaignService = campaign.NewCampaignService(campaignRepository, sessionService, userCampaignService, characterDataService, userFirebaseService)
 	campaignHandler = handler.NewCampaignHandler(&campaignService, &userFirebaseService)
 
 	characterXAttackEventRepository = characterXAttackEvent.NewCharacterXAttackEventRepository(db)
@@ -346,6 +354,7 @@ func (r *router) MapRoutes() {
 	r.buildSkillXCharacterDataRoutes()
 	r.buildWebsocketRoutes()
 	r.buildReportRoutes()
+	r.buildBackgroundRoutes()
 	// TODO Add other builders here	and write their functions
 
 }
@@ -367,10 +376,12 @@ func (r *router) buildUserRoutes() {
 		userGroup.POST("/subscribe/:months", userFirebaseHandler.HandlerSubPremium())
 		userGroup.GET("", userFirebaseHandler.HandlerGetAll())
 		userGroup.GET("/:id", userFirebaseHandler.HandlerGetById())
+		userGroup.GET("/checkSub", userFirebaseHandler.HandlerCheckSubscriptionExpDate())
 		userGroup.GET("/jwt", userFirebaseHandler.HandlerGetJwtInfo())
 		userGroup.PUT("/:id", userFirebaseHandler.HandlerUpdate())
 		userGroup.PATCH("/:id", userFirebaseHandler.HandlerPatch())
 		userGroup.DELETE("/:id", userFirebaseHandler.HandlerDelete())
+		userGroup.GET("/email", userFirebaseHandler.HandlerTryEmail())
 	}
 }
 
@@ -395,7 +406,7 @@ func (r *router) buildCampaignRoutes() {
 		campaignGroup.POST("", campaignHandler.HandlerCreate())
 		campaignGroup.GET("", campaignHandler.HandlerGetAll())
 		campaignGroup.GET("/:id", campaignHandler.HandlerGetById())
-		campaignGroup.GET("/user/:id", campaignHandler.HandlerGetByUserId())
+		campaignGroup.GET("/user", campaignHandler.HandlerGetByUserId())
 		campaignGroup.PUT("/:id", campaignHandler.HandlerUpdate())
 		campaignGroup.DELETE("/:id", campaignHandler.HandlerDelete())
 	}
@@ -436,6 +447,16 @@ func (r *router) buildProficiencyRoutes() {
 	}
 }
 
+
+
+func (r *router) buildBackgroundRoutes() {
+	backgroundGroup := r.routerGroup.Group("/background") 
+	{
+		backgroundGroup.GET("", backgroundHandler.HandlerGetAll())
+		backgroundGroup.GET("/:id", backgroundHandler.HandlerGetById())
+	}
+}
+
 func (r *router) buildProficiencyXClassRoutes() {
 	proficiencyXClassGroup := r.routerGroup.Group("/proficiencyxclass")
 	{
@@ -448,6 +469,8 @@ func (r *router) buildUserCampaignRoutes() {
 	userCampaignGroup := r.routerGroup.Group("/user_campaign")
 	{
 		userCampaignGroup.POST("", userCampaignHandler.HandlerCreate())
+		userCampaignGroup.POST("/friends/:id", userCampaignHandler.HandlerAddFriendsToCampaign())
+		userCampaignGroup.PUT("/addCharacter", userCampaignHandler.HandlerAddCharacterToCampaign())
 		userCampaignGroup.GET("", userCampaignHandler.HandlerGetAll())
 		userCampaignGroup.GET("/:id", userCampaignHandler.HandlerGetById())
 		userCampaignGroup.GET("/campaign/:id", userCampaignHandler.HandlerGetByCampaignId())
@@ -464,7 +487,7 @@ func (r *router) buildFriendshipRoutes() {
 		friendshipGroup.GET("", friendshipHandler.HandlerGetAllFriends())
 		friendshipGroup.GET("/search/:name", friendshipHandler.HandlerGetBySimilarName())
 		friendshipGroup.GET("/find/:name", friendshipHandler.HandlerSearchFollowers())
-		friendshipGroup.DELETE("", friendshipHandler.HandlerDelete())
+		friendshipGroup.DELETE("/:friend", friendshipHandler.HandlerDelete())
 	}
 }
 
@@ -629,6 +652,7 @@ func (r *router) buildCharacterDataRoutes() {
 		characterDataGroup.GET("/:id", characterDataHandler.HandlerGetById())
 		characterDataGroup.GET("/event/:eventid", characterDataHandler.HandlerGetByAttackEventId())
 		characterDataGroup.GET("/generic", characterDataHandler.HandlerGetGenerics())
+		characterDataGroup.GET("/user", characterDataHandler.HandlerGetByUser())
 		characterDataGroup.PUT("/:id", characterDataHandler.HandlerUpdate())
 		characterDataGroup.DELETE("/:id", characterDataHandler.HandlerDelete())
 	}
