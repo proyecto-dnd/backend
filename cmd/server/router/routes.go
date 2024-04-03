@@ -378,7 +378,7 @@ func (r *router) buildUserRoutes() {
 		userGroup.GET("/:id", userFirebaseHandler.HandlerGetById())
 		userGroup.GET("/checkSub", userFirebaseHandler.HandlerCheckSubscriptionExpDate())
 		userGroup.GET("/jwt", userFirebaseHandler.HandlerGetJwtInfo())
-		userGroup.OPTIONS("/sendEmailVerification", userFirebaseHandler.HandlerSendEmailVerification())
+		userGroup.POST("/sendEmailVerification", userFirebaseHandler.HandlerSendEmailVerification())
 		userGroup.PUT("/:id", userFirebaseHandler.HandlerUpdate())
 		userGroup.PATCH("/", userFirebaseHandler.HandlerPatch())
 		userGroup.DELETE("/:id", userFirebaseHandler.HandlerDelete())
